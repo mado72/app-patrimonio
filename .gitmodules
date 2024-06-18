@@ -1,0 +1,3 @@
+[submodule "srv-patrimonio"]
+	path = srv-patrimonio
+	url = ./srv-patrimonio
