@@ -1,0 +1,7 @@
+<p>carteira-list works!</p>
+@for (carteira of appData.carteiras; track carteira.identity) {
+    <app-carteira-table [carteira]="carteira"></app-carteira-table>
+}
+<button type="button" (click)="adicionarCarteira()">Adicionar Carteira</button>
+
+{{appData | json}}

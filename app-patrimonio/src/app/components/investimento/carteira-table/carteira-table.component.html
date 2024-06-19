@@ -1,0 +1,12 @@
+<div style="border: 1px solid #aaa; margin: 4px;">
+    <h3>
+        {{carteira.nome}}
+    </h3>
+    {{carteira | json}}
+
+    <app-ativo-list [ativos]="carteira.ativos"></app-ativo-list>
+
+    <div style="margin-top: 5px;">
+        <button type="button" (click)="novoAtivo()">Adicionar Ativo</button>
+    </div>
+</div>
