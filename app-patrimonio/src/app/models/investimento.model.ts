@@ -17,7 +17,7 @@ abstract class Investimento implements IInvestimento {
     _id?: string;
     identity: string;
     nome: string;
-    tipo: string;
+    tipo: TipoInvestimento;
     moeda: Moeda;
 
     constructor(investimento: Omit<IInvestimento, "valorMoeda">) {

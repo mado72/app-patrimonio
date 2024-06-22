@@ -1,4 +1,6 @@
 <div>
     <h5>Ativos</h5>
-    {{ ativos | json }}
+    @for (ativo of ativos; track ativo.identity) {
+        <app-ativo-item [ativo]="ativo" (onRemoveAtivo)="removerAtivo($event)"/>
+    }
 </div>

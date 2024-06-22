@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Moeda } from '../../../models/base.model';
 import { Ativo, Carteira, IAtivo } from '../../../models/investimento.model';
-import { addAtivoCarteira } from '../../../store/carteira.actions';
+import { addAtivoCarteira, removeAtivoCarteira, removeCarteira } from '../../../store/carteira.actions';
 import { AtivoListComponent } from '../ativo-list/ativo-list.component';
 
 @Component({
@@ -25,11 +25,11 @@ export class CarteiraTableComponent {
     tipo: 'Carteira',
   });
 
-  constructor(private store: Store) {}
+  constructor(private store: Store) { }
 
   adicionaAtivo(ativo: IAtivo) {
     const novoAtivo: Ativo = (<Ativo>ativo).identity !== undefined ? <Ativo>ativo : new Ativo(ativo);
-    this.store.dispatch(addAtivoCarteira({ativo: novoAtivo, carteira: this.carteira}))
+    this.store.dispatch(addAtivoCarteira({ ativo: novoAtivo, carteira: this.carteira }))
   }
 
   novoAtivo() {
@@ -37,8 +37,22 @@ export class CarteiraTableComponent {
       nome: `Novo ativo ${this.carteira.ativos.length}`,
       valor: 100 * Math.random(),
       moeda: Moeda.BRL,
-      tipo: 'Ativo'
+      tipo: 'Acao'
     }))
   }
+
+  removerCarteira() {
+    this.store.dispatch(removeCarteira({ carteira: this.carteira }));
+  }
+
+  removeCarteiraAtivo(ativo: Ativo) {
+    try {
+      this.store.dispatch(removeAtivoCarteira({ carteira: this.carteira, ativo }));
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
 }

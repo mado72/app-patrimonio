@@ -4,9 +4,10 @@
     </h3>
     {{carteira | json}}
 
-    <app-ativo-list [ativos]="carteira.ativos"></app-ativo-list>
+    <app-ativo-list [ativos]="carteira.ativos" (onRemoveAtivo)="removeCarteiraAtivo($event)"></app-ativo-list>
 
     <div style="margin-top: 5px;">
         <button type="button" (click)="novoAtivo()">Adicionar Ativo</button>
     </div>
 </div>
+<button type="button" (click)="removerCarteira()">Remover Carteira</button>

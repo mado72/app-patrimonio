@@ -1,7 +1,7 @@
 import { createReducer, on } from "@ngrx/store";
 import { AppData } from "../models/app.models";
-import { addAtivoCarteira, addCarteira, getAtivosCarteira, getCarteiras, removeCarteira, updateCarteira } from "./carteira.actions";
-import { Carteira } from "../models/investimento.model";
+import { addAtivoCarteira, addCarteira, getAtivosCarteira, getCarteiras, removeAtivoCarteira, removeCarteira, updateCarteira } from "./carteira.actions";
+import { Ativo, Carteira } from "../models/investimento.model";
 import { addAtivo, getAtivos, removeAtivo, updateAtivo } from "./ativo.actions";
 
 export const initialState: AppData = {
@@ -42,6 +42,14 @@ export const investimentoReducer = createReducer(
                     {...carteira, ativos: [...carteira.ativos, item.ativo]} as Carteira: carteira)
         }
     }),
+    on(removeAtivoCarteira, (state, item) =>{
+        return {
+            ...state, 
+            carteiras: state.carteiras
+                .map(carteira => carteira.identity == item.carteira.identity? 
+                    {...carteira, ativos: [...carteira.ativos.filter(ativo=>ativo.identity !== item.ativo.identity)]} as Carteira: carteira)
+        };
+    }),
     on(removeCarteira, (state, item)=>{
         return {...state, carteiras: state.carteiras.filter(carteira => carteira.identity!= item.carteira.identity)}
     }),
@@ -55,9 +63,21 @@ export const investimentoReducer = createReducer(
         return {...state, ativos: [...state.ativos, item.ativo]}
     }),
     on(removeAtivo, (state, item) => {
-        return {...state, ativos: state.ativos.filter(ativo => ativo.identity!= item.ativo.identity)}
+        const predicate = (ativo: Ativo): boolean => ativo.identity != item.ativo.identity;
+
+        return {
+            ...state, 
+            ativos: state.ativos.filter(predicate),
+        }
     }),
     on(updateAtivo, (state, item)=>{
-        return {...state, ativos: state.ativos.map(ativo => ativo.identity == item.ativo.identity? item.ativo : ativo)}
+        const predicate = (ativo: Ativo) => ativo.identity == item.ativo.identity ? item.ativo : ativo;
+        return {
+            ...state, 
+            carteiras: state.carteiras.map(carteira=> {
+                carteira.ativos = carteira.ativos.map(predicate);
+                return carteira;
+            }),
+            ativos: state.ativos.map(predicate)}
     })
 );
