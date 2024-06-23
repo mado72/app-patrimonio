@@ -1,11 +1,35 @@
 import { createAction, props } from "@ngrx/store";
 import { Ativo, Carteira } from "../models/investimento.model";
 
-export const getCarteiras = createAction("[Carteira] obterCarteiras", props<{carteiras: Carteira[]}>())
-export const addCarteira = createAction("[Carteira] adicionada", props<{carteira: Carteira}>())
-export const removeCarteira = createAction("[Carteira] removida", props<{carteira: Carteira}>())
-export const updateCarteira = createAction("[Carteira] alterada", props<{carteira: Carteira}>())
+class CarteiraActions {
+    readonly getCarteiras = createAction("[Carteira] obterCarteiras")
+    readonly getCarteirasSuccess = createAction("[Carteira] obterCarteiras sucesso", props<{carteiras: Carteira[]}>());
+    readonly getCarteirasError = createAction("[Carteira] obterCarteiras erro", props<{error: any}>());
+    
+    readonly addCarteira = createAction("[Carteira] adicionada", props<{carteira: Carteira}>())
+    readonly addCarteiraSuccess = createAction("[Carteira] adicionada sucesso", props<{carteira: Carteira}>())
+    readonly addCarteiraError = createAction("[Carteira] adicionada erro", props<{error: any}>())
+    
+    readonly removeCarteira = createAction("[Carteira] remove carteira", props<{carteira: Carteira}>())
+    readonly removeCarteiraSuccess = createAction("[Carteira] removida sucesso", props<{carteira: Carteira}>())
+    readonly removeCarteiraError = createAction("[Carteira] removida erro", props<{error: any}>())
+    
+    readonly updateCarteira = createAction("[Carteira] alterada", props<{carteira: Carteira}>())
+    readonly updateCarteiraSuccess = createAction("[Carteira] alterada sucesso", props<{carteira: Carteira}>())
+    readonly updateCarteiraError = createAction("[Carteira] alterada erro", props<{error: any}>())
+    
+    readonly getAtivosCarteira = createAction("[AtivosCarteira] ativos da carteira", props<{carteira: Carteira}>())
+    readonly getAtivosCarteiraSuccess = createAction("[AtivosCarteira] ativos da carteira sucesso", props<{ativos: Ativo[], carteira: Carteira}>())
+    readonly getAtivosCarteiraError = createAction("[AtivosCarteira] ativos da carteira erro", props<{error: any}>())
 
-export const getAtivosCarteira = createAction("[AtivosCarteira] consultado ativos da carteira", props<{ativos: Ativo[], carteira: Carteira}>())
-export const addAtivoCarteira = createAction("[Ativo] adicionado na carteira", props<{ativo: Ativo, carteira: Carteira}>())
-export const removeAtivoCarteira = createAction("[Ativo] removido da carteira", props<{ativo: Ativo, carteira: Carteira}>())
+    readonly addAtivoCarteira = createAction("[Ativo] adiciona ativo na carteira", props<{ativo: Ativo, carteira: Carteira}>())
+    readonly addAtivoCarteiraSuccess = createAction("[Ativo] adiciona ativo na carteira sucesso", props<{ativo: Ativo, carteira: Carteira}>())
+    readonly addAtivoCarteiraError = createAction("[Ativo] adiciona ativo na carteira erro", props<{error: any}>())
+
+    readonly removeAtivoCarteira = createAction("[Ativo] remove ativo da carteira", props<{ativo: Ativo, carteira: Carteira}>())
+    readonly removeAtivoCarteiraSuccess = createAction("[Ativo] remove ativo da carteira sucesso", props<{ativo: Ativo, carteira: Carteira}>())
+    readonly removeAtivoCarteiraError = createAction("[Ativo] remove ativo da carteira erro", props<{error: any}>())
+}
+
+export const carteiraActions = new CarteiraActions();
+

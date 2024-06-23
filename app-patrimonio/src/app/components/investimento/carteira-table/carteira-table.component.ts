@@ -3,8 +3,8 @@ import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Moeda } from '../../../models/base.model';
 import { Ativo, Carteira, IAtivo } from '../../../models/investimento.model';
-import { addAtivoCarteira, removeAtivoCarteira, removeCarteira } from '../../../store/carteira.actions';
 import { AtivoListComponent } from '../ativo-list/ativo-list.component';
+import { carteiraActions } from '../../../store/carteira.actions';
 
 @Component({
   selector: 'app-carteira-table',
@@ -29,7 +29,7 @@ export class CarteiraTableComponent {
 
   adicionaAtivo(ativo: IAtivo) {
     const novoAtivo: Ativo = (<Ativo>ativo).identity !== undefined ? <Ativo>ativo : new Ativo(ativo);
-    this.store.dispatch(addAtivoCarteira({ ativo: novoAtivo, carteira: this.carteira }))
+    this.store.dispatch(carteiraActions.addAtivoCarteira({ ativo: novoAtivo, carteira: this.carteira }))
   }
 
   novoAtivo() {
@@ -42,12 +42,12 @@ export class CarteiraTableComponent {
   }
 
   removerCarteira() {
-    this.store.dispatch(removeCarteira({ carteira: this.carteira }));
+    this.store.dispatch(carteiraActions.removeCarteira({ carteira: this.carteira }));
   }
 
   removeCarteiraAtivo(ativo: Ativo) {
     try {
-      this.store.dispatch(removeAtivoCarteira({ carteira: this.carteira, ativo }));
+      this.store.dispatch(carteiraActions.removeAtivoCarteira({ carteira: this.carteira, ativo }));
 
     } catch (error) {
       console.error(error);

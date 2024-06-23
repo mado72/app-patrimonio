@@ -1,13 +1,20 @@
 <p>carteira-list works!</p>
-@for (carteira of appData.carteiras; track carteira.identity) {
-    <div>
-        <app-carteira-table [carteira]="carteira"></app-carteira-table>
-    </div>
+@if (carteiras$ | async; as carteiras) {
+    @for (carteira of carteiras.items; track carteira.identity) {
+        <div>
+            <app-carteira-table [carteira]="carteira"></app-carteira-table>
+        </div>
+    }
 }
 <button type="button" (click)="adicionarCarteira()">Adicionar Carteira</button>
 <button type="button" (click)="adicionarAtivo()">Adicionar Ativo</button>
 
-@for (ativo of appData.ativos; track ativo.identity) {
-    <app-ativo-item [ativo]="ativo" (onRemoveAtivo)="removeAtivo(ativo)"/>
+@if (ativos$ | async; as ativos) {
+    @for (ativo of ativos.items; track ativo.identity) {
+        <app-ativo-item [ativo]="ativo" (onRemoveAtivo)="removeAtivo(ativo)"/>
+    }
+
+    <pre>
+        {{ativos | json}}
+    </pre>
 }
-{{appData | json}}

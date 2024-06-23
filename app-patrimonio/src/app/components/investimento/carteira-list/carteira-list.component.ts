@@ -1,19 +1,19 @@
+import { AsyncPipe, JsonPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Ativo, Carteira } from '../../../models/investimento.model';
-import { AppData } from '../../../models/app.models';
 import { Store } from '@ngrx/store';
-import { CarteiraTableComponent } from '../carteira-table/carteira-table.component';
-import { JsonPipe } from '@angular/common';
-import { addCarteira, removeAtivoCarteira } from '../../../store/carteira.actions';
 import { Moeda } from '../../../models/base.model';
-import { addAtivo, removeAtivo } from '../../../store/ativo.actions';
+import { Ativo, Carteira } from '../../../models/investimento.model';
+import { ativoActions } from '../../../store/ativo.actions';
+import { carteiraActions } from '../../../store/carteira.actions';
+import { getAtivosState, getCarteirasState, getCotacoesState } from '../../../store/investimento.selectors';
 import { AtivoItemComponent } from '../ativo-item/ativo-item.component';
-
+import { CarteiraTableComponent } from '../carteira-table/carteira-table.component';
 @Component({
   selector: 'app-carteira-list',
   standalone: true,
   imports: [
     JsonPipe,
+    AsyncPipe,
     CarteiraTableComponent,
     AtivoItemComponent
   ],
@@ -22,50 +22,46 @@ import { AtivoItemComponent } from '../ativo-item/ativo-item.component';
 })
 export class CarteiraListComponent implements OnInit {
 
-  appData: AppData = new AppData();
+  carteiras$ = this.store.select(getCarteirasState);
+  ativos$ = this.store.select(getAtivosState);
+  cotacoes$ = this.store.select(getCotacoesState);
 
   constructor(private store: Store<any>) { }
 
   ngOnInit(): void {
-    this.store.select('investimento').subscribe((investimento) => {
-      this.appData = investimento;
-      console.log(this.appData);
-    });
-  }
-
-  trackByIdentity(index: number, item: Carteira) {
-    console.log(`trackByIdentity: index: ${index}, identity: ${item.identity}`);
-
-    return item.identity;
+    this.store.dispatch(ativoActions.getAtivos());
+    this.store.dispatch(carteiraActions.getCarteiras());
   }
 
   adicionarCarteira() {
     const carteira = new Carteira({
-      nome: 'Carteira' + this.appData.carteiras.length,
+      nome: 'Carteira',
       ativos: [],
       tipo: 'Carteira',
       moeda: Moeda.BRL
     });
-    this.store.dispatch(addCarteira({ carteira }))
+    this.store.dispatch(carteiraActions.addCarteira({ carteira }))
   }
 
   adicionarAtivo() {
     const ativo = new Ativo({
       moeda: Moeda.BRL,
-      nome: 'Ativo' + this.appData.ativos.length,
+      nome: 'Ativo',
       tipo: 'Acao',
       valor: 0
     });
-    this.store.dispatch(addAtivo({ ativo }))
+    this.store.dispatch(ativoActions.addAtivo({ ativo }))
   }
 
   removeAtivo(ativo: Ativo) {
-    this.appData.carteiras.forEach(carteira=>{
-      if (carteira.ativos.find(item=> item.identity === ativo.identity)) {
-        this.store.dispatch(removeAtivoCarteira({ carteira, ativo}))
-      }
-    })
-    this.store.dispatch(removeAtivo({ ativo }))
+    this.carteiras$.subscribe(carteiras => {
+      carteiras.items.forEach(carteira => {
+        if (carteira.ativos.find(item => item.identity === ativo.identity)) {
+          this.store.dispatch(carteiraActions.removeAtivoCarteira({ carteira, ativo }))
+        }
+      })
+      this.store.dispatch(ativoActions.removeAtivo({ ativo }))
+    });
   }
     
 }

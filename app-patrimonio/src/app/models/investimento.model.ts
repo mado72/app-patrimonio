@@ -1,6 +1,7 @@
 import { Observable, map } from "rxjs";
 import { Moeda } from "./base.model"
 import { Cotacao } from "./cotacao.models";
+import { DataLoad } from "./app.models";
 
 export type TipoInvestimento = 'Carteira' | 'Acao' | 'Fundo' | 'Moeda'
 
@@ -88,3 +89,6 @@ export class AtivoCotacao {
         );
     }
 }
+
+export interface LoadCarteira extends DataLoad<Carteira> {};
+export interface LoadAtivo extends DataLoad<Ativo> {};
