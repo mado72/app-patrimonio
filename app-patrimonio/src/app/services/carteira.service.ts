@@ -1,9 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, map, of } from 'rxjs';
 import { Ativo, Carteira, CarteiraAtivo, ICarteira } from '../models/investimento.model';
 import { selectAtivoAll } from '../store/ativo.selectors';
+import { Moeda } from '../models/base.model';
+import { environment } from '../../environments/environment';
 
 type CarteiraAtivoSemAtivo = Omit<CarteiraAtivo, "ativo"> & {ativo?: Ativo};
 @Injectable({
@@ -17,10 +19,20 @@ export class CarteiraService {
 
   mock: Carteira[] = [];
 
-  readonly http = inject(HttpClient);
-  getCarteiras(): Observable<Carteira[]> {
-    console.log(this.mock);
-    return of([...this.mock]);
+  readonly _http = inject(HttpClient);
+
+  getCarteiras(filtro?: {moeda?: Moeda, classe?: string}): Observable<Carteira[]> {
+    let params = new HttpParams();
+    if (!! filtro?.moeda) {
+      params.append('moeda', filtro?.moeda);
+    }
+    if (!! filtro?.classe) {
+      params.append('classe', filtro?.classe);
+    }
+    return this._http.get<ICarteira[]>(`${environment.apiUrl}/carteira`, { params })
+      .pipe(
+        map(carteiras=>carteiras.map(carteira=> new Carteira(carteira)))
+      )
   }
   addCarteira(carteira: ICarteira): Observable<Carteira> {
     const novoItem = new Carteira(carteira);

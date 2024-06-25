@@ -10,8 +10,8 @@ export const getCarteiraEffects = createEffect((
     service = inject(CarteiraService)
 ) => action$.pipe(
     ofType(carteiraActions.getCarteiras),
-    mergeMap(() =>
-        service.getCarteiras().pipe(
+    mergeMap((item) =>
+        service.getCarteiras(item.filtro).pipe(
             map(carteiras => carteiraActions.getCarteirasSuccess({carteiras})),
             catchError(error => of(carteiraActions.getCarteirasError({error})))
         )

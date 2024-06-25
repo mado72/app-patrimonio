@@ -1,8 +1,9 @@
 import { createAction, props } from "@ngrx/store";
 import { Carteira, CarteiraAtivo } from "../models/investimento.model";
+import { Moeda } from "../models/base.model";
 
 class CarteiraActions {
-    readonly getCarteiras = createAction("[Carteira] obterCarteiras")
+    readonly getCarteiras = createAction("[Carteira] obterCarteiras", props<{filtro? : {moeda?: Moeda, classe?: string}}>())
     readonly getCarteirasSuccess = createAction("[Carteira] obterCarteiras sucesso", props<{carteiras: Carteira[]}>());
     readonly getCarteirasError = createAction("[Carteira] obterCarteiras erro", props<{error: any}>());
     
