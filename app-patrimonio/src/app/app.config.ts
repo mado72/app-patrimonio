@@ -1,25 +1,32 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { routes } from './app.routes';
+import { authInterceptor } from './interceptors/auth.interceptor';
 import * as ativosEffects from './store/ativo.effects';
 import { ativoReducer } from './store/ativo.reducers';
 import * as carteiraEffects from './store/carteira.effects';
 import { carteiraReducer } from './store/carteira.reducers';
 import * as cotacaoEffects from './store/cotacao.effects';
 import { cotacaoReducer } from './store/cotacao.reducers';
-import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { errorInterceptor } from './interceptors/handle-error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideHttpClient(),
+    provideHttpClient(
+      withInterceptors([
+        authInterceptor,
+        errorInterceptor
+      ])),
+    // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideRouter(routes),
-    provideStore({"carteira": carteiraReducer, "ativo": ativoReducer, "cotacao": cotacaoReducer}),
+    provideStore({ "carteira": carteiraReducer, "ativo": ativoReducer, "cotacao": cotacaoReducer }),
     provideEffects(carteiraEffects, ativosEffects, cotacaoEffects),
     provideStoreDevtools({})
-]
+  ]
 };
