@@ -103,12 +103,12 @@ export const carteiraReducer = createReducer(
                 carteira.ativos = [...carteira.ativos, payload.ativo];
                 return carteira;
             },
-        }, {...state, error: undefined, status: LoadStatus.Adding}),
+        }, {...state, error: undefined, status: LoadStatus.Updating}),
     ),
     on(carteiraActions.addCarteiraAtivoSuccess, (state, payload) => 
         ({
             ...state,
-            status: LoadStatus.Added
+            status: LoadStatus.Updated
         })
     ),
     on(carteiraActions.addCarteiraAtivoError, (state, payload) => 
@@ -126,14 +126,14 @@ export const carteiraReducer = createReducer(
         ({
             ...state,
             error: undefined,
-            status: LoadStatus.Deleting
+            status: LoadStatus.Updating
         })
     ),
     on(carteiraActions.removeCarteiraAtivoSuccess, (state, payload) => 
         carteiraAdapter.mapOne({
             id: payload.carteira.identity,
             map: carteira => new Carteira(carteira, [...carteira.ativos].filter(item=>item.ativoId != payload.ativo.ativoId)),
-        }, {...state, error: undefined, status: LoadStatus.Deleted})
+        }, {...state, error: undefined, status: LoadStatus.Updated})
     ),
     on(carteiraActions.removeCarteiraAtivoError, (state, payload) => 
         carteiraAdapter.mapOne({
