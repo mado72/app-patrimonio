@@ -42,3 +42,8 @@ export const selectAtivoStatus = createSelector(
     selectAtivoState,
     (state) => state.status
 )
+
+export const selectAtivoErrors = createSelector(
+    selectAtivoState,
+    (state) => state.error
+)

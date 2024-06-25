@@ -35,3 +35,9 @@ export const selectCarteiraStatus = createSelector(
     selectCarteiraState,
     (state) => state.status
 )
+
+
+export const selectCarteiraError = createSelector(
+    selectCarteiraState,
+    (state) => state.error
+)

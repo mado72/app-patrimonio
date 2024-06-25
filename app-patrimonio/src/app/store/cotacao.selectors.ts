@@ -35,3 +35,9 @@ export const selectCotacaoStatus = createSelector(
     selectCotacaoState,
     (state) => state.status
 )
+
+
+export const selectCotacaoErrors = createSelector(
+    selectCotacaoState,
+    (state) => state.error
+)
