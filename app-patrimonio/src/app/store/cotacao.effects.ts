@@ -10,17 +10,10 @@ export const getCotacoesEffects = createEffect((
     action$ = inject(Actions),
     service = inject(CotacaoService)
 ) => action$.pipe(
-    ofType(cotacaoActions.getCotacoes.execute),
+    ofType(cotacaoActions.getCotacoes.getCotacoesExecute),
     mergeMap((item) =>
         service.getCotacoes(item.ativos).pipe(
-            switchMap(ativos=> 
-                of(
-                    cotacaoActions.getCotacoes.getCotacoesSuccess({
-                        cotacoes: ativos.filter(ativo=>ativo.cotacao).map(ativo=>ativo.cotacao as Cotacao)
-                    }),
-                    ativoActions.updateCotacoes({ativos})
-                )
-            ),
+            map(cotacoes=>cotacaoActions.getCotacoes.getCotacoesSuccess({cotacoes})),
             catchError(error=> of(cotacaoActions.getCotacoes.getCotacoesFailure({error})))
         )
     )
@@ -30,7 +23,7 @@ export const setCotacaoEffects = createEffect((
     action$ = inject(Actions),
     service = inject(CotacaoService)
 ) => action$.pipe(
-    ofType(cotacaoActions.setCotacao.execute),
+    ofType(cotacaoActions.setCotacao.setCotacaoExecute),
     mergeMap((item) =>
         service.setCotacao(item.cotacao.simbolo, item.cotacao.valor, item.cotacao.moeda).pipe(
             map(cotacao=> 

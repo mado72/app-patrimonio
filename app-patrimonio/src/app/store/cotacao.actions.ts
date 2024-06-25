@@ -8,7 +8,7 @@ class CotacaoActions {
     readonly getCotacoes = createActionGroup({
         source: '[Cotacao]',
         events: {
-            execute: props<{ativos: Ativo[]}>(),
+            getCotacoesExecute: props<{ativos: Ativo[]}>(),
             getCotacoesSuccess: props<{cotacoes: Cotacao[]}>(),
             getCotacoesFailure: props<{error: any}>(),
         }
@@ -17,7 +17,7 @@ class CotacaoActions {
     readonly setCotacao = createActionGroup({
         source: '[Cotacao]',
         events: {
-            execute: props<{cotacao: Cotacao}>(),
+            setCotacaoExecute: props<{cotacao: Cotacao}>(),
             setCotacaoSuccess: props<{cotacao: Cotacao}>(),
             setCotacaoFailure: props<{error: any}>()
         }

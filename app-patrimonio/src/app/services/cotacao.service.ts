@@ -11,7 +11,7 @@ import { Moeda } from "../models/base.model";
 export class CotacaoService {
     readonly http = inject(HttpClient);
 
-    getCotacoes(ativos: Ativo[]) : Observable<Ativo[]> {
+    getCotacoes(ativos: Ativo[]) : Observable<Cotacao[]> {
         const siglas = new Map(ativos.map(ativo=>[ativo.sigla, ativo]))
         const cotacoes = [...siglas.keys()].map(sigla=>new Cotacao({
             data: new Date(),
@@ -20,13 +20,7 @@ export class CotacaoService {
             valor: Math.random() * 200,
             _id: crypto.randomUUID()
         }))
-        return of(cotacoes).pipe(
-            map(cotacoes=>cotacoes.map(cotacao=>{
-                const ativo = siglas.get(cotacao.simbolo) as Ativo;
-                ativo.cotacao = cotacao;
-                return ativo;
-            }))
-        )
+        return of(cotacoes);
     }
 
     setCotacao(simbolo: string, valor: number, moeda: Moeda): Observable<Cotacao> {

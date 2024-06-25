@@ -17,20 +17,17 @@ export const initialStateCotacao: CotacaoEntityState = {
 export const cotacaoReducer = createReducer(
     initialStateCotacao,
 
-    on(cotacaoActions.getCotacoes.execute, (state, payload) => 
-        cotacaoAdapter.setAll(
-            payload.ativos
-                .filter(ativo=> ativo.cotacao)
-                .map(ativo=>ativo.cotacao as Cotacao), 
-        {
+    on(cotacaoActions.getCotacoes.getCotacoesExecute, (state, payload) => 
+        ({
             ...state,
             status: LoadStatus.Loading,
             error: undefined
         })
     ),
     on(cotacaoActions.getCotacoes.getCotacoesSuccess, (state, payload) =>
-        ({
-            ...state,
+        cotacaoAdapter.setAll(
+            payload.cotacoes, 
+        {   ...state,
             status: LoadStatus.Loaded
         })
     ),
@@ -42,7 +39,7 @@ export const cotacaoReducer = createReducer(
         })
     ),
 
-    on(cotacaoActions.setCotacao.execute, (state, payload)=>
+    on(cotacaoActions.setCotacao.setCotacaoExecute, (state, payload)=>
         cotacaoAdapter.mapOne({
             id: payload.cotacao.simbolo,
             map: cotacao=> payload.cotacao
