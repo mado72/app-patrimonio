@@ -38,6 +38,16 @@ export const selectAtivoId = createSelector(
     (entities, id) => id && Object.values(entities).find(ativo=>ativo?._id == id)
 )
 
+export const selectAtivosIn = (identities: string[]) => createSelector(
+    selectAtivoEntities,
+    (entities) => identities.map(identity=>entities[identity])
+)
+
+export const selectAtivosIdIn = (id: string[]) => createSelector(
+    selectAtivoEntities,
+    (entities) => Object.values(entities).filter(entity=>entity?._id && id.includes(entity?._id))
+)
+
 export const selectAtivoStatus = createSelector(
     selectAtivoState,
     (state) => state.status

@@ -25,8 +25,8 @@ abstract class Investimento implements IInvestimento {
     moeda: Moeda;
 
     constructor(investimento: IInvestimento | Investimento) {
-        this.identity = (<Investimento>investimento).identity || crypto.randomUUID();
-        this._id = this.identity;
+        this._id = investimento._id;
+        this.identity = this._id || (<Investimento>investimento).identity || crypto.randomUUID();
         this.nome = investimento.nome;
         this.tipo = investimento.tipo;
         this.moeda = investimento.moeda;
@@ -49,12 +49,15 @@ export class Ativo extends Investimento {
 
     sigla: string;
 
+    siglaYahoo?: string;
+
     cotacao?: Cotacao;
     
     constructor(ativo: IAtivo) {
         super(ativo);
         this._valor = ativo.valor;
         this.sigla = ativo.sigla;
+        this.siglaYahoo = ativo.siglaYahoo;
     }
 
     get valor() {
@@ -102,6 +105,24 @@ export class Carteira extends Investimento {
         return this.ativos.reduce((acc,ativo)=>acc += ativo?.vlAtual || 0,0);
     }
 }
+
+export type YahooQuote = {
+    "_id"?: string,
+    "simbolo": string,
+    "data": string,
+    "dataColeta": Date,
+    "maxima": number,
+    "minima": number,
+    "moeda": string,
+    "preco": number,
+    "variacao": number,
+    "nome": string,
+    "curto": string,
+    "dividendo": number,
+    "dividendoTaxa": number,
+    "horaMercado": Date
+}
+
 
 export interface AtivoEntityState extends LoadDataEntityState<Ativo> {}
 export interface CarteiraAtivoEntityState extends LoadDataEntityState<CarteiraAtivo> {}

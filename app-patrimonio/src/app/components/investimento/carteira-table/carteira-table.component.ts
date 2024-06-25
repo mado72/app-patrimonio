@@ -3,9 +3,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 import { Ativo, Carteira } from '../../../models/investimento.model';
-import { selectAtivoAll } from '../../../store/ativo.selectors';
-import { AtivoListComponent } from '../ativo-list/ativo-list.component';
 import { createAtivo } from '../../../store/ativo.reducers';
+import { selectAtivosIdIn } from '../../../store/ativo.selectors';
+import { AtivoListComponent } from '../ativo-list/ativo-list.component';
 
 @Component({
   selector: 'app-carteira-table',
@@ -41,9 +41,8 @@ export class CarteiraTableComponent {
 
   get ativos$() {
     const ids = this.carteira.ativos.map(carteiraAtivo => carteiraAtivo.ativoId);
-    return this.store.select(selectAtivoAll)
-    .pipe(
-      map(ativos=>ativos.filter(ativo=>ativo._id && ids && ids.includes(ativo._id)))
+    return this.store.select(selectAtivosIdIn(ids)).pipe(
+      map(ativos=>ativos.filter(ativo=>ativo) as Ativo[])
     )
   }
 
