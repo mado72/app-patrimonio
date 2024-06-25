@@ -19,6 +19,7 @@ class AtivoActions {
     readonly updateAtivoSuccess = createAction("[Ativo] alterado sucesso", props<{ativo: Ativo}>())
     readonly updateAtivoError = createAction("[Ativo] alterado erro", props<{ativo: Ativo, error: any}>())
     
+    readonly updateCotacoes = createAction("[Ativo] updateCotacoes", props<{ativos: Ativo[]}>())
 }
 
 export const ativoActions = new AtivoActions();

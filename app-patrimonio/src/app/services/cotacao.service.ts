@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { Ativo } from "../models/investimento.model";
-import { Observable, map, of } from "rxjs";
+import { Observable, map, of, tap } from "rxjs";
 import { Cotacao, ICotacao } from "../models/cotacao.models";
 import { Moeda } from "../models/base.model";
 
@@ -29,14 +29,14 @@ export class CotacaoService {
         )
     }
 
-    setCotacao(ativo: Ativo, valor: number): Observable<Cotacao> {
-        ativo.cotacao = new Cotacao({
+    setCotacao(simbolo: string, valor: number, moeda: Moeda): Observable<Cotacao> {
+        const cotacao = new Cotacao({
             data: new Date(),
-            moeda: ativo.moeda,
-            simbolo: ativo.sigla,
+            moeda,
+            simbolo,
             valor,
             _id: crypto.randomUUID()
         })
-        return of(ativo.cotacao as Cotacao);
+        return of(cotacao);
     }
 }

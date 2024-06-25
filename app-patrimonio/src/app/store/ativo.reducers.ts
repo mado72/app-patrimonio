@@ -70,6 +70,13 @@ export const ativoReducer = createReducer(
             id: payload.ativo.identity,
             changes: state.original || payload.ativo
         }, {...state, status: LoadStatus.Error, error: payload.error})
+    ),
+
+    on(ativoActions.updateCotacoes, (state, payload)=>
+        ativoAdapter.updateMany(payload.ativos.map(ativo=>({
+            id: ativo.identity,
+            changes: {...ativo}
+        })), state)
     )
 )
 
