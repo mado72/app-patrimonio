@@ -1,8 +1,14 @@
 <p>carteira-list works!</p>
+<div>Carteira Status: {{carteiraStatus$ | async}}</div>
+<div>Ativo Status: {{ativoStatus$ | async}}</div>
 @if (carteiras$ | async; as carteiras) {
-    @for (carteira of carteiras.items; track carteira.identity) {
+    @for (carteira of carteiras.sort(sortByNome); track carteira.identity) {
         <div>
-            <app-carteira-table [carteira]="carteira"></app-carteira-table>
+            <app-carteira-table [carteira]="carteira"
+                (onRemoverCarteira)="removerCarteira(carteira)"
+                (onAdicionarCarteiraAtivo)="adicionarCarteiraAtivo($event)"
+                (onRemoverCarteiraAtivo)="removerCarteiraAtivo($event)"
+                />
         </div>
     }
 }
@@ -10,7 +16,7 @@
 <button type="button" (click)="adicionarAtivo()">Adicionar Ativo</button>
 
 @if (ativos$ | async; as ativos) {
-    @for (ativo of ativos.items; track ativo.identity) {
+    @for (ativo of ativos; track ativo.identity) {
         <app-ativo-item [ativo]="ativo" (onRemoveAtivo)="removeAtivo(ativo)"/>
     }
 

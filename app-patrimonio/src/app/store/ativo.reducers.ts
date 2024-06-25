@@ -1,82 +1,87 @@
 import { createReducer, on } from "@ngrx/store";
-import { DataLoadAtivo, LoadStatus } from "../models/app.models";
+import { LoadStatus } from "../models/app.models";
+import { Ativo, AtivoEntityState } from "../models/investimento.model";
 import { ativoActions } from "./ativo.actions";
+import { Moeda } from "../models/base.model";
+import { ativoAdapter } from "./investimento.adapters";
 
-
-const initialState: DataLoadAtivo = {
-    items: [],
+const ativoInitialState: AtivoEntityState = {
+    entities: {},
+    ids: [],
+    original: undefined,
     status: LoadStatus.Empty,
     error: undefined
 }
 
 export const ativoReducer = createReducer(
-    initialState,
-    on(ativoActions.getAtivos, (state) => ({
-        ...state,
-        error: undefined,
-        status: LoadStatus.Loading
-    })),
-    on(ativoActions.getAtivosSuccess, (state, payload) => ({
-        ...state,
-        items: [...payload.ativos],
-        status: LoadStatus.Loaded
-    })),
-    on(ativoActions.getAtivosError, (state, payload) => ({
-        ...state,
-        items: [],
-        error: payload.error,
-        status: LoadStatus.Error
-    })),
+    ativoInitialState,
+    on(ativoActions.getAtivos, (state) =>
+        ({
+            ...state,
+            error: undefined,
+            status: LoadStatus.Loading
+        })
+    ),
+    on(ativoActions.getAtivosSuccess, (state, payload) =>
+        ativoAdapter.setAll(payload.ativos, {...state, status: LoadStatus.Loaded})
+    ),
+    on(ativoActions.getAtivosError, (state, payload) =>
+        ({...ativoAdapter.getInitialState(), status: LoadStatus.Error, error: payload.error})
+    ),
 
-    on(ativoActions.addAtivo, (state, payload) => ({
-        ...state,
-        items: [...state.items, payload.ativo],
-        status: LoadStatus.Adding,
-        error: undefined,
-    })),
+    on(ativoActions.addAtivo, (state, payload) =>
+        ativoAdapter.addOne(payload.ativo, {...state, status: LoadStatus.Adding, error: undefined})
+    ),
     on(ativoActions.addAtivoSuccess, (state, payload) => ({
         ...state,
-        items: [...state.items],
         status: LoadStatus.Added,
     })),
-    on(ativoActions.addAtivoError, (state, payload) => ({
-        ...state,
-        items: [...state.items].filter(item=>item.identity !== payload.ativo.identity),
-        error: payload.error,
-        status: LoadStatus.Error
-    })),
+    on(ativoActions.addAtivoError, (state, payload) =>
+        ativoAdapter.removeOne(payload.ativo.identity, {...state, status: LoadStatus.Error, error: payload.error })
+    ),
 
-    
-    on(ativoActions.removeAtivo, (state, payload) => ({
-        ...state,
-        items: state.items.filter(item => item.identity !== payload.ativo.identity),
-        error: undefined,
-        status: LoadStatus.Deleting
-    })),
-    on(ativoActions.removeAtivoSuccess, (state, payload) => ({
-        ...state,
-        status: LoadStatus.Deleted
-    })),
-    on(ativoActions.removeAtivoError, (state, payload) => ({
-        ...state,
-        items: [...state.items, payload.ativo],
-        status: LoadStatus.Error,
-        error: payload.error
-    })),
+    on(ativoActions.removeAtivo, (state, payload) =>
+        ativoAdapter.removeOne(payload.ativo.identity, {... state, status: LoadStatus.Deleting, error: undefined})
+    ),
+    on(ativoActions.removeAtivoSuccess, (state, payload) =>
+        ({
+            ...state,
+            status: LoadStatus.Deleted 
+        })
+    ),
+    on(ativoActions.removeAtivoError, (state, payload) =>
+        ativoAdapter.addOne(payload.ativo, {...state, status: LoadStatus.Error, error: payload.error})
+    ),
 
-    on(ativoActions.updateAtivo, (state, payload) => ({
-        ...state,
-        items: state.items.map(item => item.identity == payload.ativo.identity ? payload.ativo : item),
-        error: undefined,
-        status: LoadStatus.Updating
-    })),
-    on(ativoActions.updateAtivoSuccess, (state, payload) => ({
-        ...state,
-        status: LoadStatus.Updated
-    })),
-    on(ativoActions.updateAtivoError, (state, payload) => ({
-        ...state,
-        status: LoadStatus.Error,
-        error: payload.error
-    }))
+    on(ativoActions.updateAtivo, (state, payload) =>
+        ativoAdapter.updateOne({
+            id: payload.ativo.identity,
+            changes: payload.ativo
+        }, {...state, status: LoadStatus.Updating, error: undefined})
+    ),
+    on(ativoActions.updateAtivoSuccess, (state, payload) =>
+        ({
+            ...state,
+            status: LoadStatus.Updated
+        })
+    ),
+    on(ativoActions.updateAtivoError, (state, payload) =>
+        ativoAdapter.updateOne({
+            id: payload.ativo.identity,
+            changes: state.original || payload.ativo
+        }, {...state, status: LoadStatus.Error, error: payload.error})
+    )
 )
+
+let ativoId = 0;
+export function createAtivo() {
+    ativoId++;
+    return new Ativo({
+        moeda: Moeda.BRL,
+        nome: `Ativo ${ativoId}`,
+        sigla: `A${ativoId}`,
+        tipo: 'Acao',
+        valor: 100 * Math.random()
+    })
+}
+

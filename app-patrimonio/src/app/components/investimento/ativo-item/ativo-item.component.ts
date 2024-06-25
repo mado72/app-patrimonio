@@ -16,6 +16,7 @@ export class AtivoItemComponent {
 
   @Input() ativo = new Ativo({
     nome: '',
+    sigla: '',
     valor: 0,
     tipo: 'Acao',
     moeda: Moeda.BRL

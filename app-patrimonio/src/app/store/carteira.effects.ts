@@ -2,7 +2,7 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { CarteiraService } from "../services/carteira.service";
 import { inject } from "@angular/core";
 import { carteiraActions } from "./carteira.actions";
-import { catchError, map, mergeMap, of } from "rxjs";
+import { catchError, map, mergeMap, of, tap } from "rxjs";
 
 
 export const getCarteiraEffects = createEffect((
@@ -56,3 +56,42 @@ export const updateCarteiraEffects = createEffect((
         )
     )
 ), { functional: true})
+
+export const getCarteiraAtivoEffects = createEffect((
+    action$ = inject(Actions),
+    service = inject(CarteiraService)
+) => action$.pipe(
+    ofType(carteiraActions.getCarteiraAtivos),
+    mergeMap((item)=>
+        service.loadCarteiraAtivos(item.carteira).pipe(
+            map(carteira => carteiraActions.getCarteiraAtivosSuccess({carteira, ativos: carteira.ativos})),
+            catchError(error => of(carteiraActions.updateCarteiraError({error, carteira: item.carteira})))
+        )
+    )
+), {functional: true})
+
+export const addCarteiraAtivoEffects = createEffect((
+    action$ = inject(Actions),
+    service = inject(CarteiraService)
+) => action$.pipe(
+    ofType(carteiraActions.addCarteiraAtivo),
+    mergeMap((item)=>
+        service.updateCarteira(item.carteira).pipe(
+            map(carteira => carteiraActions.addCarteiraAtivoSuccess({carteira, ativo: item.ativo})),
+            catchError(error => of(carteiraActions.addCarteiraAtivoError({error, carteira: item.carteira, ativo: item.ativo})))
+        )
+    )
+), {functional: true})
+
+export const removeCarteiraAtivoEffects = createEffect((
+    action$ = inject(Actions),
+    service = inject(CarteiraService)
+) => action$.pipe(
+    ofType(carteiraActions.removeCarteiraAtivo),
+    mergeMap((item)=>
+        service.updateCarteira(item.carteira).pipe(
+            map(carteira => carteiraActions.removeCarteiraAtivoSuccess({carteira, ativo: item.ativo})),
+            catchError(error => of(carteiraActions.removeCarteiraAtivoError({error, carteira: item.carteira, ativo: item.ativo})))
+        )
+    )
+), {functional: true})

@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(),
     provideRouter(routes),
-    provideStore({"Carteira": carteiraReducer, "Ativo": ativoReducer}),
+    provideStore({"carteira": carteiraReducer, "ativo": ativoReducer}),
     provideEffects(carteiraEffects, ativosEffects)
 ]
 };

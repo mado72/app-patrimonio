@@ -1,5 +1,5 @@
 import { createAction, props } from "@ngrx/store";
-import { Ativo, Carteira } from "../models/investimento.model";
+import { Carteira, CarteiraAtivo } from "../models/investimento.model";
 
 class CarteiraActions {
     readonly getCarteiras = createAction("[Carteira] obterCarteiras")
@@ -8,27 +8,27 @@ class CarteiraActions {
     
     readonly addCarteira = createAction("[Carteira] adicionada", props<{carteira: Carteira}>())
     readonly addCarteiraSuccess = createAction("[Carteira] adicionada sucesso", props<{carteira: Carteira}>())
-    readonly addCarteiraError = createAction("[Carteira] adicionada erro", props<{error: any}>())
+    readonly addCarteiraError = createAction("[Carteira] adicionada erro", props<{error: any, carteira: Carteira}>())
     
     readonly removeCarteira = createAction("[Carteira] remove carteira", props<{carteira: Carteira}>())
     readonly removeCarteiraSuccess = createAction("[Carteira] removida sucesso", props<{carteira: Carteira}>())
-    readonly removeCarteiraError = createAction("[Carteira] removida erro", props<{error: any}>())
+    readonly removeCarteiraError = createAction("[Carteira] removida erro", props<{error: any, carteira: Carteira}>())
     
     readonly updateCarteira = createAction("[Carteira] alterada", props<{carteira: Carteira}>())
     readonly updateCarteiraSuccess = createAction("[Carteira] alterada sucesso", props<{carteira: Carteira}>())
-    readonly updateCarteiraError = createAction("[Carteira] alterada erro", props<{error: any}>())
+    readonly updateCarteiraError = createAction("[Carteira] alterada erro", props<{error: any, carteira: Carteira}>())
     
-    readonly getAtivosCarteira = createAction("[AtivosCarteira] ativos da carteira", props<{carteira: Carteira}>())
-    readonly getAtivosCarteiraSuccess = createAction("[AtivosCarteira] ativos da carteira sucesso", props<{ativos: Ativo[], carteira: Carteira}>())
-    readonly getAtivosCarteiraError = createAction("[AtivosCarteira] ativos da carteira erro", props<{error: any}>())
+    readonly getCarteiraAtivos = createAction("[CarteiraAtivos] ativos", props<{carteira: Carteira}>())
+    readonly getCarteiraAtivosSuccess = createAction("[CarteiraAtivos] ativos sucesso", props<{carteira: Carteira, ativos: CarteiraAtivo[]}>())
+    readonly getCarteiraAtivosError = createAction("[CarteiraAtivos] ativos erro", props<{error: any, carteira: Carteira, ativo: CarteiraAtivo}>())
 
-    readonly addAtivoCarteira = createAction("[Ativo] adiciona ativo na carteira", props<{ativo: Ativo, carteira: Carteira}>())
-    readonly addAtivoCarteiraSuccess = createAction("[Ativo] adiciona ativo na carteira sucesso", props<{ativo: Ativo, carteira: Carteira}>())
-    readonly addAtivoCarteiraError = createAction("[Ativo] adiciona ativo na carteira erro", props<{error: any}>())
+    readonly addCarteiraAtivo = createAction("[CarteiraAtivo] adiciona ativo", props<{carteira: Carteira, ativo: CarteiraAtivo}>())
+    readonly addCarteiraAtivoSuccess = createAction("[CarteiraAtivo] adiciona ativo sucesso", props<{carteira: Carteira, ativo: CarteiraAtivo}>())
+    readonly addCarteiraAtivoError = createAction("[CarteiraAtivo] adiciona ativo erro", props<{error: any, carteira: Carteira, ativo: CarteiraAtivo}>())
 
-    readonly removeAtivoCarteira = createAction("[Ativo] remove ativo da carteira", props<{ativo: Ativo, carteira: Carteira}>())
-    readonly removeAtivoCarteiraSuccess = createAction("[Ativo] remove ativo da carteira sucesso", props<{ativo: Ativo, carteira: Carteira}>())
-    readonly removeAtivoCarteiraError = createAction("[Ativo] remove ativo da carteira erro", props<{error: any}>())
+    readonly removeCarteiraAtivo = createAction("[CarteiraAtivo] remove ativo", props<{carteira: Carteira, ativo: CarteiraAtivo}>())
+    readonly removeCarteiraAtivoSuccess = createAction("[CarteiraAtivo] remove ativo sucesso", props<{carteira: Carteira, ativo: CarteiraAtivo}>())
+    readonly removeCarteiraAtivoError = createAction("[CarteiraAtivo] remove ativo erro", props<{error: any, carteira: Carteira, ativo: CarteiraAtivo}>())
 }
 
 export const carteiraActions = new CarteiraActions();

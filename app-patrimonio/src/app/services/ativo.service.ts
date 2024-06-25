@@ -8,12 +8,14 @@ class MockData {
     private _items: Ativo[] = [
         new Ativo({
             moeda: Moeda.BRL,
+            sigla: 'ATV1',
             nome: "Ativo 1",
             valor: 1000,
             tipo: "Acao",
         }),
         new Ativo({
             moeda: Moeda.BRL,
+            sigla: 'ATV2',
             nome: "Ativo 2",
             valor: 2000,
             tipo: "Acao",
@@ -30,6 +32,10 @@ class MockData {
     }
 }
 
+export type FilterAtivos = {
+    termo?: string
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -38,7 +44,7 @@ export class AtivoService {
 
     mock = new MockData();
 
-    getAtivos(): Observable<Ativo[]> {
+    getAtivos(filter?: FilterAtivos): Observable<Ativo[]> {
         console.log(this.mock)
         return of(this.mock.items);
     }
