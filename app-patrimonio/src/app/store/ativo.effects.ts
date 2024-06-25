@@ -2,28 +2,15 @@ import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { AtivoService } from "../services/ativo.service";
 import { ativoActions } from "./ativo.actions";
-import { catchError, map, mergeAll, of, switchMap } from "rxjs";
-import { cotacaoActions } from "./cotacao.actions";
-import { CotacaoService } from "../services/cotacao.service";
+import { catchError, map, of, switchMap } from "rxjs";
 
 export const getAtivosEffects = createEffect((
     action$ = inject(Actions),
-    service = {ativoService: inject(AtivoService), cotacaoService: inject(CotacaoService)}
+    service = inject(AtivoService)
 ) => action$.pipe(
     ofType(ativoActions.getAtivos),
-    switchMap(() => service.ativoService.getAtivos().pipe(
-        switchMap((ativos)=>{
-            return service.cotacaoService.getCotacoes(ativos).pipe(
-                map((cotacoes)=>{
-                    const mapCotacoes = new Map(cotacoes.map(cotacao=>[cotacao.simbolo, cotacao]));
-                    ativos.forEach(ativo=>{
-                        ativo.cotacao = mapCotacoes.get(ativo.sigla);
-                    })
-                    return ativos;
-                })
-            )
-        }),
-        map(ativos=>ativoActions.getAtivosSuccess({ ativos })),
+    switchMap(() => service.getAtivos().pipe(
+        map(ativos => ativoActions.getAtivosSuccess({ ativos })),
         catchError(error => of(ativoActions.getAtivosError({ error })))
     ))
 ), { functional: true})

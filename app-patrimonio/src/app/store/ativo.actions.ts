@@ -1,5 +1,6 @@
 import { createAction, props } from "@ngrx/store"
 import { Ativo } from "../models/investimento.model"
+import { Update } from "@ngrx/entity";
 
 class AtivoActions {
 
@@ -19,7 +20,7 @@ class AtivoActions {
     readonly updateAtivoSuccess = createAction("[Ativo] alterado sucesso", props<{ativo: Ativo}>())
     readonly updateAtivoError = createAction("[Ativo] alterado erro", props<{ativo: Ativo, error: any}>())
     
-    readonly updateCotacoes = createAction("[Ativo] updateCotacoes", props<{ativos: Ativo[]}>())
+    readonly updateCotacoes = createAction("[Ativo] updateCotacoes", props<{update: Update<Ativo>[]}>())
 }
 
 export const ativoActions = new AtivoActions();

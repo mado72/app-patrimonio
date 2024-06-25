@@ -5,6 +5,7 @@ import { cotacaoActions } from "./cotacao.actions";
 import { catchError, map, mergeMap, of, switchMap, tap } from "rxjs";
 import { Cotacao } from "../models/cotacao.models";
 import { ativoActions } from "./ativo.actions";
+import { Ativo } from "../models/investimento.model";
 
 export const getCotacoesEffects = createEffect((
     action$ = inject(Actions),
@@ -13,7 +14,21 @@ export const getCotacoesEffects = createEffect((
     ofType(cotacaoActions.getCotacoes.getCotacoesExecute),
     mergeMap((item) =>
         service.getCotacoes(item.ativos).pipe(
-            map(cotacoes=>cotacaoActions.getCotacoes.getCotacoesSuccess({cotacoes})),
+            map(cotacoes=>{
+                const mapCotacoes = new Map(cotacoes.map(cotacao=>[cotacao.simbolo, cotacao]));
+                const ativos = item.ativos.map(ativo=>{
+                    ativo = {...ativo} as Ativo;
+                    ativo.cotacao = mapCotacoes.get(ativo.sigla);
+                    return ativo;
+                });
+                return {ativos, cotacoes};
+            }),
+            switchMap((update)=>
+                of(
+                    cotacaoActions.getCotacoes.getCotacoesSuccess({cotacoes: update.cotacoes}),
+                    ativoActions.updateCotacoes({update: update.ativos.map(ativo=>({id: ativo.identity, changes: ativo}))})
+                )
+            ),
             catchError(error=> of(cotacaoActions.getCotacoes.getCotacoesFailure({error})))
         )
     )

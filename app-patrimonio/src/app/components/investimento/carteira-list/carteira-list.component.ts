@@ -10,6 +10,9 @@ import { AtivoItemComponent } from '../ativo-item/ativo-item.component';
 import { CarteiraTableComponent } from '../carteira-table/carteira-table.component';
 import { selectCarteiraStatus, selectCarteirasAll } from '../../../store/carteira.selectors';
 import { selectAtivoAll, selectAtivoStatus } from '../../../store/ativo.selectors';
+import { cotacaoActions } from '../../../store/cotacao.actions';
+import { tap } from 'rxjs';
+import { CotacaoService } from '../../../services/cotacao.service';
 @Component({
   selector: 'app-carteira-list',
   standalone: true,
@@ -30,7 +33,10 @@ export class CarteiraListComponent implements OnInit {
   ativos$ = this.store.select(selectAtivoAll);
   // cotacoes$ = this.store.select(getCotacoesState);
 
-  constructor(private store: Store<any>) { }
+  constructor(
+    private store: Store<any>, 
+    private cotacaoService: CotacaoService
+  ) { }
 
   ngOnInit(): void {
     this.store.dispatch(ativoActions.getAtivos());
@@ -38,6 +44,10 @@ export class CarteiraListComponent implements OnInit {
   }
 
   sortByNome = (a: Carteira, b: Carteira) => a.nome.localeCompare(b.nome);
+
+  obterCotacoes() {
+    this.cotacaoService.atualizarCotacoes(this.store).subscribe();  
+  }
 
   adicionarCarteira() {
     const carteira = createCarteira();

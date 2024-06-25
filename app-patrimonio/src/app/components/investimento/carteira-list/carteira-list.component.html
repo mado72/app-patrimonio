@@ -1,6 +1,7 @@
 <p>carteira-list works!</p>
 <div>Carteira Status: {{carteiraStatus$ | async}}</div>
 <div>Ativo Status: {{ativoStatus$ | async}}</div>
+<button (click)="obterCotacoes()">Obter cotações</button>
 @if (carteiras$ | async; as carteiras) {
     @for (carteira of carteiras.sort(sortByNome); track carteira.identity) {
         <div>
