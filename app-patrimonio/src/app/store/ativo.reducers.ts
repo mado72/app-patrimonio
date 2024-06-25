@@ -37,7 +37,8 @@ export const ativoReducer = createReducer(
         status: LoadStatus.Added,
     })),
     on(ativoActions.addAtivoError, (state, payload) =>
-        ativoAdapter.removeOne(payload.ativo.identity, {...state, status: LoadStatus.Error, error: payload.error })
+        ativoAdapter.removeOne(payload.ativo.identity, 
+            {...state, status: LoadStatus.Error, error: payload.error })
     ),
 
     on(ativoActions.removeAtivo, (state, payload) =>
