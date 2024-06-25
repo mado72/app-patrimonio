@@ -11,7 +11,6 @@ export const initialStateCarteira: CarteiraEntityState = {
     ids: [],
     original: undefined,
     status: LoadStatus.Empty,
-    carteiraIdentity: null,
     error: undefined
 }
 
@@ -84,13 +83,13 @@ export const carteiraReducer = createReducer(
     ),
     on(carteiraActions.getCarteiraAtivosSuccess, (state, payload) => 
         carteiraAdapter.mapOne({
-            id: state.carteiraIdentity as string,
+            id: payload.carteira.identity,
             map: carteira => new Carteira(carteira, payload.ativos),
         }, state)
     ),
     on(carteiraActions.getCarteiraAtivosError, (state, payload) => 
         carteiraAdapter.mapOne({
-            id: state.carteiraIdentity as string,
+            id: payload.carteira.identity,
             map: carteira => new Carteira(carteira, []),
         }, {...state, error: payload.error, status: LoadStatus.Error}),
             
@@ -114,7 +113,7 @@ export const carteiraReducer = createReducer(
     ),
     on(carteiraActions.addCarteiraAtivoError, (state, payload) => 
         carteiraAdapter.mapOne({
-            id: state.carteiraIdentity as string,
+            id: payload.carteira.identity,
             map: carteira => {
                 carteira = {...carteira} as Carteira,
                 carteira.ativos = [...carteira.ativos].filter(ativo=>ativo.ativoId != payload.ativo.ativoId);

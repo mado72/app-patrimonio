@@ -13,7 +13,7 @@ export const getCarteiraEffects = createEffect((
     mergeMap(() =>
         service.getCarteiras().pipe(
             map(carteiras => carteiraActions.getCarteirasSuccess({carteiras})),
-            catchError(error => of(carteiraActions.getCarteirasError(error)))
+            catchError(error => of(carteiraActions.getCarteirasError({error})))
         )
     )
 ), { functional: true})
@@ -26,7 +26,7 @@ export const addCarteiraEffects = createEffect((
     mergeMap((item) =>
         service.addCarteira(item.carteira).pipe(
             map(carteira => carteiraActions.addCarteiraSuccess({carteira})),
-            catchError(error => of(carteiraActions.addCarteiraError(error)))
+            catchError(error => of(carteiraActions.addCarteiraError({error, carteira: item.carteira})))
         )
     )
 ), { functional: true})
@@ -39,7 +39,7 @@ export const removeCarteiraEffects = createEffect((
     mergeMap((item) =>
         service.removeCarteira(item.carteira).pipe(
             map(carteira => carteiraActions.removeCarteiraSuccess({carteira})),
-            catchError(error => of(carteiraActions.removeCarteiraError(error)))
+            catchError(error => of(carteiraActions.removeCarteiraError({error, carteira: item.carteira})))
         )
     )
 ), { functional: true})
@@ -52,7 +52,7 @@ export const updateCarteiraEffects = createEffect((
     mergeMap((item) =>
         service.removeCarteira(item.carteira).pipe(
             map(carteira => carteiraActions.updateCarteiraSuccess({carteira})),
-            catchError(error => of(carteiraActions.updateCarteiraError(error)))
+            catchError(error => of(carteiraActions.updateCarteiraError({error, carteira: item.carteira})))
         )
     )
 ), { functional: true})

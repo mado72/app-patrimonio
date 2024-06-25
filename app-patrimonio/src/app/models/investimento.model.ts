@@ -105,7 +105,6 @@ export class Carteira extends Investimento {
 
 export interface AtivoEntityState extends LoadDataEntityState<Ativo> {}
 export interface CarteiraAtivoEntityState extends LoadDataEntityState<CarteiraAtivo> {}
-export interface CarteiraEntityState extends LoadDataEntityState<Carteira> {
-    carteiraIdentity: string | null;
-}
+export interface CarteiraEntityState extends LoadDataEntityState<Carteira> {}
+export interface CotacaoEntityState extends LoadDataEntityState<Cotacao> {}
 
