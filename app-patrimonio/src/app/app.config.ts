@@ -11,6 +11,7 @@ import * as carteiraEffects from './store/carteira.effects';
 import { carteiraReducer } from './store/carteira.reducers';
 import * as cotacaoEffects from './store/cotacao.effects';
 import { cotacaoReducer } from './store/cotacao.reducers';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,6 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideRouter(routes),
     provideStore({"carteira": carteiraReducer, "ativo": ativoReducer, "cotacao": cotacaoReducer}),
-    provideEffects(carteiraEffects, ativosEffects, cotacaoEffects)
+    provideEffects(carteiraEffects, ativosEffects, cotacaoEffects),
+    provideStoreDevtools({})
 ]
 };
