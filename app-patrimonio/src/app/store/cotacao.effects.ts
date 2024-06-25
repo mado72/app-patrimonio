@@ -16,9 +16,9 @@ export const getCotacoesEffects = createEffect((
         service.getCotacoes(item.ativos).pipe(
             map(cotacoes=>{
                 const mapCotacoes = new Map(cotacoes.map(cotacao=>[cotacao.simbolo, cotacao]));
-                const ativos = item.ativos.map(ativo=>{
+                const ativos = item.ativos.filter(ativo=>ativo.siglaYahoo).map(ativo=>{
                     ativo = {...ativo} as Ativo;
-                    ativo.cotacao = mapCotacoes.get(ativo.sigla);
+                    ativo.cotacao = mapCotacoes.get(ativo.siglaYahoo as string);
                     return ativo;
                 });
                 return {ativos, cotacoes};
