@@ -1,7 +1,6 @@
 import { ActionReducerMap, createFeatureSelector, createSelector } from "@ngrx/store";
 import { Carteira, CarteiraEntityState } from "../models/investimento.model";
 import * as fromCarteira from './carteira.reducers';
-import { selectCarteiraIdentity } from "./investimento.adapters";
 
 const selectEntities = (state: CarteiraEntityState) => state.entities;
 const selectAll = (state: CarteiraEntityState) => Object.values(state.entities) as Carteira[];
