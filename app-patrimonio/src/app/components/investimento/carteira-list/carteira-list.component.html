@@ -1,7 +1,20 @@
 <p>carteira-list works!</p>
-<div>Carteira Status: {{carteiraStatus$ | async}}</div>
-<div>Ativo Status: {{ativoStatus$ | async}}</div>
-<button (click)="obterCotacoes()">Obter cotações</button>
+<div>
+    Carteira Status: {{carteiraStatus$ | async}}
+    @if (carteiraError$ | async; as error) {
+        <div class="error">{{error | json}}</div>
+    }
+</div>
+<div>
+    Ativo Status: {{ativoStatus$ | async}}
+    @if (ativosError$ | async; as error) {
+        <div class="error">{{error | json}}</div>
+    }
+</div>
+<div>
+    <button (click)="obterCotacoes()">Obter cotações</button>
+</div>
+
 @if (carteiras$ | async; as carteiras) {
     @for (carteira of carteiras.sort(sortByNome); track carteira.identity) {
         <div>
