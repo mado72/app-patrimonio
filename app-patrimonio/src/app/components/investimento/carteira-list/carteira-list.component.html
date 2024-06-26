@@ -28,13 +28,3 @@
 }
 <button type="button" (click)="adicionarCarteira()">Adicionar Carteira</button>
 <button type="button" (click)="adicionarAtivo()">Adicionar Ativo</button>
-
-@if (ativos$ | async; as ativos) {
-    @for (ativo of ativos; track ativo.identity) {
-        <app-ativo-item [ativo]="ativo" (onRemoveAtivo)="removeAtivo(ativo)"/>
-    }
-
-    <pre>
-        {{ativos | json}}
-    </pre>
-}

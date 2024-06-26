@@ -1,6 +1,43 @@
-<div>
-    <h5>Ativos</h5>
-    @for (ativo of ativos; track ativo.identity) {
-        <app-ativo-item [ativo]="ativo" (onRemoveAtivo)="removerAtivo($event)"/>
-    }
-</div>
+<table class="table table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Sigla</th>
+            <th>Yahoo</th>
+            <th>Moeda</th>
+            <th>Cotação</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@for (ativo of ativos; track ativo.identity) {
+        <tr>
+            <td>
+                {{ativo.nome}}
+            </td>
+            <td>{{ativo.sigla}}</td>
+            <td>{{ativo.siglaYahoo}}</td>
+            <td>{{ativo.moeda}}</td>
+            <td class="text-end">
+            @if(ativo.cotacao) {
+                {{ativo.cotacao.valor | number:'1.6-6'}}
+            }
+            @else {
+                <i class="fas fa-spinner fa-spin"></i>x
+            }
+            </td>
+            <td>
+                <a href="javascript:void(0)" (click)="editarAtivo(ativo)">editar</a><br/>
+                <a href="javascript:void(0)" (click)="removerAtivo(ativo)">remover</a>
+            </td>
+        </tr>
+}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="6" class=" m-0 p-0">
+                <button type="button" class="w-100 border bg-light" (click)="adicionarAtivo()">Adicionar Ativo</button>
+            </td>
+        </tr>
+    </tfoot>
+</table>

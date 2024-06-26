@@ -9,7 +9,6 @@ import { selectAtivoAll, selectAtivoErrors as selectAtivoError, selectAtivoStatu
 import { carteiraActions } from '../../../store/carteira.actions';
 import { createCarteira } from '../../../store/carteira.reducers';
 import { selectCarteiraError, selectCarteiraStatus, selectCarteirasAll } from '../../../store/carteira.selectors';
-import { AtivoItemComponent } from '../ativo-item/ativo-item.component';
 import { CarteiraTableComponent } from '../carteira-table/carteira-table.component';
 @Component({
   selector: 'app-carteira-list',
@@ -18,7 +17,6 @@ import { CarteiraTableComponent } from '../carteira-table/carteira-table.compone
     JsonPipe,
     AsyncPipe,
     CarteiraTableComponent,
-    AtivoItemComponent
   ],
   templateUrl: './carteira-list.component.html',
   styleUrl: './carteira-list.component.scss'

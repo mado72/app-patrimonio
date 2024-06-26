@@ -1,14 +1,13 @@
+import { DecimalPipe, JsonPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Ativo } from '../../../models/investimento.model';
-import { JsonPipe } from '@angular/common';
-import { AtivoItemComponent } from '../ativo-item/ativo-item.component';
 
 @Component({
   selector: 'app-ativo-list',
   standalone: true,
   imports: [
     JsonPipe,
-    AtivoItemComponent
+    DecimalPipe,
   ],
   templateUrl: './ativo-list.component.html',
   styleUrl: './ativo-list.component.scss'
@@ -19,8 +18,18 @@ export class AtivoListComponent {
 
   @Output() onRemoveAtivo = new EventEmitter<Ativo>();
 
+  @Output() onAdicionarAtivo = new EventEmitter<void>();
+
   removerAtivo(ativo: Ativo): void {
     this.onRemoveAtivo.emit(ativo);
+  }
+
+  editarAtivo(ativo: Ativo) {
+
+  }
+
+  adicionarAtivo(): void {
+    this.onAdicionarAtivo.emit();
   }
 
 }

@@ -1,18 +1,16 @@
-<div style="border: 1px solid #aaa; margin: 4px;">
-    <h3>
-        {{carteira.nome}}
-    </h3>
-    {{carteira | json}}
-
-@if (ativos$ | async; as ativos) {
-    @if (!!ativos) {
-        <app-ativo-list [ativos]="ativos" (onRemoveAtivo)="removeCarteiraAtivo($event)"></app-ativo-list>
+<div class="card m-3">
+    <div class="card-header d-flex justify-content-between">
+        <h3>
+            {{carteira.nome}}
+        </h3>
+        <div class="float-end">
+            <button type="button" class="border-0" (click)="removerCarteira()">&times;</button>
+        </div>
+    </div>
+    @if (ativos$ | async; as ativos) {
+        @if (!!ativos) {
+            <app-ativo-list [ativos]="ativos" (onRemoveAtivo)="removeCarteiraAtivo($event)"></app-ativo-list>
+        }
     }
 
-}
-
-    <div style="margin-top: 5px;">
-        <button type="button" (click)="novoAtivo()">Adicionar Ativo</button>
-    </div>
 </div>
-<button type="button" (click)="removerCarteira()">Remover Carteira</button>
