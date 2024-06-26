@@ -14,6 +14,7 @@ import { carteiraReducer } from './store/carteira.reducers';
 import * as cotacaoEffects from './store/cotacao.effects';
 import { cotacaoReducer } from './store/cotacao.reducers';
 import { errorInterceptor } from './interceptors/handle-error.interceptor';
+import { provideToastr } from 'ngx-toastr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +28,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideStore({ "carteira": carteiraReducer, "ativo": ativoReducer, "cotacao": cotacaoReducer }),
     provideEffects(carteiraEffects, ativosEffects, cotacaoEffects),
-    provideStoreDevtools({})
+    provideStoreDevtools({}),
+    provideToastr()
   ]
 };
