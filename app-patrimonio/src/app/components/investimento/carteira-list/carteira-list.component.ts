@@ -1,7 +1,7 @@
 import { AsyncPipe, JsonPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Ativo, Carteira } from '../../../models/investimento.model';
+import { Ativo, Carteira, CarteiraAtivo } from '../../../models/investimento.model';
 import { CotacaoService } from '../../../services/cotacao.service';
 import { ativoActions } from '../../../store/ativo.actions';
 import { createAtivo } from '../../../store/ativo.reducers';
@@ -68,15 +68,10 @@ export class CarteiraListComponent implements OnInit {
     }}))
   }
 
-  removerCarteiraAtivo({ativo, carteira}: {ativo: Ativo, carteira: Carteira}) {
-    const carteiraAtivo = carteira.ativos.find(item=>item.ativoId === ativo.identity );
-    if (carteiraAtivo) {
-      this.store.dispatch(carteiraActions.removeCarteiraAtivo({carteira, ativo: carteiraAtivo}));
-      this.store.dispatch(ativoActions.removeAtivo({ativo}))
-    }
-    else {
-      console.warn(`Ativo ${ativo.sigla} não encontrado na carteira`);
-    }
+  removerCarteiraAtivo({carteiraAtivo, carteira}: {carteiraAtivo: CarteiraAtivo, carteira: Carteira}) {
+    const ativo = carteiraAtivo.ativo as Ativo;
+    this.store.dispatch(carteiraActions.removeCarteiraAtivo({carteira, ativo: carteiraAtivo}));
+    this.store.dispatch(ativoActions.removeAtivo({ativo}))
   }
 
   removerCarteira(carteira: Carteira) {

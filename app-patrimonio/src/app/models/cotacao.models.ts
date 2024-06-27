@@ -1,6 +1,6 @@
 import { Moeda } from "./base.model";
 
-export type ICotacao = Omit<Cotacao, "converterPara">;
+export type ICotacao = Omit<Cotacao, "converterPara" | "aplicar">;
 
 export class Cotacao {
     _id?: string;
@@ -19,5 +19,9 @@ export class Cotacao {
 
     converterPara(outra: ICotacao) {
         return this.valor / outra.valor;
+    }
+
+    aplicar(n: number) {
+        return n * this.valor;
     }
 }

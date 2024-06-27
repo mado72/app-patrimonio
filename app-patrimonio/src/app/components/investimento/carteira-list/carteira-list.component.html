@@ -15,16 +15,14 @@
     <button (click)="obterCotacoes()">Obter cotações</button>
 </div>
 
-@if (carteiras$ | async; as carteiras) {
-    @for (carteira of carteiras.sort(sortByNome); track carteira.identity) {
-        <div>
-            <app-carteira-table [carteira]="carteira"
-                (onRemoverCarteira)="removerCarteira(carteira)"
-                (onAdicionarCarteiraAtivo)="adicionarCarteiraAtivo($event)"
-                (onRemoverCarteiraAtivo)="removerCarteiraAtivo($event)"
-                />
-        </div>
-    }
+@for (carteira of (carteiras$ | async)?.sort(sortByNome) ; track carteira.identity) {
+    <div>
+        <app-carteira-table [carteira]="carteira"
+            (onRemoverCarteira)="removerCarteira(carteira)"
+            (onAdicionarCarteiraAtivo)="adicionarCarteiraAtivo($event)"
+            (onRemoverCarteiraAtivo)="removerCarteiraAtivo($event)"
+            />
+    </div>
 }
 <button type="button" (click)="adicionarCarteira()">Adicionar Carteira</button>
 <button type="button" (click)="adicionarAtivo()">Adicionar Ativo</button>

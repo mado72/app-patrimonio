@@ -7,10 +7,6 @@
             <button type="button" class="border-0" (click)="removerCarteira()">&times;</button>
         </div>
     </div>
-    @if (ativos$ | async; as ativos) {
-        @if (!!ativos) {
-            <app-ativo-list [ativos]="ativos" (onRemoveAtivo)="removeCarteiraAtivo($event)"></app-ativo-list>
-        }
-    }
+    <app-carteira-ativo-list [ativos]="carteira.ativos" (onRemoveAtivo)="removeCarteiraAtivo($event)"></app-carteira-ativo-list>
 
 </div>
