@@ -1,7 +1,7 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Ativo, CarteiraAtivo } from '../../../models/investimento.model';
-import { CommonModule, DecimalPipe, JsonPipe } from '@angular/common';
-import { consolidaValores, ConsolidadoTotal } from '../../../formulas';
+import { ConsolidadoTotal, consolidaValores } from '../../../util/formulas';
 
 type AuxAtivo = Pick<Ativo, "identity" | "nome" | "sigla" | "moeda" | "cotacao">;
 type ListItem = AuxAtivo & Omit<CarteiraAtivo, "ativo">;

@@ -48,7 +48,7 @@ export function consolidaValores<T>(
         valorizacaoPerc: 0
     });
 
-    total.valorizacao = total.vlInicial - total.vlTotal;
+    total.valorizacao = total.vlTotal - total.vlInicial;
     total.valorizacaoPerc = total.valorizacao / total.vlInicial;
 
     Array.from(mapCalc.values()).forEach(v => {
