@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { CarteiraTableComponent } from '../carteira-table/carteira-table.component';
-import { AtivoListComponent } from '../ativo-list/ativo-list.component';
-import { InvestimentoData } from '../../../models/app.models';
 import { Store } from '@ngrx/store';
-import { ativosSelectors, carteirasSelectors, cotacoesSelectors } from '../../../store/investimento.selectors';
-import { investimentoActions } from '../../../store/investimento.actions';
+import { InvestimentoData } from '../../../models/app.models';
 import { Ativo, Carteira, CarteiraAtivo, createAtivo, createCarteira } from '../../../models/investimento.model';
-import { carteiraActions } from '../../../store/carteira.actions';
 import { ativoActions } from '../../../store/ativo.actions';
+import { carteiraActions } from '../../../store/carteira.actions';
+import { ativosSelectors, carteirasSelectors, cotacoesSelectors } from '../../../store/investimento.selectors';
+import { AtivosCardComponent } from '../ativos-card/ativos-card.component';
+import { CarteiraTableComponent } from '../carteira-table/carteira-table.component';
 
 
 @Component({
@@ -17,7 +16,7 @@ import { ativoActions } from '../../../store/ativo.actions';
   imports: [
     CommonModule,
     CarteiraTableComponent,
-    AtivoListComponent
+    AtivosCardComponent
   ],
   templateUrl: './protifolio.component.html',
   styleUrl: './protifolio.component.scss'
@@ -49,7 +48,6 @@ throw new Error('Method not implemented.');
   };
 
   ngOnInit(): void {
-      this.store.dispatch(investimentoActions.obterAlocacoes())
   }
 
   adicionarCarteira() {
