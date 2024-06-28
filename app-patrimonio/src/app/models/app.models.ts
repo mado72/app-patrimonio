@@ -1,31 +1,54 @@
+import { Comparer, EntityState, IdSelector, createEntityAdapter } from "@ngrx/entity";
 import { Cotacao } from "./cotacao.models";
 import { Ativo, Carteira } from "./investimento.model";
 
-export enum LoadStatus {
-    Loading  = "Loading",
-    Loaded  = "Loaded",
-    Adding  = "Adding",
-    Added  = "Added",
-    Updating  = "Updating",
-    Updated  = "Updated",
-    Deleting  = "Deleting",
-    Deleted  = "Deleted",
-    Error  = "Error",
-    Empty  = "Empty"
+export interface InvestimentoData {
+    carteiras: Carteira[];
+    ativos: Ativo[];
+    cotacoes: Cotacao[];
 }
 
-export interface DataLoad<T> {
-    items: T[];
-    status: LoadStatus;
+export interface AppData extends InvestimentoData {}
+
+export enum StateStatus {
+    Pending  = "Pending",
+    Executed  = "Executed",
+    Error  = "Error",
+    Idle  = "Idle"
+}
+
+export interface DataState<T> extends EntityState<T> {
+    status: StateStatus;
     error?: any;
 }
 
-export interface InvestimentoData {
-    carteiras: DataLoad<Carteira>;
-    ativos: DataLoad<Ativo>;
-    cotacoes: DataLoad<Cotacao>;
+const selectIdentityId: IdSelector<Carteira | Ativo> = (entity: Carteira | Ativo) => entity.identity;
+const sortNomeCompare: Comparer<Carteira | Ativo> = 
+    (e1: Carteira | Ativo, e2: Carteira | Ativo) => e1.nome.localeCompare(e2.nome);
+
+export const carteirasAdapter = createEntityAdapter<Carteira>(
+    {selectId: selectIdentityId, sortComparer: sortNomeCompare});
+
+export const ativosAdapter = createEntityAdapter<Ativo>(
+    {selectId: selectIdentityId, sortComparer: sortNomeCompare});
+
+export const cotacoesAdapter = createEntityAdapter<Cotacao>({
+    selectId: (c: Cotacao) => c.simbolo,
+    sortComparer: (c1: Cotacao, c2: Cotacao) => c1.simbolo.localeCompare(c2.simbolo)
+});
+
+export interface InvestimentoModelState {
+    carteiras: DataStateCarteira & {ativoId?: string};
+    ativos: DataStateAtivo;
+    cotacoes: DataStateCotacao;
 }
 
-export interface DataLoadCarteira extends DataLoad<Carteira> {}
-export interface DataLoadAtivo extends DataLoad<Ativo> {}
-export interface DataLoadCotacao extends DataLoad<Cotacao>{}
+export const investimentoInitialState : InvestimentoModelState = {
+    ativos: ativosAdapter.getInitialState({status: StateStatus.Idle, error: undefined}),
+    carteiras: carteirasAdapter.getInitialState({status: StateStatus.Idle, error: undefined, ativoId: undefined}),
+    cotacoes: cotacoesAdapter.getInitialState({status: StateStatus.Idle, error: undefined})
+}
+
+export interface DataStateCarteira extends DataState<Carteira> {}
+export interface DataStateAtivo extends DataState<Ativo> {}
+export interface DataStateCotacao extends DataState<Cotacao>{}
