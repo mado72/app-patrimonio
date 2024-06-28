@@ -12,11 +12,10 @@ import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { errorInterceptor } from './interceptors/handle-error.interceptor';
 import * as ativosEffects from './store/ativo.effects';
-import { ativoReducer } from './store/ativo.reducers';
 import * as carteiraEffects from './store/carteira.effects';
-import { carteiraReducer } from './store/carteira.reducers';
+import { investimentoReducer } from './store/investimento.reducers';
 import * as cotacaoEffects from './store/cotacao.effects';
-import { cotacaoReducer } from './store/cotacao.reducers';
+import * as investimentoEffects from './store/investimento.effects';
 
 registerLocaleData(localePt);
 
@@ -31,9 +30,12 @@ export const appConfig: ApplicationConfig = {
       {provide: LOCALE_ID, useValue: 'pt' },
       // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideRouter(routes),
-    provideStore({ "carteira": carteiraReducer, "ativo": ativoReducer, "cotacao": cotacaoReducer }),
-    provideEffects(carteiraEffects, ativosEffects, cotacaoEffects),
-    provideStoreDevtools({}),
+    provideStore({ "investimentos": investimentoReducer }),
+    provideEffects(carteiraEffects, ativosEffects, cotacaoEffects, investimentoEffects),
+    provideStoreDevtools({
+      trace: true,
+      traceLimit: 100
+    }),
     provideToastr()
   ]
 };
