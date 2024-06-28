@@ -20,7 +20,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       //   titulo: 'Erro na requisição'
       // })
       console.error(`Erro HTTP: ${httpError.error?.message || httpError.message}`);
-      throw `${httpError.message}.<br>\nDetalhe: ${httpError.error?.message || ''}`;
+      throw httpError.error?.message || httpError.message;
     })
   );
 }
