@@ -1,8 +1,9 @@
 import { ApplicationConfig, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { PreloadAllModules, provideRouter, withDebugTracing, withPreloading } from '@angular/router';
 
 import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import localePt from '@angular/common/locales/pt';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
@@ -29,13 +30,23 @@ export const appConfig: ApplicationConfig = {
       ])),
       {provide: LOCALE_ID, useValue: 'pt' },
       // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    provideRouter(routes),
+    provideRouter(routes,
+      withPreloading(PreloadAllModules),
+      withDebugTracing()
+    ),
     provideStore({ "investimentos": investimentoReducer }),
     provideEffects(carteiraEffects, ativosEffects, cotacaoEffects, investimentoEffects),
     provideStoreDevtools({
       trace: true,
       traceLimit: 100
     }),
-    provideToastr()
+    provideToastr({
+      easeTime: 600,
+      progressBar: true,
+      positionClass: 'toast-bottom-right',
+      closeButton: true,
+      newestOnTop: true,
+    }),
+    provideAnimations(),
   ]
 };
