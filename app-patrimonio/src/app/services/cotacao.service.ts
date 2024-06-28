@@ -7,7 +7,7 @@ import { environment } from "../../environments/environment";
 import { Moeda } from "../models/base.model";
 import { Cotacao, ICotacao } from "../models/cotacao.models";
 import { Ativo, YahooQuote } from "../models/investimento.model";
-import { selectAtivoAll } from "../store/ativo.selectors";
+import { ativosSelectors } from "../store/investimento.selectors";
 import { cotacaoActions } from "../store/cotacao.actions";
 
 @Injectable({
@@ -47,7 +47,7 @@ export class CotacaoService {
     atualizarCotacoes(store: Store): Observable<void> {
         return new Observable<void>(observer => {
             let obteveCotacao = false;
-            store.select(selectAtivoAll).subscribe({
+            store.select(ativosSelectors.selectAll).subscribe({
                 next:
                     ativos => {
                         console.log(`Obtendo cotações dos ativos`, ativos);
