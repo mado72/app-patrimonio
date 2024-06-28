@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "srv-patrimonio"
+		},
+		{
+			"path": "../rebalanceamento/app-rebalanceamento"
 		}
 	],
 	"extensions": {

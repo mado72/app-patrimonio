@@ -26,6 +26,16 @@
             />
     </div>
 }
+
+<div class="card m-3">
+    <div class="card-header">
+        <h3 class="card-title">Ativos</h3>
+    </div>
+    @if ((ativos.dados$ | async); as itens) {
+        <app-ativo-list [ativos]="itens"/>
+    }
+</div>
+
 <button type="button" (click)="adicionarCarteira()">Adicionar Carteira</button>
 <button type="button" (click)="adicionarAtivo()">Adicionar Ativo</button>
 
