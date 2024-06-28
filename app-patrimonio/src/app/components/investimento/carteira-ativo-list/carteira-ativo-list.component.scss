@@ -1,6 +1,24 @@
-th {
-    width: 6.75%;
+table {
+    table-layout: fixed;
+    th {
+        width: 6.75%;
+    }
+    th:first-child {
+        width: 19%
+    }
 }
-th:first {
-    width: 19%
+
+tfoot button {
+    box-shadow: 2px 2px #e1e1e1;
+    border-radius: 3px;
+    width: calc(100% - 2px) !important;
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+    }
+    &:active {
+        background-color: rgba(126, 126, 126, 0.5);
+        box-shadow: 1px 1px #999;
+        transform: translateY(4px);
+        border: 0
+    }
 }
