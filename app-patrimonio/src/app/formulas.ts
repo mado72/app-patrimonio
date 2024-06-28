@@ -23,9 +23,10 @@ export function consolidaValores<T>(
 
     const mapCalc = new Map(items.map(item => {
         const v = {
+            ...item,
             quantidade: quantidadeFn(item),
             vlInicial: valorInicialFn(item),
-            vlFinal: valorAtualFn(item),
+            vlFinal: valorAtualFn(item) || 0,
             valorizacao: valorAtualFn(item) - valorInicialFn(item),
             valorizacaoPerc: NaN,
             objetivo: objetivoFn(item),
