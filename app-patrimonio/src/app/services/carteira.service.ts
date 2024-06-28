@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, map, of } from 'rxjs';
 import { Ativo, Carteira, CarteiraAtivo, ICarteira } from '../models/investimento.model';
-import { selectAtivoAll } from '../store/ativo.selectors';
+import { ativosSelectors } from '../store/investimento.selectors';
 import { Moeda } from '../models/base.model';
 import { environment } from '../../environments/environment';
 
@@ -21,13 +21,13 @@ export class CarteiraService {
 
   readonly _http = inject(HttpClient);
 
-  getCarteiras(filtro?: {moeda?: Moeda, classe?: string}): Observable<Carteira[]> {
+  getCarteiras({moeda, classe, ativo}: {moeda?: Moeda, classe?: string, ativo?: Ativo}): Observable<Carteira[]> {
     let params = new HttpParams();
-    if (!! filtro?.moeda) {
-      params.append('moeda', filtro?.moeda);
+    if (!! moeda) {
+      params.append('moeda', moeda);
     }
-    if (!! filtro?.classe) {
-      params.append('classe', filtro?.classe);
+    if (!! classe) {
+      params.append('classe', classe);
     }
     return this._http.get<ICarteira[]>(`${environment.apiUrl}/carteira`, { params })
       .pipe(
@@ -56,7 +56,7 @@ export class CarteiraService {
     return of(carteira);
   }
   loadCarteiraAtivos(carteira: Carteira): Observable<Carteira> {
-    return this.store.select(selectAtivoAll).pipe(
+    return this.store.select(ativosSelectors.selectAll).pipe(
       map(ativos=>{
         const ativosId = carteira.ativos.map(ativo=>ativo?.ativoId);
         const mapAtivos = new Map(ativos
