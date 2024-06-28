@@ -1,9 +1,9 @@
-import { createAction, props } from "@ngrx/store";
-import { Carteira, CarteiraAtivo } from "../models/investimento.model";
+import { createAction, createActionGroup, props } from "@ngrx/store";
+import { Ativo, Carteira, CarteiraAtivo } from "../models/investimento.model";
 import { Moeda } from "../models/base.model";
 
 class CarteiraActions {
-    readonly getCarteiras = createAction("[Carteira] obterCarteiras", props<{filtro? : {moeda?: Moeda, classe?: string}}>())
+    readonly getCarteiras = createAction("[Carteira] obterCarteiras", props<{moeda?: Moeda, classe?: string, ativo?: Ativo}>())
     readonly getCarteirasSuccess = createAction("[Carteira] obterCarteiras sucesso", props<{carteiras: Carteira[]}>());
     readonly getCarteirasError = createAction("[Carteira] obterCarteiras erro", props<{error: any}>());
     
@@ -30,6 +30,23 @@ class CarteiraActions {
     readonly removeCarteiraAtivo = createAction("[CarteiraAtivo] remove ativo", props<{carteira: Carteira, ativo: CarteiraAtivo}>())
     readonly removeCarteiraAtivoSuccess = createAction("[CarteiraAtivo] remove ativo sucesso", props<{carteira: Carteira, ativo: CarteiraAtivo}>())
     readonly removeCarteiraAtivoError = createAction("[CarteiraAtivo] remove ativo erro", props<{error: any, carteira: Carteira, ativo: CarteiraAtivo}>())
+
+    readonly getCarteirasAtivo = createActionGroup({
+        source : 'CarteiraAtivo',
+        events: {
+            getItens: props<{ativo: Ativo}>(),
+            getItensSuccess: props<{ativoId: string, itens: {carteiraId: string, carteiraAtivoSigla: string}[]}>(),
+            getItensFailure: props<{error: any, ativoId?: string}>(),
+        }
+    })
+    readonly removeAtivoDeCarteiras = createActionGroup({
+        source : 'CarteiraAtivo',
+        events: {
+            removeItens: props<{ativoId: string}>(),
+            removeItensSuccess: props<{ativoId: string}>(),
+            removeItensFailure: props<{error: any}>(),
+        }
+    })
 }
 
 export const carteiraActions = new CarteiraActions();

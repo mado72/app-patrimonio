@@ -11,7 +11,11 @@ export const getCarteiraEffects = createEffect((
 ) => action$.pipe(
     ofType(carteiraActions.getCarteiras),
     mergeMap((item) =>
-        service.getCarteiras(item.filtro).pipe(
+        service.getCarteiras({
+            moeda: item.moeda,
+            ativo: item.ativo,
+            classe: item.classe
+        }).pipe(
             map(carteiras => carteiraActions.getCarteirasSuccess({carteiras})),
             catchError(error => of(carteiraActions.getCarteirasError({error})))
         )
