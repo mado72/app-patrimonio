@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { CarteiraListComponent } from './components/investimento/carteira-list/carteira-list.component';
+import { ProtifolioComponent } from './components/investimento/protifolio/protifolio.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CarteiraListComponent],
+  imports: [RouterOutlet, ProtifolioComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

@@ -21,14 +21,14 @@
         <tr>
             <td>{{item.nome}}</td>
             <td>{{item.sigla}}</td>
-            <td>{{item.moeda}}</td>
+            <td class="text-center">{{item.moeda}}</td>
             <td [ngClass]="item.cotacao ? 'text-end' : 'text-center'">
             @if(item.cotacao?.valor != undefined) { {{item.cotacao?.valor | number:'1.6-6'}} } @else { <i class="fas fa-spinner fa-spin"></i>- }
             </td>
             <td class="text-end">{{item.quantidade | number:'1.0-6'}}</td>
-            <td class="text-end">{{item.vlInicial | number:'1.6-6'}} </td>
-            <td class="text-end">{{item.vlFinal | number:'1.6-6'}}</td>
-            <td class="text-end">{{item.valorizacao | number:'1.6-6'}}</td>
+            <td class="text-end">{{item.vlInicial | number:'1.2-2'}} </td>
+            <td class="text-end">{{item.vlFinal | number:'1.2-2'}}</td>
+            <td class="text-end">{{item.valorizacao | number:'1.2-2'}}</td>
             <td class="text-end">{{item.valorizacaoPerc | percent:'1.2-2'}}</td>
             <td class="text-end">{{item.objetivo | percent:'1.2-2'}}</td>
             <td class="text-end">{{item.participacao | percent:'1.2-2'}}</td>
@@ -43,10 +43,10 @@
     <tfoot>
         <tr class="table-dark">
             <td>Totais:</td>
-            <td class="text-end" colspan="5">{{consolidado.total.vlInicial| number:'1.0-6'}}</td>
-            <td class="text-end">{{consolidado.total.vlTotal| number:'1.0-6'}}</td>
-            <td class="text-end">{{consolidado.total.valorizacao| number:'1.0-6'}}</td>
-            <td class="text-end">{{consolidado.total.valorizacaoPerc| percent:'1.0-6'}}</td>
+            <td class="text-end" colspan="5">{{consolidado.total.vlInicial| number:'1.2-2'}}</td>
+            <td class="text-end">{{consolidado.total.vlTotal| number:'1.2-2'}}</td>
+            <td class="text-end">{{consolidado.total.valorizacao| number:'1.2-2'}}</td>
+            <td class="text-end">{{consolidado.total.valorizacaoPerc| percent:'1.2-2'}}</td>
             <td colspan="4"></td>
         </tr>
         <tr>

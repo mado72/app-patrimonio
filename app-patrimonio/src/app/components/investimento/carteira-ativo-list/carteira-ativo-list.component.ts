@@ -48,7 +48,7 @@ export class CarteiraAtivoListComponent {
   }
 
   transform(item: CarteiraAtivo) {
-    return {...item, ...item.ativo as AuxAtivo};
+    return Object.assign({}, item, item.ativo as AuxAtivo);
   }
 
   calcularTotais() {

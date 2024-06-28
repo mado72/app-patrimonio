@@ -1,14 +1,11 @@
 import { AsyncPipe, JsonPipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Ativo, Carteira, CarteiraAtivo } from '../../../models/investimento.model';
+import { Ativo, Carteira, CarteiraAtivo, createAtivo, createCarteira } from '../../../models/investimento.model';
 import { CotacaoService } from '../../../services/cotacao.service';
 import { ativoActions } from '../../../store/ativo.actions';
-import { createAtivo } from '../../../store/ativo.reducers';
-import { selectAtivoAll, selectAtivoErrors as selectAtivoError, selectAtivoStatus } from '../../../store/ativo.selectors';
 import { carteiraActions } from '../../../store/carteira.actions';
-import { createCarteira } from '../../../store/carteira.reducers';
-import { selectCarteiraError, selectCarteiraStatus, selectCarteirasAll } from '../../../store/carteira.selectors';
+import { ativosSelectors, carteirasSelectors } from '../../../store/investimento.selectors';
 import { CarteiraTableComponent } from '../carteira-table/carteira-table.component';
 @Component({
   selector: 'app-carteira-list',
@@ -21,25 +18,20 @@ import { CarteiraTableComponent } from '../carteira-table/carteira-table.compone
   templateUrl: './carteira-list.component.html',
   styleUrl: './carteira-list.component.scss'
 })
-export class CarteiraListComponent implements OnInit {
+export class CarteiraListComponent {
 
-  carteiras$ = this.store.select(selectCarteirasAll);
-  carteiraStatus$ = this.store.select(selectCarteiraStatus);
-  carteiraError$ = this.store.select(selectCarteiraError)
-  ativos$ = this.store.select(selectAtivoAll);
-  ativoStatus$ = this.store.select(selectAtivoStatus);
-  ativosError$ = this.store.select(selectAtivoError);
+  carteiras$ = this.store.select(carteirasSelectors.selectAll);
+  carteiraStatus$ = this.store.select(carteirasSelectors.status);
+  carteiraError$ = this.store.select(carteirasSelectors.errors)
+  ativos$ = this.store.select(ativosSelectors.selectAll);
+  ativoStatus$ = this.store.select(ativosSelectors.status);
+  ativosError$ = this.store.select(ativosSelectors.errors);
   // cotacoes$ = this.store.select(getCotacoesState);
 
   constructor(
     private store: Store<any>, 
     private cotacaoService: CotacaoService
   ) { }
-
-  ngOnInit(): void {
-    this.store.dispatch(ativoActions.getAtivos());
-    this.store.dispatch(carteiraActions.getCarteiras({}));
-  }
 
   sortByNome = (a: Carteira, b: Carteira) => a.nome.localeCompare(b.nome);
 
@@ -91,3 +83,4 @@ export class CarteiraListComponent implements OnInit {
   }
     
 }
+
