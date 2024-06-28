@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterOutlet,  } from '@angular/router';
-import { ProtifolioComponent } from './components/investimento/protifolio/protifolio.component';
+import { PortifolioComponent } from './components/investimento/portifolio/protifolio.component';
 import { Store } from '@ngrx/store';
 import { InvestimentoData } from './models/app.models';
 import { investimentoActions } from './store/investimento.actions';
@@ -11,7 +11,7 @@ import { Subscription, map, of, take, takeUntil, timer } from 'rxjs';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ProtifolioComponent],
+  imports: [RouterOutlet, PortifolioComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

@@ -11,7 +11,7 @@ export const routes: Routes = [
     },
     {
         path: 'portifolio',
-        loadComponent: () => import('./protifolio/protifolio.component').then(m => m.ProtifolioComponent)
+        loadComponent: () => import('./portifolio/protifolio.component').then(m => m.PortifolioComponent)
     },
     {
         path: 'ativos',

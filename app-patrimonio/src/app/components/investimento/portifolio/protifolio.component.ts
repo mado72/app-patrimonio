@@ -18,10 +18,10 @@ import { CarteiraTableComponent } from '../carteira-table/carteira-table.compone
     CarteiraTableComponent,
     AtivosCardComponent
   ],
-  templateUrl: './protifolio.component.html',
-  styleUrl: './protifolio.component.scss'
+  templateUrl: './portifolio.component.html',
+  styleUrl: './portifolio.component.scss'
 })
-export class ProtifolioComponent implements OnInit {
+export class PortifolioComponent implements OnInit {
 removerCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
 throw new Error('Method not implemented.');
 }
