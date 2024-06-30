@@ -1,5 +1,5 @@
 import { DecimalPipe, JsonPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { Ativo } from '../../../models/investimento.model';
 
 @Component({
@@ -13,6 +13,8 @@ import { Ativo } from '../../../models/investimento.model';
   styleUrl: './ativo-list.component.scss'
 })
 export class AtivoListComponent {
+
+  // private modal = inject(NgModal)
 
   @Input() ativos: Ativo[] = [];
 

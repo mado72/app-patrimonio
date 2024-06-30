@@ -3,7 +3,12 @@ import { Moeda } from "./base.model";
 import { Cotacao } from "./cotacao.models";
 import { StateStatus } from "./app.models";
 
-export type TipoInvestimento = 'Carteira' | 'Acao' | 'Fundo' | 'Moeda'
+export enum TipoInvestimento {
+    Carteira = 'Carteira',
+    Acao = 'Acao',
+    Fundo = 'Fundo',
+    Moeda = 'Moeda' 
+}
 
 export type CotacaoFn = () => Observable<number>;
 
@@ -47,11 +52,20 @@ export class Ativo extends Investimento {
 
     cotacao?: Cotacao;
 
+    setor: string;
+
+    referencia?: {
+        id: string,
+        tipo: TipoInvestimento
+    };
+
     constructor(ativo: IAtivo) {
         super(ativo);
         this._valor = ativo.valor;
         this.sigla = ativo.sigla;
+        this.setor = ativo.setor;
         this.siglaYahoo = ativo.siglaYahoo;
+        this.referencia = ativo.referencia;
     }
 
     get valor() {
@@ -122,7 +136,7 @@ export function createCarteira(): Carteira {
         ativos: [],
         nome: '',
         moeda: Moeda.BRL,
-        tipo: 'Carteira'
+        tipo: TipoInvestimento.Carteira
     })
 }
 
@@ -130,8 +144,9 @@ export function createAtivo(): Ativo {
     return new Ativo({
         sigla: '',
         nome: '',
+        setor: '',
         moeda: Moeda.BRL,
         valor: 0,
-        tipo: 'Acao'
+        tipo: TipoInvestimento.Acao
     })
 }

@@ -1,1 +1,80 @@
-<p>ativo-modal works!</p>
+<div class="modal-header">
+    <h4 class="modal-title">Cadastro de Ativo</h4>
+</div>
+<form>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="nome" class="form-label">Ativo</label>
+            <input type="text" class="form-control" id="nome" name="nome" [(ngModel)]="ativo.nome" minlength="3">
+        </div>
+
+        <div class="row mt-3">
+            <div class="form-group col-md">
+                <label for="sigla" class="form-label">Sigla</label>
+                <input type="text" class="form-control" id="sigla" name="sigla" [(ngModel)]="ativo.sigla" minlength="1">
+            </div>
+
+            <div class="form-group col-md">
+                <label for="siglaYahoo" class="form-label">Yahoo</label>
+                <input type="text" class="form-control" id="siglaYahoo" name="siglaYahoo" [(ngModel)]="ativo.siglaYahoo"
+                    minlength="1">
+            </div>
+
+            <div class="form-group col-md">
+                <label for="setor" class="form-label">Setor</label>
+                <input type="text" class="form-control" id="setor" name="setor" [(ngModel)]="ativo.setor" minlength="3">
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="form-group col-md">
+                <label for="tipoAtivo" class="form-label">Tipo</label>
+                <select name="tipoAtivo" id="tipoAtivo" class="form-select" [(ngModel)]="ativo.tipo">
+                    <option [value]="undefined">Selecione...</option>
+                    <option *ngFor="let tipoAtivo of tipos" [ngValue]="tipoAtivo">{{tipoAtivo}}</option>
+                </select>
+            </div>
+
+            <div class="form-group col-md">
+                <label for="moeda" class="form-label">Moeda</label>
+                <select name="moeda" id="moeda" class="form-select" [(ngModel)]="ativo.moeda">
+                    <option [value]="undefined">Selecione...</option>
+                    @for (moeda of moedas; track $index) { <option [ngValue]="moeda">{{moeda}}</option> }
+                </select>
+            </div>
+
+            <div class="form-group col-md">
+                <label for="cotacao" class="form-label">Cotação</label>
+                <input type="number" class="form-control text-end" name="cotacao" id="cotacao" [value]="ativo.cotacao?.valor" disabled>
+            </div>
+        </div>
+
+    @switch (ativo.tipo) {
+        @case (tipoCarteiraRef) {
+            <div class="form-group">
+                <label for="carteiras" class="form-label">Carteiras</label>
+                <select name="carteiras" id="carteiras" class="form-select" [(ngModel)]="carteiraReferenciaId">
+                    <option [value]="undefined">Selecione...</option>
+                    <option *ngFor="let carteira of carteiras$ | async; " [value]="carteira._id">{{carteira.nome}}</option>
+                </select>
+            </div>
+        }
+        @case (tipoMoedaRef) {
+            <div class="form-group">
+                <label for="moedas" class="form-label">Carteiras</label>
+                <select name="moedas" id="moedas" class="form-select" [(ngModel)]="carteiraReferenciaId">
+                    <option [value]="undefined">Selecione...</option>
+                    <option *ngFor="let carteira of carteiras$ | async; " [value]="carteira._id">{{carteira.nome}}</option>
+                </select>
+            </div>
+        }
+    }
+
+        <pre class="debug">{{ativo | json}}</pre>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" (click)="save()">Salvar</button>
+        <button type="button" class="btn btn-default" (click)="close()">Fechar</button>
+        <button type="submit" class="btn btn-danger" (click)="remove()">Excluir</button>
+    </div>
+</form>
