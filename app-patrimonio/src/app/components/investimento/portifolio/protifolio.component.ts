@@ -22,10 +22,13 @@ import { CarteiraTableComponent } from '../carteira-table/carteira-table.compone
   styleUrl: './portifolio.component.scss'
 })
 export class PortifolioComponent implements OnInit {
+editarCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
+throw new Error('Method not implemented.');
+}
 removerCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
 throw new Error('Method not implemented.');
 }
-adicionarCarteiraAtivo($event: { carteira: Carteira; ativo: Ativo; }) {
+adicionarCarteiraAtivo(carteira: Carteira) {
 throw new Error('Method not implemented.');
 }
 
@@ -53,6 +56,12 @@ throw new Error('Method not implemented.');
   adicionarCarteira() {
     const carteira = createCarteira();
     this.store.dispatch(carteiraActions.addCarteira({carteira}))
+  }
+
+  editarCarteira(carteira: Carteira) {
+    // this.store.dispatch(carteiraActions.updateCarteira({carteira}));
+    console.warn(`Falta implementar a edição de carteira`);
+    throw `Não implementado`;
   }
 
   removerCarteira(carteira: Carteira) {

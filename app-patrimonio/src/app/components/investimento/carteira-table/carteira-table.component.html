@@ -7,6 +7,15 @@
             <button type="button" class="border-0" (click)="removerCarteira()">&times;</button>
         </div>
     </div>
-    <app-carteira-ativo-list [ativos]="carteira.ativos" (onRemoveAtivo)="removeCarteiraAtivo($event)"></app-carteira-ativo-list>
-
+    <app-carteira-ativo-list 
+            [ativos]="carteira.ativos" 
+            (onRemoveAtivo)="removeCarteiraAtivo($event)"
+            (onEditarAtivo)="editarCarteiraAtivo($event)"
+            (onAdicionarAtivo)="adicionarCarteiraAtivo()" />
+    <div class="card-footer">
+        <div class="text-end">
+            <a href="javascript:void(0)" class="me-2" (click)="editarCarteira()">editar</a>
+            <a href="javascript:void(0)" (click)="removerCarteira()">remover</a>
+        </div>
+    </div>
 </div>

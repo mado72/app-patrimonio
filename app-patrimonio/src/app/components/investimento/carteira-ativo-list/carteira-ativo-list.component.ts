@@ -33,6 +33,8 @@ export class CarteiraAtivoListComponent {
 
   @Output() onRemoveAtivo = new EventEmitter<CarteiraAtivo>();
 
+  @Output() onEditarAtivo = new EventEmitter<CarteiraAtivo>();
+
   @Output() onAdicionarAtivo = new EventEmitter<void>();
 
   removerAtivo(ativo: CarteiraAtivo): void {
@@ -40,7 +42,7 @@ export class CarteiraAtivoListComponent {
   }
 
   editarAtivo(ativo: CarteiraAtivo) {
-
+    this.onEditarAtivo.emit(ativo);
   }
 
   adicionarAtivo(): void {
