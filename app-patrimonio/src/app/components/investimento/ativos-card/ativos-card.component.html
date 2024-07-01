@@ -2,5 +2,5 @@
     <div class="card-header">
         <h3 class="card-title">Ativos</h3>
     </div>
-    <app-ativo-list [ativos]="ativos"/>
+    <app-ativo-list [ativos]="ativos" (onRemoveAtivo)="removerAtivo($event)"/>
 </div>

@@ -4,10 +4,29 @@ import { Cotacao } from "./cotacao.models";
 import { StateStatus } from "./app.models";
 
 export enum TipoInvestimento {
+    Referencia = 'Referencia',
     Carteira = 'Carteira',
     Acao = 'Acao',
-    Fundo = 'Fundo',
+    RF = 'RF',
+    PosFixada = 'PosFixada',
+    FundoImobiliario = 'FundoImobiliario',
+    ETF = 'ETF',
     Moeda = 'Moeda' 
+}
+
+type TipoInvestimentoPropertiesAsString = {
+    [key in keyof typeof TipoInvestimento]: string;
+};
+
+export const TipoInvestimentoStr : TipoInvestimentoPropertiesAsString = {
+    Referencia: 'Referência',
+    Carteira: 'Carteira',
+    Acao: 'Ação',
+    RF: 'RF',
+    PosFixada: 'Pós Fixada',
+    FundoImobiliario: 'Fundo Imobiliário',
+    ETF: 'ETF',
+    Moeda: 'Moeda' 
 }
 
 export type CotacaoFn = () => Observable<number>;

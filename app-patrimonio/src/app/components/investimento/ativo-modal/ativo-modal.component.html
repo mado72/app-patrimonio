@@ -28,10 +28,10 @@
 
         <div class="row mt-3">
             <div class="form-group col-md">
-                <label for="tipoAtivo" class="form-label">Tipo</label>
-                <select name="tipoAtivo" id="tipoAtivo" class="form-select" [(ngModel)]="ativo.tipo">
+                <label for="tipo" class="form-label">Tipo</label>
+                <select name="tipo" id="tipo" class="form-select" [(ngModel)]="ativo.tipo">
                     <option [value]="undefined">Selecione...</option>
-                    <option *ngFor="let tipoAtivo of tipos" [ngValue]="tipoAtivo">{{tipoAtivo}}</option>
+                    <option *ngFor="let tipo of tiposKey; index as index" [ngValue]="tipo">{{tiposStr[index]}}</option>
                 </select>
             </div>
 
@@ -53,18 +53,16 @@
         @case (tipoCarteiraRef) {
             <div class="form-group">
                 <label for="carteiras" class="form-label">Carteiras</label>
-                <select name="carteiras" id="carteiras" class="form-select" [(ngModel)]="carteiraReferenciaId">
-                    <option [value]="undefined">Selecione...</option>
+                <select name="carteiras" id="carteiras" class="form-select" [(ngModel)]="carteiraReferenciaId" payload="Selecione...">
                     <option *ngFor="let carteira of carteiras$ | async; " [value]="carteira._id">{{carteira.nome}}</option>
                 </select>
             </div>
         }
         @case (tipoMoedaRef) {
             <div class="form-group">
-                <label for="moedas" class="form-label">Carteiras</label>
-                <select name="moedas" id="moedas" class="form-select" [(ngModel)]="carteiraReferenciaId">
-                    <option [value]="undefined">Selecione...</option>
-                    <option *ngFor="let carteira of carteiras$ | async; " [value]="carteira._id">{{carteira.nome}}</option>
+                <label for="moedas" class="form-label">Moedas</label>
+                <select name="moedas" id="moedas" class="form-select" [(ngModel)]="moedaReferenciaId" payload="Selecione...">
+                    <option *ngFor="let moeda of moedas; " [value]="moeda">{{moeda}}</option>
                 </select>
             </div>
         }

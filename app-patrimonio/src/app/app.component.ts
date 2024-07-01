@@ -51,14 +51,16 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   displayError(error: any): void {
-    error && this.toastrService.error(typeof error === "string"? error : JSON.stringify(error), "Erro não capturado");
-    this.timerSubscription && this.timerSubscription.unsubscribe();
-    this.timerSubscription = timer(30000).pipe(
-      map(()=>{
-        console.warn("Fazendo reload...");
-        this.ngOnInit();
-      }),
-      take(1)
-    ).subscribe();
+    if (!!error) {
+      this.toastrService.error(typeof error === "string"? error : JSON.stringify(error), "Erro não capturado");
+      this.timerSubscription && this.timerSubscription.unsubscribe();
+      this.timerSubscription = timer(30000).pipe(
+        map(()=>{
+          console.warn("Fazendo reload...");
+          this.ngOnInit();
+        }),
+        take(1)
+      ).subscribe();
+    }
   }
 }
