@@ -27,10 +27,9 @@
     </div>
 }
 
-@if ((ativos.dados$ | async); as itens) {
-    <app-ativos-card [ativos]="itens"/>
-}
-
 <button type="button" (click)="adicionarCarteira()">Adicionar Carteira</button>
 <button type="button" (click)="adicionarAtivo()">Adicionar Ativo</button>
 
+@if ((ativos.dados$ | async); as itens) {
+    <app-ativos-card [ativos]="itens"/>
+}
