@@ -3,9 +3,10 @@ import { CarteiraService } from "../services/carteira.service";
 import { inject } from "@angular/core";
 import { carteiraActions } from "./carteira.actions";
 import { catchError, map, mergeMap, of, tap } from "rxjs";
+import { InvestimentoService } from "../services/investimento.service";
 
 
-export const getCarteiraEffects = createEffect((
+export const getCarteirasEffects = createEffect((
     action$ = inject(Actions),
     service = inject(CarteiraService)
 ) => action$.pipe(
@@ -52,9 +53,9 @@ export const updateCarteiraEffects = createEffect((
     action$ = inject(Actions),
     service = inject(CarteiraService)
 ) => action$.pipe(
-    ofType(carteiraActions.removeCarteira),
+    ofType(carteiraActions.updateCarteira),
     mergeMap((item) =>
-        service.removeCarteira(item.carteira).pipe(
+        service.updateCarteira(item.carteira).pipe(
             map(carteira => carteiraActions.updateCarteiraSuccess({carteira})),
             catchError(error => of(carteiraActions.updateCarteiraError({error, carteira: item.carteira})))
         )
@@ -80,7 +81,7 @@ export const addCarteiraAtivoEffects = createEffect((
 ) => action$.pipe(
     ofType(carteiraActions.addCarteiraAtivo),
     mergeMap((item)=>
-        service.updateCarteira(item.carteira).pipe(
+        service.updateCarteira(item.carteira, item.ativo).pipe(
             map(carteira => carteiraActions.addCarteiraAtivoSuccess({carteira, ativo: item.ativo})),
             catchError(error => of(carteiraActions.addCarteiraAtivoError({error, carteira: item.carteira, ativo: item.ativo})))
         )

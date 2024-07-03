@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Ativo, CarteiraAtivo } from '../../../models/investimento.model';
+import { Ativo, CarteiraAtivo, ICarteiraAtivo } from '../../../models/investimento.model';
 import { ConsolidadoTotal, consolidaValores } from '../../../util/formulas';
 
 type AuxAtivo = Pick<Ativo, "identity" | "nome" | "sigla" | "moeda" | "cotacao">;
@@ -37,12 +37,25 @@ export class CarteiraAtivoListComponent {
 
   @Output() onAdicionarAtivo = new EventEmitter<void>();
 
-  removerAtivo(ativo: CarteiraAtivo): void {
+  removerAtivo(listItem: ListItem): void {
+    const ativo : ICarteiraAtivo = this.extrairCarteiraAtivo(listItem)
     this.onRemoveAtivo.emit(ativo);
   }
 
-  editarAtivo(ativo: CarteiraAtivo) {
+  editarAtivo(listItem: ListItem) {
+    const ativo : ICarteiraAtivo = this.extrairCarteiraAtivo(listItem)
     this.onEditarAtivo.emit(ativo);
+  }
+
+  private extrairCarteiraAtivo(listItem: ListItem): CarteiraAtivo {
+    return {
+      ativoId: listItem.ativoId,
+      ativo: (listItem as any).ativo,
+      quantidade: listItem.quantidade,
+      objetivo: listItem.objetivo,
+      vlInicial: listItem.vlInicial,
+      vlAtual: listItem.vlAtual
+    };
   }
 
   adicionarAtivo(): void {
@@ -69,3 +82,4 @@ export class CarteiraAtivoListComponent {
   }
 
 }
+

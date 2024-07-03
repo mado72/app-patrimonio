@@ -1,12 +1,9 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { RouterOutlet,  } from '@angular/router';
-import { PortifolioComponent } from './components/investimento/portifolio/protifolio.component';
-import { Store } from '@ngrx/store';
-import { InvestimentoData } from './models/app.models';
-import { investimentoActions } from './store/investimento.actions';
-import { ativosSelectors, carteirasSelectors, cotacoesSelectors } from './store/investimento.selectors';
+import { RouterOutlet, } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Subscription, map, of, take, takeUntil, timer } from 'rxjs';
+import { Subscription, map, take, timer } from 'rxjs';
+import { PortifolioComponent } from './components/investimento/portifolio/protifolio.component';
+import { InvestimentoStateService } from './state/investimento-state.service';
 
 @Component({
   selector: 'app-root',
@@ -20,39 +17,41 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private timerSubscription! : Subscription;
 
-  private store = inject(Store<InvestimentoData>);
-
   private toastrService = inject(ToastrService);
 
-  carteiras = {
-    erros$: this.store.select(carteirasSelectors.errors),
-    status$: this.store.select(carteirasSelectors.status)
-  };
-  ativos = {
-    erros$: this.store.select(ativosSelectors.errors),
-    status$: this.store.select(ativosSelectors.status)
-  };
-  cotacoes = {
-    erros$: this.store.select(cotacoesSelectors.errors),
-    status$: this.store.select(cotacoesSelectors.status)
-  };
+  private investimentoStateService = inject(InvestimentoStateService);
 
   erro: any;
 
   ngOnInit(): void {
-    this.store.dispatch(investimentoActions.obterAlocacoes())
-    this.carteiras.erros$.subscribe(error=>this.displayError(error));
-    this.ativos.erros$.subscribe(error=>this.displayError(error));
-    this.cotacoes.erros$.subscribe(error=>this.displayError(error));
+    this.investimentoStateService.ativoError.subscribe(error=> {
+      if(!!error){
+        this.displayError(error, "Ativos não carregados");
+        this.investimentoStateService.limparErrosAtivos();
+      }
+    });
+    this.investimentoStateService.carteiraError.subscribe(error=> {
+      if(!!error){
+        this.displayError(error, "Carteira não carregada");
+        this.investimentoStateService.limparErrosCarteiras();
+      }
+    });
+    this.investimentoStateService.cotacaoError.subscribe(error=> {
+      if(!!error){
+        this.displayError(error, "Cotações não carregadas");
+        this.investimentoStateService.limparErrosCotacoes();
+      }
+    })
+    this.investimentoStateService.obterAlocacoes().subscribe();
   }
 
   ngOnDestroy(): void {
       this.timerSubscription && this.timerSubscription.unsubscribe();
   }
 
-  displayError(error: any): void {
+  displayError(error: any, title?: string): void {
     if (!!error) {
-      this.toastrService.error(typeof error === "string"? error : JSON.stringify(error), "Erro não capturado");
+      this.toastrService.error(typeof error === "string"? error : JSON.stringify(error), title || "Erro não capturado");
       this.timerSubscription && this.timerSubscription.unsubscribe();
       this.timerSubscription = timer(30000).pipe(
         map(()=>{

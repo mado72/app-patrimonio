@@ -1,9 +1,8 @@
 import { AsyncPipe, JsonPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { map } from 'rxjs';
-import { Ativo, Carteira, CarteiraAtivo } from '../../../models/investimento.model';
-import { ativosSelectors } from '../../../store/investimento.selectors';
+import { Carteira, CarteiraAtivo } from '../../../models/investimento.model';
+import { InvestimentoStateService } from '../../../state/investimento-state.service';
 import { CarteiraAtivoListComponent } from '../carteira-ativo-list/carteira-ativo-list.component';
 
 @Component({
@@ -26,7 +25,9 @@ export class CarteiraTableComponent {
   @Output() onAdicionarCarteiraAtivo = new EventEmitter<Carteira>();
   @Output() onEditarCarteiraAtivo = new EventEmitter<{ carteira: Carteira, carteiraAtivo: CarteiraAtivo }>();
 
-  constructor(private store: Store) { }
+  private investimentoStateService = inject(InvestimentoStateService);
+
+  constructor() { }
 
   novoAtivo() {
     this.onAdicionarCarteiraAtivo.emit(this.carteira);
@@ -54,10 +55,9 @@ export class CarteiraTableComponent {
 
   get ativos() {
     const ids = this.carteira.ativos.map(carteiraAtivo => carteiraAtivo.ativoId);
-    return this.store.select(ativosSelectors.ativosIdIn(ids)).pipe(
-      map(ativos => ativos.filter(ativo => ativo) as Ativo[])
-    )
+    return this.investimentoStateService.ativo.pipe(
+      map((ativos)=>ativos.filter(ativo=>ids.includes(ativo.identity.toString())))
+    );
   }
-
 
 }

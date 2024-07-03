@@ -5,7 +5,8 @@ import { environment } from "../../environments/environment";
 import { Ativo, IAtivo } from "../models/investimento.model";
 
 export type FilterAtivos = {
-    termo?: string
+    termo?: string,
+    in?: string[]
 }
 
 @Injectable({
@@ -21,6 +22,12 @@ export class AtivoService {
         if (filter?.termo) {
             params.append("nome", filter.termo);
         }
+        if (filter?.in) {
+            filter.in.forEach(id=>{
+                params.append("in", id);
+            })
+        }
+        
         return this._http.get<IAtivo[]>(`${environment.apiUrl}/ativo`, { params })
             .pipe(
                 map(ativos => ativos.map(ativo => new Ativo(ativo)))

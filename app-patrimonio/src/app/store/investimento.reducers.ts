@@ -11,7 +11,7 @@ export const investimentoReducer = createReducer(
 
     // ----------------------------------------------------- investimentoActions
 
-    on(investimentoActions.obterAlocacoes, (state) => 
+    on(investimentoActions.obterAlocacoes.getItems, (state) => 
         ({
             ...state,
             carteiras: {
@@ -23,7 +23,7 @@ export const investimentoReducer = createReducer(
             cotacoes: {...state.cotacoes, status: StateStatus.Pending, error: undefined}
         })
     ),
-    on(investimentoActions.obterAlocacoesSuccess, (state, payload) => 
+    on(investimentoActions.obterAlocacoes.getItemsSuccess, (state, payload) => 
         ({
             ...state,
             carteiras: carteirasAdapter.setAll(payload.alocacoes.carteiras, {...state.carteiras, status: StateStatus.Executed}),
@@ -31,7 +31,7 @@ export const investimentoReducer = createReducer(
             cotacoes: cotacaoAdapter.setAll(payload.alocacoes.cotacoes, {...state.cotacoes, status: StateStatus.Executed}),
         })
     ),
-    on(investimentoActions.obterAlocacoesFailure, (state, payload) => 
+    on(investimentoActions.obterAlocacoes.getItemsFailure, (state, payload) => 
         ({
             ...state,
             carteiras: carteirasAdapter.getInitialState({status: StateStatus.Error, error: payload.error}),
@@ -82,14 +82,14 @@ export const investimentoReducer = createReducer(
     on(carteiraActions.addCarteiraError, (state, payload)=>
         ({
             ...state,
-            carteiras: carteirasAdapter.removeOne(payload.carteira.identity, {...state.carteiras, status: StateStatus.Error, error: payload.error})
+            carteiras: carteirasAdapter.removeOne(payload.carteira.identity.toString(), {...state.carteiras, status: StateStatus.Error, error: payload.error})
         })
     ),
     
     on(carteiraActions.removeCarteira, (state, payload)=>
         ({
             ...state,
-            carteiras: carteirasAdapter.removeOne(payload.carteira.identity, {...state.carteiras, status: StateStatus.Pending, error: undefined})
+            carteiras: carteirasAdapter.removeOne(payload.carteira.identity.toString(), {...state.carteiras, status: StateStatus.Pending, error: undefined})
         })
     ),
     on(carteiraActions.removeCarteiraSuccess, (state, payload)=>
@@ -112,7 +112,7 @@ export const investimentoReducer = createReducer(
         ({
             ...state,
             carteiras: carteirasAdapter.updateOne({
-                id: payload.carteira.identity,
+                id: payload.carteira.identity.toString(),
                 changes: payload.carteira
             }, {...state.carteiras, status: StateStatus.Pending, error: undefined})
         })
@@ -143,7 +143,7 @@ export const investimentoReducer = createReducer(
         ({
             ...state,
             carteiras: carteirasAdapter.mapOne({
-                id: payload.carteira.identity,
+                id: payload.carteira.identity.toString(),
                 map: carteira => new Carteira(carteira, payload.ativos),
             }, {
                 ...state.carteiras,
@@ -155,7 +155,7 @@ export const investimentoReducer = createReducer(
         ({
             ...state,
             carteiras: carteirasAdapter.mapOne({
-                id: payload.carteira.identity,
+                id: payload.carteira.identity.toString(),
                 map: carteira => new Carteira(carteira, []),
             }, {...state.carteiras, error: payload.error, status: StateStatus.Error})
         })    
@@ -165,7 +165,7 @@ export const investimentoReducer = createReducer(
         ({
             ...state,
             carteiras: carteirasAdapter.mapOne({
-                id: payload.carteira.identity,
+                id: payload.carteira.identity.toString(),
                 map: carteira => {
                     carteira = {...carteira} as Carteira,
                     carteira.ativos = [...carteira.ativos, payload.ativo];
@@ -187,7 +187,7 @@ export const investimentoReducer = createReducer(
         ({
             ...state,
             carteiras: carteirasAdapter.mapOne({
-                id: payload.carteira.identity,
+                id: payload.carteira.identity.toString(),
                 map: carteira => {
                     carteira = {...carteira} as Carteira,
                     carteira.ativos = [...carteira.ativos].filter(ativo=>ativo.ativoId != payload.ativo.ativoId);
@@ -208,7 +208,7 @@ export const investimentoReducer = createReducer(
         ({
             ...state,
             carteiras: carteirasAdapter.mapOne({
-                id: payload.carteira.identity,
+                id: payload.carteira.identity.toString(),
                 map: carteira => new Carteira(carteira, [...carteira.ativos].filter(item=>item.ativoId != payload.ativo.ativoId)),
             }, {...state.carteiras, error: undefined, status: StateStatus.Executed})
         })
@@ -218,7 +218,7 @@ export const investimentoReducer = createReducer(
             ...state,
             carteiras: 
                 carteirasAdapter.mapOne({
-                        id: payload.carteira.identity,
+                        id: payload.carteira.identity.toString(),
                         map: carteira => new Carteira(carteira, [...carteira.ativos, payload.ativo]),
                     }, {...state.carteiras, error: payload.error, status: StateStatus.Error}),
         })
@@ -231,7 +231,7 @@ export const investimentoReducer = createReducer(
                 ...state.carteiras,
                 status: StateStatus.Pending,
                 error: undefined,
-                ativoId: payload.ativo.identity
+                ativoId: payload.ativo.identity.toString()
             }
         })
     ),
@@ -266,7 +266,7 @@ export const investimentoReducer = createReducer(
                     .filter((carteira):carteira is Carteira=>!!carteira && carteira.ativos.some(ativo=>ativo.ativoId))
                     .map(carteira=> 
                         ({
-                            id: carteira.identity,
+                            id: carteira.identity.toString(),
                             changes: {
                                 ativos: [...carteira.ativos
                                     .filter(ativo=>ativo.ativoId !== payload.ativoId)
@@ -347,7 +347,7 @@ export const investimentoReducer = createReducer(
     on(ativoActions.addAtivoError, (state, payload) => 
         ({
             ...state,
-            ativos: ativosAdapter.removeOne(payload.ativo.identity, 
+            ativos: ativosAdapter.removeOne(payload.ativo.identity.toString(), 
                     {...state.ativos, status: StateStatus.Error, error: payload.error })
         })
     ),
@@ -355,7 +355,7 @@ export const investimentoReducer = createReducer(
     on(ativoActions.removeAtivo, (state, payload) =>
         ({
             ...state,
-            ativos: ativosAdapter.removeOne(payload.ativo.identity, {...state.ativos, status: StateStatus.Pending, error: undefined})
+            ativos: ativosAdapter.removeOne(payload.ativo.identity.toString(), {...state.ativos, status: StateStatus.Pending, error: undefined})
         })
     ),
     on(ativoActions.removeAtivoSuccess, (state, payload) =>
@@ -379,7 +379,7 @@ export const investimentoReducer = createReducer(
         ({
             ...state,
             ativos: ativosAdapter.updateOne({
-                id: payload.ativo.identity,
+                id: payload.ativo.identity.toString(),
                 changes: payload.ativo
             }, {...state.ativos, status: StateStatus.Pending, error: undefined})
         })
@@ -412,6 +412,14 @@ export const investimentoReducer = createReducer(
         })
     ),
 
+    on(ativoActions.reloadAtivos, (state, payload)=> ({
+        ...state,
+        ativos: ativosAdapter.updateMany(payload.ativos.map(ativo=>({
+            id: ativo.identity.toString(),
+            changes: {...ativo }
+        })), {...state.ativos, status: StateStatus.Executed, error: undefined})
+    })),
+
 
     // -------------------------------------------------------- cotacaoActions
 
@@ -425,14 +433,20 @@ export const investimentoReducer = createReducer(
             }
         })
     ),
-    on(cotacaoActions.getCotacoes.getCotacoesSuccess, (state, payload) =>
+
+    on(cotacaoActions.getCotacoes.getCotacoesSuccess, (state, payload) => 
         ({
             ...state,
-            cotacoes: cotacaoAdapter.setAll(payload.cotacoes, {
-                ...state.cotacoes,
-                status: StateStatus.Executed,
-                error: undefined
-            })
+            cotacoes: cotacaoAdapter.updateMany(
+                payload.cotacoes.map(cotacao=>({
+                    id: cotacao.simbolo,
+                    changes: {...cotacao }
+                })), 
+                {
+                    ...state.cotacoes,
+                    status: StateStatus.Executed,
+                    error: undefined
+                }) 
         })
     ),
     on(cotacaoActions.getCotacoes.getCotacoesFailure, (state, payload) =>

@@ -38,7 +38,7 @@ export const removeAtivoEffects = createEffect((
         service.removeAtivo(payload.ativo).pipe(
             switchMap(ativo=>
                 of(
-                    carteiraActions.removeAtivoDeCarteiras.removeItens({ ativoId: payload.ativo.identity }),
+                    carteiraActions.removeAtivoDeCarteiras.removeItens({ ativoId: payload.ativo.identity.toString() }),
                     ativoActions.removeAtivoSuccess({ ativo: payload.ativo})
                 )
             ),

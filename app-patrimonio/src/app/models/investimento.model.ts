@@ -35,16 +35,26 @@ export type IInvestimento = Omit<Investimento, "identity">;
 
 export type InvestimentoIdentity = Pick<Investimento, "identity">;
 
+export class UUID {
+    value: string;
+    constructor(value?: string | UUID) {
+        this.value = value?.toString() || crypto.randomUUID();
+    }
+    toString() {
+        return this.value;
+    }
+}
+
 abstract class Investimento {
     _id?: string;
-    identity: string;
+    identity: string | UUID;
     nome: string;
     tipo: TipoInvestimento;
     moeda: Moeda;
 
     constructor(investimento: IInvestimento | Investimento) {
         this._id = investimento._id;
-        this.identity = this._id || (<Investimento>investimento).identity || crypto.randomUUID();
+        this.identity = this._id || new UUID((<Investimento>investimento).identity);
         this.nome = investimento.nome;
         this.tipo = investimento.tipo;
         this.moeda = investimento.moeda;
@@ -107,6 +117,8 @@ export function valorAtivoEm(ativo: IAtivo, outraCotacao: Cotacao) {
 
 export type ICarteira = Omit<Carteira, "identity" | "valor">;
 
+export type ICarteiraAtivo = Omit<CarteiraAtivo, "ativo">;
+
 export interface CarteiraAtivo {
     ativoId: string;
     quantidade: number;
@@ -120,9 +132,12 @@ export class Carteira extends Investimento {
 
     ativos: CarteiraAtivo[];
 
+    objetivo: number;
+
     constructor(carteira: ICarteira | Carteira, ativos?: CarteiraAtivo[]) {
         super({ ...carteira, valor: 0 });
         this.ativos = ativos || carteira.ativos;
+        this.objetivo = carteira.objetivo;
     }
 
     get valor() {
@@ -155,7 +170,8 @@ export function createCarteira(): Carteira {
         ativos: [],
         nome: '',
         moeda: Moeda.BRL,
-        tipo: TipoInvestimento.Carteira
+        tipo: TipoInvestimento.Carteira,
+        objetivo: 0
     })
 }
 

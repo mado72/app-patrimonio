@@ -54,7 +54,7 @@ export function consolidaValores<T>(
     Array.from(mapCalc.values()).forEach(v => {
         v.valorizacaoPerc = v.valorizacao / v.vlInicial;
         v.participacao = v.vlFinal / total.vlTotal;
-        v.difObjetivo = (v.participacao - v.objetivo) / v.objetivo;
+        v.difObjetivo = v.objetivo > 0 ? (v.participacao - v.objetivo) / v.objetivo : v.participacao ? 1 : 0;
     })
 
     const dados = Array.from(mapCalc.entries()).map(entry=>({

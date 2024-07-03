@@ -26,7 +26,7 @@ export const getCotacoesEffects = createEffect((
             switchMap((update)=>
                 of(
                     cotacaoActions.getCotacoes.getCotacoesSuccess({cotacoes: update.cotacoes}),
-                    ativoActions.updateCotacoes({update: update.ativos.map(ativo=>({id: ativo.identity, changes: ativo}))})
+                    ativoActions.updateCotacoes({update: update.ativos.map(ativo=>({id: ativo.identity.toString(), changes: ativo}))})
                 )
             ),
             catchError(error=> of(cotacaoActions.getCotacoes.getCotacoesFailure({error})))

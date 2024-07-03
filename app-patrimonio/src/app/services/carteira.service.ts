@@ -1,21 +1,16 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable, map, of } from 'rxjs';
-import { Ativo, Carteira, CarteiraAtivo, ICarteira } from '../models/investimento.model';
-import { ativosSelectors } from '../store/investimento.selectors';
-import { Moeda } from '../models/base.model';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Moeda } from '../models/base.model';
+import { Ativo, Carteira, CarteiraAtivo, ICarteira, ICarteiraAtivo } from '../models/investimento.model';
 
-type CarteiraAtivoSemAtivo = Omit<CarteiraAtivo, "ativo"> & {ativo?: Ativo};
 @Injectable({
   providedIn: 'root'
 })
 export class CarteiraService {
 
-  constructor(
-    private store: Store
-  ) {}
+  constructor() {}
 
   mock: Carteira[] = [];
 
@@ -34,40 +29,33 @@ export class CarteiraService {
         map(carteiras=>carteiras.map(carteira=> new Carteira(carteira)))
       )
   }
-  addCarteira(carteira: ICarteira): Observable<Carteira> {
-    const novoItem = new Carteira(carteira);
-    console.log(novoItem.identity);
-    this.mock.push(novoItem);
-    return of(novoItem);
-  }
-  updateCarteira(carteira: Carteira): Observable<Carteira> {
-    console.log(carteira.identity);
-    const c = carteira.ativos.map(ativo=>ativo as CarteiraAtivoSemAtivo);
-    c.forEach(i=>{
-      if (! i.ativo ) {
-        throw JSON.stringify(i);
-      }
-    })
-    return of(carteira);
-  }
-  removeCarteira(carteira: Carteira): Observable<Carteira> {
-    console.log(carteira.identity);
-    this.mock = this.mock.filter(item=> item.identity !== carteira.identity);
-    return of(carteira);
-  }
-  loadCarteiraAtivos(carteira: Carteira): Observable<Carteira> {
-    return this.store.select(ativosSelectors.selectAll).pipe(
-      map(ativos=>{
-        const ativosId = carteira.ativos.map(ativo=>ativo?.ativoId);
-        const mapAtivos = new Map(ativos
-          .filter(ativo=>ativo._id && ativosId.includes(ativo._id))
-          .map(ativo=>[ativo._id as string, ativo]));
 
-        carteira.ativos.forEach(carteiraAtivo=>{
-          carteiraAtivo.ativo = mapAtivos.get(carteiraAtivo.ativoId);
-        });
-        return carteira;
-      }))
+  getCarteira(carteiraId: string) {
+    return this._http.get<ICarteira>(`${environment.apiUrl}/carteira/${carteiraId}`)
+      .pipe(
+        map(carteira=>new Carteira(carteira))
+      )
+  }
+
+  addCarteira(carteira: ICarteira): Observable<Carteira> {
+    const dados : Omit<ICarteira, "ativo"> = carteira;
+    return this._http.post<ICarteira>(`${environment.apiUrl}/carteira`, dados).pipe(
+      map(carteira=> new Carteira(carteira))
+    )
+  }
+  updateCarteira(carteira: ICarteira, adicionarCarteiraAtivo?: ICarteiraAtivo): Observable<Carteira> {
+    const dados = {...carteira};
+    dados.ativos = [...dados.ativos].map(item=>{
+      item = {...item, ativo: undefined};
+      return item;
+    });
+
+    return this._http.put<Carteira>(`${environment.apiUrl}/carteira`, dados);
+  }
+  removeCarteira(carteira: ICarteira): Observable<Carteira> {
+    return this._http.delete<ICarteira>(`${environment.apiUrl}/carteira/${carteira._id as string}`).pipe(
+      map(carteira=> new Carteira(carteira))
+    )
   }
 
 }

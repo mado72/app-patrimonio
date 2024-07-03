@@ -1,0 +1,49 @@
+<div class="modal-header">
+    <h4 class="modal-title m-2">Editar Ativo</h4>
+  </div>
+  <form (ngSubmit)="submitClick()" class="form">
+    <div class="modal-body row m-2">
+      <div class="row">
+        <h6>{{carteiraAtivo.ativo?.nome}}</h6>
+      </div>
+      <div class="row">
+        <div class="form-group col">
+          <label class="form-label" for="ativo">Ativo:</label>
+          <input class="form-control" type="text" id="ativo" name="ativo" [value]="carteiraAtivo.ativo?.sigla" 
+              (selectItem)="selecionarAtivo($event)" [inputFormatter]="formatar" [ngbTypeahead]="buscarAtivo" [resultTemplate]="autoTemplate">
+        </div>
+        <ng-template #autoTemplate let-r="result">
+          <option>{{r.nome}}</option>
+        </ng-template>
+    
+        <div class="form-group col">
+          <label class="form-label" for="qtd">Quantidade:</label>
+          <input class="form-control" type="number" id="qtd" name="qtd" [(ngModel)]="carteiraAtivo.quantidade">
+        </div>
+      
+        <div class="form-group col">
+          <label class="form-label" for="vlInicial">Valor Inicial:</label>
+          <input class="form-control" type="number" step="0.01" min="0" id="vlInicial" name="vlInicial" [(ngModel)]="carteiraAtivo.vlInicial" (change)="!carteiraAtivo.vlAtual && carteiraAtivo.vlAtual = carteiraAtivo.vlInicial">
+        </div>
+    
+        <div class="form-group col">
+          <label class="form-label" for="valor">Valor:</label>
+          <input class="form-control" type="number" step="0.01" min="0" id="valor" name="valor" [(ngModel)]="carteiraAtivo.vlAtual">
+        </div>
+    
+        <div class="form-group col">
+          <label class="form-label" for="objetivo">Objetivo:</label>
+          <input class="form-control" type="number" step="0.1" min="0" max="100" id="objetivo" name="objetivo" [(ngModel)]="objetivoPerc">
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-footer">
+      <div class="m-2">
+        <button type="submit" class="btn btn-primary m-1">Salvar</button>
+        <button type="button" class="btn btn-secondary m-1" (click)="cancelarClick()">Cancelar</button>
+        <button type="button" class="btn btn-danger m-1" (click)="excluirClick()">Excluir</button>
+      </div>
+    </div>
+  </form>
+  

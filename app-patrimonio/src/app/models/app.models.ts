@@ -22,7 +22,7 @@ export interface DataState<T> extends EntityState<T> {
     error?: any;
 }
 
-const selectIdentityId: IdSelector<Carteira | Ativo> = (entity: Carteira | Ativo) => entity.identity;
+const selectIdentityId: IdSelector<Carteira | Ativo> = (entity: Carteira | Ativo) => entity.identity.toString();
 const sortNomeCompare: Comparer<Carteira | Ativo> = 
     (e1: Carteira | Ativo, e2: Carteira | Ativo) => e1.nome.localeCompare(e2.nome);
 

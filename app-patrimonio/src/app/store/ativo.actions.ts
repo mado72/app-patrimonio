@@ -21,6 +21,7 @@ class AtivoActions {
     readonly updateAtivoError = createAction("[Ativo] alterado erro", props<{ativo: Ativo, error: any}>())
     
     readonly updateCotacoes = createAction("[Ativo] updateCotacoes", props<{update: Update<Ativo>[]}>())
+    readonly reloadAtivos = createAction("[Ativo] reloadAtivos", props<{ativos: Ativo[]}>());
 }
 
 export const ativoActions = new AtivoActions();

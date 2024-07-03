@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Store } from '@ngrx/store';
 import { Moeda } from '../../../models/base.model';
-import { Ativo, Carteira, TipoInvestimento, TipoInvestimentoStr } from '../../../models/investimento.model';
-import { carteirasSelectors } from '../../../store/investimento.selectors';
+import { Ativo, TipoInvestimento, TipoInvestimentoStr } from '../../../models/investimento.model';
+import { InvestimentoStateService } from '../../../state/investimento-state.service';
 
 
 type TipoObjetoReferenciado = 'Carteira' | 'Ativo' | 'Moeda';
@@ -42,16 +41,18 @@ export class AtivoModalComponent {
   readonly moedas = Object.values(Moeda);
 
   readonly tiposKey = Object.keys(TipoInvestimentoStr);
+
   readonly tiposStr = Object.values(TipoInvestimentoStr);
 
   readonly tipoMoedaRef = TipoInvestimento.Moeda;
 
   readonly tipoCarteiraRef = TipoInvestimento.Carteira;
 
-  carteiras$ = this.store.select(carteirasSelectors.selectAll);
+  private investimentoStateService = inject(InvestimentoStateService);
+
+  carteiras$ = this.investimentoStateService.carteira;
 
   constructor(
-    private store: Store
   ) {  }
 
   close() {

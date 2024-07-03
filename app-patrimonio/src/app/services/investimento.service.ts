@@ -4,6 +4,7 @@ import { CarteiraService } from './carteira.service';
 import { CotacaoService } from './cotacao.service';
 import { concatMap, forkJoin, map, mergeMap, switchMap } from 'rxjs';
 import { InvestimentoData } from '../models/app.models';
+import { Ativo, Carteira } from '../models/investimento.model';
 
 @Injectable({
   providedIn: 'root'
@@ -42,5 +43,29 @@ export class InvestimentoService {
           } as InvestimentoData))
         )
       }));
+  }
+
+  obterAlocacao(carteiraId: string) {
+    return this.carteiraService.getCarteira(carteiraId).pipe(
+      mergeMap(carteira=>{
+        return this.ativoService.getAtivos({in: carteira.ativos.map(ativo=>ativo.ativoId)}).pipe(
+          map(ativos=>{
+            const map = new Map(ativos.map(ativo=>[ativo._id as string, ativo]));
+            carteira.ativos.forEach(item=>item.ativo = map.get(item.ativoId as string));
+            return carteira;
+          }),
+          mergeMap(carteira=>
+            this.cotacaoService.getCotacoes(carteira.ativos.map(item=>item.ativo as Ativo)).pipe(
+              map(cotacoes=>{
+                const map = new Map(cotacoes.map(cotacao=>[cotacao.simbolo, cotacao]));
+                const ativos = carteira.ativos.map(item=>item.ativo as Ativo);
+                ativos.filter(ativo=>ativo.siglaYahoo).forEach(ativo=>ativo.cotacao = map.get(ativo.siglaYahoo as string));
+                return {carteira, ativos, cotacoes};
+              })
+            )
+          )
+        )
+      })
+    )
   }
 }

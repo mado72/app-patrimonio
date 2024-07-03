@@ -31,6 +31,15 @@ class CarteiraActions {
     readonly removeCarteiraAtivoSuccess = createAction("[CarteiraAtivo] remove ativo sucesso", props<{carteira: Carteira, ativo: CarteiraAtivo}>())
     readonly removeCarteiraAtivoError = createAction("[CarteiraAtivo] remove ativo erro", props<{error: any, carteira: Carteira, ativo: CarteiraAtivo}>())
 
+    readonly getCarteira = createActionGroup({
+        source: "Carteira",
+        events: {
+            getCarteira: props<{carteira: Carteira}>(),
+            getCarteiraSuccess: props<{carteira: Carteira, ativos: CarteiraAtivo[]}>(),
+            getCarteiraFailure: props<{error: any}>()
+        }
+    })
+
     readonly getCarteirasAtivo = createActionGroup({
         source : 'CarteiraAtivo',
         events: {

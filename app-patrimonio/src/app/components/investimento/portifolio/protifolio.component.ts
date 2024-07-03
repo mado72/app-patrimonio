@@ -1,14 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { InvestimentoData } from '../../../models/app.models';
+import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { take, tap } from 'rxjs';
 import { Ativo, Carteira, CarteiraAtivo, createAtivo, createCarteira } from '../../../models/investimento.model';
-import { ativoActions } from '../../../store/ativo.actions';
-import { carteiraActions } from '../../../store/carteira.actions';
-import { ativosSelectors, carteirasSelectors, cotacoesSelectors } from '../../../store/investimento.selectors';
+import { ModalService } from '../../../services/modal.service';
+import { InvestimentoStateService } from '../../../state/investimento-state.service';
 import { AtivosCardComponent } from '../ativos-card/ativos-card.component';
 import { CarteiraTableComponent } from '../carteira-table/carteira-table.component';
-
 
 @Component({
   selector: 'app-protifolio',
@@ -16,77 +14,97 @@ import { CarteiraTableComponent } from '../carteira-table/carteira-table.compone
   imports: [
     CommonModule,
     CarteiraTableComponent,
-    AtivosCardComponent
+    AtivosCardComponent,
+    NgbModalModule
   ],
   templateUrl: './portifolio.component.html',
   styleUrl: './portifolio.component.scss'
 })
 export class PortifolioComponent implements OnInit {
-editarCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
-throw new Error('Method not implemented.');
-}
-removerCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
-throw new Error('Method not implemented.');
-}
-adicionarCarteiraAtivo(carteira: Carteira) {
-throw new Error('Method not implemented.');
-}
 
-  private store = inject(Store<InvestimentoData>);
+  private investimentoStateService = inject(InvestimentoStateService);
 
-  carteiras = {
-    dados$: this.store.select(carteirasSelectors.selectAll),
-    erros$: this.store.select(carteirasSelectors.errors),
-    status$: this.store.select(carteirasSelectors.status)
-  };
-  ativos = {
-    dados$: this.store.select(ativosSelectors.selectAll),
-    erros$: this.store.select(ativosSelectors.errors),
-    status$: this.store.select(ativosSelectors.status)
-  };
-  cotacoes = {
-    dados$: this.store.select(cotacoesSelectors.selectAll),
-    erros$: this.store.select(cotacoesSelectors.errors),
-    status$: this.store.select(cotacoesSelectors.status)
-  };
+  private modalService = inject(ModalService);
+
+  carteiras$ = this.investimentoStateService.carteira;
+  ativos$ = this.investimentoStateService.ativo;
+  cotacoes$ = this.investimentoStateService.cotacao;
+
+  carteiraError$ = this.investimentoStateService.carteiraError;
+  ativoError$ = this.investimentoStateService.ativoError;
+  cotacoesError$ = this.investimentoStateService.cotacaoError;
+
+  carteiraStatus$ = this.investimentoStateService.carteiraStatus;
+  ativoStatus$ = this.investimentoStateService.ativoStatus;
+  cotacoesStatus$ = this.investimentoStateService.cotacaoStatus;
 
   ngOnInit(): void {
   }
 
   adicionarCarteira() {
     const carteira = createCarteira();
-    this.store.dispatch(carteiraActions.addCarteira({carteira}))
+    this.investimentoStateService.adicionarCarteira(carteira);
   }
 
   editarCarteira(carteira: Carteira) {
-    // this.store.dispatch(carteiraActions.updateCarteira({carteira}));
     console.warn(`Falta implementar a edição de carteira`);
     throw `Não implementado`;
   }
 
   removerCarteira(carteira: Carteira) {
-    this.store.dispatch(carteiraActions.removeCarteira({carteira}));
+    this.investimentoStateService.removerCarteira(carteira);
   }
 
   adicionarAtivo() {
     const ativo = createAtivo();
-    this.store.dispatch(ativoActions.addAtivo({ativo}))
+    this.modalService.openAtivoModalComponent(ativo).subscribe(result=>{
+      if (result.comando === 'salvar') {
+        this.investimentoStateService.adicionarAtivo(ativo);
+      }
+    });
   }
 
   removerAtivo(ativo: Ativo) {
-    this.store.dispatch(ativoActions.removeAtivo({ativo}));
+    this.investimentoStateService.removerAtivo(ativo);
   }
 
-  incluirCarteiraAtivo() {
-    const carteira = createCarteira();
-    const ativo = createAtivo();
-    const carteiraAtivo : CarteiraAtivo = {
-      ativoId: ativo.identity,
-      quantidade: 1,
-      objetivo: 1000,
-      vlInicial: 1000,
-      ativo: ativo
-    }
-    this.store.dispatch(carteiraActions.addCarteiraAtivo({carteira, ativo: carteiraAtivo}));
+  editarCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
+    this.investimentoStateService.ativo.pipe(
+      take(1),
+      tap(ativos=>
+        this.modalService.openCarteiraAtivoModalComponent(ativos, $event.carteiraAtivo).subscribe((result) => {
+          const carteiraAtivo = {...result.carteiraAtivo} as CarteiraAtivo;
+          switch (result.comando) {
+            case 'excluir':
+              this.removerCarteiraAtivo({carteira: $event.carteira, carteiraAtivo});
+              break;
+            case 'salvar':
+              const update = {
+                ...$event.carteira,
+                ativos: [...$event.carteira.ativos.filter(item=>item.ativoId != carteiraAtivo.ativoId), carteiraAtivo],
+              } as Carteira;
+              this.investimentoStateService.atualizarCarteira(update);
+              break;
+          }
+        })
+      )
+    ).subscribe();
   }
+
+  adicionarCarteiraAtivo(carteira: Carteira) {
+    const carteiraAtivo : CarteiraAtivo = {
+      ativoId: '',
+      quantidade: 1,
+      objetivo: 0,
+      vlInicial: 0
+    }
+    this.editarCarteiraAtivo({carteira, carteiraAtivo});
+  }
+
+  removerCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
+    const carteira = {...$event.carteira} as Carteira;
+    carteira.ativos = carteira.ativos.filter(ativo=> ativo.ativoId !== $event.carteiraAtivo.ativoId);
+    this.investimentoStateService.atualizarCarteira(carteira);
+  }
+
 }

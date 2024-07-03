@@ -32,6 +32,11 @@ export const ativosSelectors = {...ativosStateSelectors,
     ativosIdIn : (id: string[]) => createSelector(
         ativosStateSelectors.selectEntities,
         (entities) => Object.values(entities).filter(ativo=>ativo?._id && id.includes(ativo?._id))
+    ),
+
+    byTermo : (termo: string) => createSelector(
+        ativosStateSelectors.selectAll,
+        (ativos: Ativo[]) => ativos.filter(ativo=> ativo.sigla.includes(termo) || ativo.nome.includes(termo))
     )
 
 }

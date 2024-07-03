@@ -1,12 +1,9 @@
 import { DecimalPipe, JsonPipe } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { Ativo, createAtivo } from '../../../models/investimento.model';
-import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
-import { AtivoModalComponent } from '../ativo-modal/ativo-modal.component';
-import { Store } from '@ngrx/store';
-import { carteiraActions } from '../../../store/carteira.actions';
-import { ativosSelectors, carteirasSelectors } from '../../../store/investimento.selectors';
-import { ativoActions } from '../../../store/ativo.actions';
+import { ModalService } from '../../../services/modal.service';
+import { InvestimentoStateService } from '../../../state/investimento-state.service';
 
 @Component({
   selector: 'app-ativo-list',
@@ -21,38 +18,39 @@ import { ativoActions } from '../../../store/ativo.actions';
 })
 export class AtivoListComponent {
 
-  private modal = inject(NgbModal)
+  private modalService = inject(ModalService);
+
+  private investimentoStateService = inject(InvestimentoStateService);
   
   @Input() ativos: Ativo[] = [];
 
   @Output() onRemoveAtivo = new EventEmitter<Ativo>();
-
-  private store = inject(Store);
-
 
   removerAtivo(ativo: Ativo): void {
     this.onRemoveAtivo.emit(ativo);
   }
 
   editarAtivo(ativo: Ativo) {
-    
-    const modalRef = this.modal.open(AtivoModalComponent, { size: 'lg' });
-    const component = modalRef.componentInstance as AtivoModalComponent;
-    
-    component.ativo = {...ativo} as Ativo;
-    component.onClose.subscribe(()=>modalRef.dismiss('closed'));
-    component.onRemove.subscribe((event)=>modalRef.close(event));
-    component.onSave.subscribe((event)=>modalRef.close(event));
-
-    modalRef.result.then((ativo: Ativo) => {
-      if (ativo._id) {
-        this.store.dispatch(ativoActions.updateAtivo({ativo}));
+    this.modalService.openAtivoModalComponent(ativo).subscribe(result=>{
+      const ativo = result.ativo as Ativo;
+      switch(result.comando) {
+        case 'cancelar':
+          break;
+        case 'excluir':
+          this.investimentoStateService.removerAtivo(ativo);
+          break;
+        case'salvar':
+          if (ativo._id !== ativo.identity) {
+            this.investimentoStateService.adicionarAtivo(ativo);
+          }
+          else {
+            this.investimentoStateService.atualizarAtivo(ativo);
+          }
+          break;
+        default:
+          break;
       }
-      else {
-        this.store.dispatch(ativoActions.addAtivo({ativo}));
-      }
-    });
-
+    })
   }
 
   adicionarAtivo(): void {
