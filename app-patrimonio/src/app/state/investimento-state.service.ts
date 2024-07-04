@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, catchError, forkJoin, map, mergeMap, of, take, tap } from 'rxjs';
+import { Injectable, OnDestroy, inject } from '@angular/core';
+import { BehaviorSubject, catchError, forkJoin, interval, map, mergeMap, of, Subscription, take, tap, timer } from 'rxjs';
 import { Moeda } from '../models/base.model';
 import { Cotacao } from '../models/cotacao.models';
 import { Ativo, Carteira, ICarteira, TipoInvestimento } from '../models/investimento.model';
@@ -42,7 +42,9 @@ class StateBehavior<T> {
   }
 
   asObservable() {
-    return this.state$.asObservable();
+    return this.state$.asObservable().pipe(
+      tap(()=>console.log(`Observando ${this.nome}..`))
+    );
   }
 
   setState(state: State<T>) {
@@ -56,6 +58,10 @@ class StateBehavior<T> {
       const state = { ...this.state$.value, status: DataStatus.Idle, error: null };
       this.setState(state);
     }
+  }
+
+  countListerners() {
+    return this.state$.observers.length
   }
 
 }
@@ -78,7 +84,7 @@ class CotacaoStateBehavior extends StateBehavior<Cotacao> {
 @Injectable({
   providedIn: 'root'
 })
-export class InvestimentoStateService {
+export class InvestimentoStateService implements OnDestroy{
 
   private ativoState$ = new StateBehavior<Ativo>("Ativo");
 
@@ -91,8 +97,22 @@ export class InvestimentoStateService {
   private carteiraService = inject(CarteiraService);
 
   private cotacaoService = inject(CotacaoService);
+  
+  private timerSubscription?: Subscription;
 
-  constructor() { }
+
+  constructor() { 
+    this.timerSubscription = interval(15_000).pipe(
+      tap(() => console.log(`\n\n@@@ Listeners: carteira ${this.carteiraState$.countListerners()}, ativo: ${this.ativoState$.countListerners()}, cotacao: ${this.cotacaoState$.countListerners()}`))
+    ).subscribe();
+  }
+
+  ngOnDestroy(): void {
+      if (this.timerSubscription) {
+        this.timerSubscription.unsubscribe();
+        this.timerSubscription = undefined;
+      }
+  }
 
   get ativo() {
     return this.ativoState$.entities.pipe(
@@ -259,8 +279,18 @@ export class InvestimentoStateService {
     this.ativoService.updateAtivo(ativo).subscribe({
       next: () => {
         const dictionary = { ...this.ativoState$.state$.value.entities };
-        dictionary[ativo._id as string] = new Ativo(ativo);
-        this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Executed });
+        ativo = new Ativo(ativo);
+        dictionary[ativo._id as string] = ativo;
+        this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Executed, entities: dictionary });
+        const carteiraDic = {...this.carteiraState$.state$.value.entities};
+        Object.keys(carteiraDic).forEach(identity=>{
+          const carteira = carteiraDic[identity];
+          let carteiraAtivo = carteira.ativos.find(a => a.ativoId === ativo._id)
+          if (carteiraAtivo !== undefined) {
+            carteiraAtivo = {...carteiraAtivo, ativo};
+            carteira.ativos = [...carteira.ativos.map(a=>a.ativoId === carteiraAtivo?.ativoId ? carteiraAtivo: a)]
+          }
+        })
       },
       error: error => {
         this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Error, error });
@@ -274,7 +304,10 @@ export class InvestimentoStateService {
     this.ativoService.removeAtivo(ativo).subscribe({
       next: () => {
         const dictionary = { ...this.ativoState$.state$.value.entities };
-        delete dictionary[ativo.identity.toString()];
+        const item = dictionary[ativo.identity.toString()];
+        if (!!item) {
+          delete dictionary[item.identity.toString()];
+        }
         this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Executed, entities: dictionary });
       },
       error: error => {
@@ -384,6 +417,14 @@ export class InvestimentoStateService {
         this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Error, error });
       }
     })
+  }
+
+  ocultarCarteira(carteira: Carteira): void {
+    this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Processing });
+
+    const dictionary = { ...this.carteiraState$.state$.value.entities };
+    delete dictionary[carteira.identity.toString()];
+    this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Executed, entities: dictionary });
   }
 
   carregarCotacoes(ativos: Ativo[]): void {

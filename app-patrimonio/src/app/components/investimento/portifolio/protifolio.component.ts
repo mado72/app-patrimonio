@@ -55,6 +55,10 @@ export class PortifolioComponent implements OnInit {
     this.investimentoStateService.removerCarteira(carteira);
   }
 
+  ocultarCarteira(carteira: Carteira) {
+    this.investimentoStateService.ocultarCarteira(carteira);
+  }
+
   adicionarAtivo() {
     const ativo = createAtivo();
     this.modalService.openAtivoModalComponent(ativo).subscribe(result=>{

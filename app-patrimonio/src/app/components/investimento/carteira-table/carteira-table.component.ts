@@ -21,6 +21,7 @@ export class CarteiraTableComponent {
   @Input() carteira!: Carteira;
   @Output() onEditarCarteira = new EventEmitter<Carteira>();
   @Output() onRemoverCarteira = new EventEmitter<Carteira>();
+  @Output() onOcultarCarteira = new EventEmitter<Carteira>();
   @Output() onRemoverCarteiraAtivo = new EventEmitter<{ carteira: Carteira, carteiraAtivo: CarteiraAtivo }>();
   @Output() onAdicionarCarteiraAtivo = new EventEmitter<Carteira>();
   @Output() onEditarCarteiraAtivo = new EventEmitter<{ carteira: Carteira, carteiraAtivo: CarteiraAtivo }>();
@@ -47,6 +48,10 @@ export class CarteiraTableComponent {
 
   removerCarteira() {
     this.onRemoverCarteira.emit(this.carteira);
+  }
+
+  ocultarCarteira() {
+    this.onOcultarCarteira.emit(this.carteira);
   }
 
   removeCarteiraAtivo(carteiraAtivo: CarteiraAtivo) {

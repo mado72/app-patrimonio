@@ -23,8 +23,8 @@ export const appConfig: ApplicationConfig = {
       {provide: LOCALE_ID, useValue: 'pt' },
       // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideRouter(routes,
-      withPreloading(PreloadAllModules),
-      withDebugTracing()
+      // withPreloading(PreloadAllModules),
+      // withDebugTracing()
     ),
     provideToastr({
       easeTime: 600,
