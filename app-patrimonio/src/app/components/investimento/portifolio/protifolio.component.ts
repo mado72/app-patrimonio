@@ -6,14 +6,14 @@ import { Ativo, Carteira, CarteiraAtivo, createAtivo, createCarteira } from '../
 import { ModalService } from '../../../services/modal.service';
 import { InvestimentoStateService } from '../../../state/investimento-state.service';
 import { AtivosCardComponent } from '../ativos-card/ativos-card.component';
-import { CarteiraTableComponent } from '../carteira-table/carteira-table.component';
+import { CarteiraCardComponent } from '../carteira-card/carteira-card.component';
 
 @Component({
   selector: 'app-protifolio',
   standalone: true,
   imports: [
     CommonModule,
-    CarteiraTableComponent,
+    CarteiraCardComponent,
     AtivosCardComponent,
     NgbModalModule
   ],
@@ -43,12 +43,20 @@ export class PortifolioComponent implements OnInit {
 
   adicionarCarteira() {
     const carteira = createCarteira();
-    this.investimentoStateService.adicionarCarteira(carteira);
+    this.editarCarteira(carteira);
   }
 
   editarCarteira(carteira: Carteira) {
-    console.warn(`Falta implementar a edição de carteira`);
-    throw `Não implementado`;
+    this.modalService.openCarteiraModalComponent(carteira).subscribe(result => {
+      if (result.comando === 'salvar') {
+        if (!result.dados._id) {
+          this.investimentoStateService.adicionarCarteira(result.dados);
+        }
+        else {
+          this.investimentoStateService.atualizarCarteira(result.dados);
+        }
+      }
+    })
   }
 
   removerCarteira(carteira: Carteira) {
@@ -77,7 +85,7 @@ export class PortifolioComponent implements OnInit {
       take(1),
       tap(ativos=>
         this.modalService.openCarteiraAtivoModalComponent(ativos, $event.carteiraAtivo).subscribe((result) => {
-          const carteiraAtivo = {...result.carteiraAtivo} as CarteiraAtivo;
+          const carteiraAtivo = {...result.dados} as CarteiraAtivo;
           switch (result.comando) {
             case 'excluir':
               this.removerCarteiraAtivo({carteira: $event.carteira, carteiraAtivo});

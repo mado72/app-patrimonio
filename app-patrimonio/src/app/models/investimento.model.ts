@@ -11,7 +11,8 @@ export enum TipoInvestimento {
     PosFixada = 'PosFixada',
     FundoImobiliario = 'FundoImobiliario',
     ETF = 'ETF',
-    Moeda = 'Moeda' 
+    Moeda = 'Moeda',
+    Cripto = 'Cripto'
 }
 
 type TipoInvestimentoPropertiesAsString = {
@@ -26,7 +27,8 @@ export const TipoInvestimentoStr : TipoInvestimentoPropertiesAsString = {
     PosFixada: 'Pós Fixada',
     FundoImobiliario: 'Fundo Imobiliário',
     ETF: 'ETF',
-    Moeda: 'Moeda' 
+    Moeda: 'Moeda',
+    Cripto: 'Cripto'
 }
 
 export type CotacaoFn = () => Observable<number>;
@@ -134,10 +136,13 @@ export class Carteira extends Investimento {
 
     objetivo: number;
 
+    classe: TipoInvestimento;
+
     constructor(carteira: ICarteira | Carteira, ativos?: CarteiraAtivo[]) {
         super({ ...carteira, valor: 0 });
         this.ativos = ativos || carteira.ativos;
         this.objetivo = carteira.objetivo;
+        this.classe = carteira.classe;
     }
 
     get valor() {
@@ -171,6 +176,7 @@ export function createCarteira(): Carteira {
         nome: '',
         moeda: Moeda.BRL,
         tipo: TipoInvestimento.Carteira,
+        classe: TipoInvestimento.Acao,
         objetivo: 0
     })
 }

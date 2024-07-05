@@ -1,0 +1,48 @@
+<form>
+    <div class="modal-header">
+        <h4 class="modal-title m-2">Editar Carteira</h4>
+    </div>
+    <div class="modal-body row">
+        <div class="form-group col">
+            <label class="form-label" for="nome">Carteira</label>
+            <input class="form-control" type="text" name="nome" id="nome" [(ngModel)]="carteira.nome">
+        </div>
+
+        <div class="form-group col">
+            <label class="form-label" for="classe">Tipo</label>
+            <select class="form-select" name="classe" id="classe" [(ngModel)]="carteira.classe">
+                <option [value]="undefined">Selecione...</option>
+                @for (classe of classes; track $index) {
+                    <option [value]="classe">{{classe}}</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group col">
+            <label class="form-label" for="moeda">Moeda</label>
+            <select class="form-select" name="moeda" id="moeda" [(ngModel)]="carteira.moeda">
+                <option [value]="undefined">Selecione...</option>
+                @for (moeda of moedas; track $index) {
+                    <option [value]="moeda">{{moeda}}</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group col">
+            <label for="objetivo" class="form-label">Objetivo</label>
+            <input type="number" name="objetivo" id="objetivo" class="form-control" [(ngModel)]="objetivoPerc"
+                step="0.01" min="0" max="100">
+        </div>
+        {{carteira | json}}
+    </div>
+    <div class="modal-footer">
+        <div class="form-group">
+            <button class="btn btn-sm btn-primary m-1" type="submit" (click)="salvarEdicao()">
+                Salvar
+            </button>
+            <button class="btn btn-sm btn-secondary m-1" type="button" (click)="cancelarEdicao()">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</form>

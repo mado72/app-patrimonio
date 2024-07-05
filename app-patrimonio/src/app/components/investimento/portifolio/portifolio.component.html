@@ -19,7 +19,7 @@
 
 @for (carteira of (carteiras$ | async) ; track carteira.identity) {
     <div>
-        <app-carteira-table [carteira]="carteira"
+        <app-carteira-card [carteira]="carteira"
             (onEditarCarteira)="editarCarteira($event)"
             (onRemoverCarteira)="removerCarteira(carteira)"
             (onOcultarCarteira)="ocultarCarteira(carteira)"

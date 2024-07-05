@@ -32,7 +32,7 @@ export class AtivoListComponent {
 
   editarAtivo(ativo: Ativo) {
     this.modalService.openAtivoModalComponent(ativo).subscribe(result=>{
-      const ativo = result.ativo as Ativo;
+      const ativo = result.dados as Ativo;
       switch(result.comando) {
         case 'cancelar':
           break;
