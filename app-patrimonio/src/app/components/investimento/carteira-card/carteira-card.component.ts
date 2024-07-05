@@ -6,17 +6,17 @@ import { InvestimentoStateService } from '../../../state/investimento-state.serv
 import { CarteiraAtivoListComponent } from '../carteira-ativo-list/carteira-ativo-list.component';
 
 @Component({
-  selector: 'app-carteira-table',
+  selector: 'app-carteira-card',
   standalone: true,
   imports: [
     JsonPipe,
     AsyncPipe,
     CarteiraAtivoListComponent
   ],
-  templateUrl: './carteira-table.component.html',
-  styleUrl: './carteira-table.component.scss'
+  styleUrl: './carteira-card.component.scss',
+  templateUrl: './carteira-card.component.html',
 })
-export class CarteiraTableComponent {
+export class CarteiraCardComponent {
 
   @Input() carteira!: Carteira;
   @Output() onEditarCarteira = new EventEmitter<Carteira>();

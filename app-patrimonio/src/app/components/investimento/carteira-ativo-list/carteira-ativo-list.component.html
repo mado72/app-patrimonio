@@ -19,7 +19,7 @@
     <tbody>
 @for (item of consolidado.items; track item.ativoId) {
         <tr>
-            <td>{{item.nome}} {{item.identity}}</td>
+            <td>{{item.nome}}</td>
             <td>{{item.sigla}}</td>
             <td class="text-center">{{item.moeda}}</td>
             <td [ngClass]="item.cotacao ? 'text-end' : 'text-center'">
