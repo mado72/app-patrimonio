@@ -1,3 +1,9 @@
+<div class="d-flex">
+    <button type="button" class="btn btn-light" (click)="adicionarCarteira()">Adicionar Carteira</button>
+    <button type="button" class="btn btn-light" (click)="adicionarAtivo()">Adicionar Ativo</button>
+    <button type="button" class="btn btn-light" (click)="atualizarCotacoes()">Atualizar Cotações</button>
+</div>
+
 <div>
     Carteira Status: {{carteiraStatus$ | async}}
     @if (carteiraError$ | async; as error) {
@@ -29,9 +35,6 @@
             />
     </div>
 }
-
-<button type="button" (click)="adicionarCarteira()">Adicionar Carteira</button>
-<button type="button" (click)="adicionarAtivo()">Adicionar Ativo</button>
 
 @if ((ativos$ | async); as itens) {
     <app-ativos-card [ativos]="itens"/>
