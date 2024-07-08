@@ -254,7 +254,7 @@ export class InvestimentoStateService implements OnDestroy{
       const ativo = mapAtivos.get(key) as Ativo;
       dictionary[key] = ativo;
 
-      ativo.cotacao = mapCotacoes.get(ativo.sigla);
+      ativo.cotacao = mapCotacoes.get(ativo.siglaYahoo as string);
     });
     return dictionary;
   }
