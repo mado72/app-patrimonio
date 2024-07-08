@@ -68,25 +68,20 @@ export class AtivoModalComponent {
   }
 
   get carteiraReferenciaId() {
-    return this.ativo.referencia?.id;
+    return this.ativo.referencia;
   }
 
   set carteiraReferenciaId(id: string | undefined) {
-    this.ativo.referencia = id ? {
-      id,
-      tipo: TipoInvestimento.Carteira
-    } : undefined;
+    this.ativo.tipo = TipoInvestimento.Carteira;
+    this.ativo.referencia = id;
   }
 
   get moedaReferenciaId() {
-    return this.ativo.referencia?.id;
+    return this.ativo.referencia;
   }
 
   set moedaReferenciaId(id: string | undefined) {
-    this.ativo.referencia = id? {
-      id,
-      tipo: TipoInvestimento.Moeda
-    } : undefined;
+    this.ativo.referencia = id
   }
 
 }

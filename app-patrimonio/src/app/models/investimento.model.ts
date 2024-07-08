@@ -9,7 +9,7 @@ export enum TipoInvestimento {
     Acao = 'Acao',
     RF = 'RF',
     PosFixada = 'PosFixada',
-    FundoImobiliario = 'FundoImobiliario',
+    FII = 'FII',
     ETF = 'ETF',
     Moeda = 'Moeda',
     Cripto = 'Cripto'
@@ -25,7 +25,7 @@ export const TipoInvestimentoStr : TipoInvestimentoPropertiesAsString = {
     Acao: 'Ação',
     RF: 'RF',
     PosFixada: 'Pós Fixada',
-    FundoImobiliario: 'Fundo Imobiliário',
+    FII: 'Fundo Imobiliário',
     ETF: 'ETF',
     Moeda: 'Moeda',
     Cripto: 'Cripto'
@@ -51,14 +51,12 @@ abstract class Investimento {
     _id?: string;
     identity: string | UUID;
     nome: string;
-    tipo: TipoInvestimento;
     moeda: Moeda;
 
     constructor(investimento: IInvestimento | Investimento) {
         this._id = investimento._id;
         this.identity = this._id || new UUID((<Investimento>investimento).identity);
         this.nome = investimento.nome;
-        this.tipo = investimento.tipo;
         this.moeda = investimento.moeda;
     }
 
@@ -85,10 +83,9 @@ export class Ativo extends Investimento {
 
     setor: string;
 
-    referencia?: {
-        id: string,
-        tipo: TipoInvestimento
-    };
+    tipo?: TipoInvestimento;
+
+    referencia?: string;
 
     constructor(ativo: IAtivo) {
         super(ativo);
@@ -96,6 +93,7 @@ export class Ativo extends Investimento {
         this.sigla = ativo.sigla;
         this.setor = ativo.setor;
         this.siglaYahoo = ativo.siglaYahoo;
+        this.tipo = ativo.tipo;
         this.referencia = ativo.referencia;
     }
 
@@ -175,7 +173,6 @@ export function createCarteira(): Carteira {
         ativos: [],
         nome: '',
         moeda: Moeda.BRL,
-        tipo: TipoInvestimento.Carteira,
         classe: TipoInvestimento.Acao,
         objetivo: 0
     })
@@ -187,7 +184,6 @@ export function createAtivo(): Ativo {
         nome: '',
         setor: '',
         moeda: Moeda.BRL,
-        valor: 0,
-        tipo: TipoInvestimento.Acao
+        valor: 0
     })
 }
