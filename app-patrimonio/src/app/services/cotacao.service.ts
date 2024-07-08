@@ -7,6 +7,17 @@ import { Moeda } from "../models/base.model";
 import { Cotacao, ICotacao } from "../models/cotacao.models";
 import { Ativo, YahooQuote } from "../models/investimento.model";
 
+
+export type InfoCotacaoBatch = {
+    data: Date,
+    total: number,
+    processados: number,
+    erros: number,
+    status: string
+}
+
+
+
 @Injectable({
     providedIn: 'root'
 })
@@ -38,7 +49,11 @@ export class CotacaoService {
     }
 
     atualizarCotacoesBatch() {
-        return this.http.put<string[]>(`${environment.apiUrl}/cotacao/batch/cotacoes`, {});
+        return this.http.put<string>(`${environment.apiUrl}/cotacao/batch/cotacoes`, {});
+    }
+
+    obterInfoCotacoesBatch() {
+        return this.http.get<Map<string, InfoCotacaoBatch>>(`${environment.apiUrl}/cotacao/batch/cotacoes`);
     }
 
 }

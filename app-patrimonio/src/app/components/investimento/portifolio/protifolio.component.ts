@@ -69,7 +69,7 @@ export class PortifolioComponent implements OnInit {
 
   adicionarAtivo() {
     const ativo = createAtivo();
-    this.modalService.openAtivoModalComponent(ativo).subscribe(result=>{
+    this.modalService.openAtivoModalComponent(ativo).subscribe(result => {
       if (result.comando === 'salvar') {
         this.investimentoStateService.adicionarAtivo(ativo);
       }
@@ -83,17 +83,17 @@ export class PortifolioComponent implements OnInit {
   editarCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
     this.investimentoStateService.ativo.pipe(
       take(1),
-      tap(ativos=>
+      tap(ativos =>
         this.modalService.openCarteiraAtivoModalComponent(ativos, $event.carteiraAtivo).subscribe((result) => {
-          const carteiraAtivo = {...result.dados} as CarteiraAtivo;
+          const carteiraAtivo = { ...result.dados } as CarteiraAtivo;
           switch (result.comando) {
             case 'excluir':
-              this.removerCarteiraAtivo({carteira: $event.carteira, carteiraAtivo});
+              this.removerCarteiraAtivo({ carteira: $event.carteira, carteiraAtivo });
               break;
             case 'salvar':
               const update = {
                 ...$event.carteira,
-                ativos: [...$event.carteira.ativos.filter(item=>item.ativoId != carteiraAtivo.ativoId), carteiraAtivo],
+                ativos: [...$event.carteira.ativos.filter(item => item.ativoId != carteiraAtivo.ativoId), carteiraAtivo],
               } as Carteira;
               this.investimentoStateService.atualizarCarteira(update);
               break;
@@ -104,19 +104,26 @@ export class PortifolioComponent implements OnInit {
   }
 
   adicionarCarteiraAtivo(carteira: Carteira) {
-    const carteiraAtivo : CarteiraAtivo = {
+    const carteiraAtivo: CarteiraAtivo = {
       ativoId: '',
       quantidade: 1,
       objetivo: 0,
       vlInicial: 0
     }
-    this.editarCarteiraAtivo({carteira, carteiraAtivo});
+    this.editarCarteiraAtivo({ carteira, carteiraAtivo });
   }
 
   removerCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
-    const carteira = {...$event.carteira} as Carteira;
-    carteira.ativos = carteira.ativos.filter(ativo=> ativo.ativoId !== $event.carteiraAtivo.ativoId);
+    const carteira = { ...$event.carteira } as Carteira;
+    carteira.ativos = carteira.ativos.filter(ativo => ativo.ativoId !== $event.carteiraAtivo.ativoId);
     this.investimentoStateService.atualizarCarteira(carteira);
   }
+
+  atualizarCotacoes() {
+    this.investimentoStateService.carregarCotacoesBatch().asObservable().subscribe(info=>{
+      console.log('Cotações atualizadas com sucesso!', info);
+    });
+  }
+
 
 }

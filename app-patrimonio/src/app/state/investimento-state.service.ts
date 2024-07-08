@@ -1,11 +1,11 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { BehaviorSubject, catchError, forkJoin, interval, map, mergeMap, of, Subscription, take, tap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, forkJoin, interval, map, mergeMap, of, Subject, Subscription, switchMap, take, takeUntil, takeWhile, tap, timer } from 'rxjs';
 import { Moeda } from '../models/base.model';
 import { Cotacao } from '../models/cotacao.models';
 import { Ativo, Carteira, ICarteira, TipoInvestimento } from '../models/investimento.model';
 import { AtivoService, FilterAtivos } from '../services/ativo.service';
 import { CarteiraService } from '../services/carteira.service';
-import { CotacaoService } from '../services/cotacao.service';
+import { CotacaoService, InfoCotacaoBatch } from '../services/cotacao.service';
 
 export enum DataStatus {
   Idle = "Idle",
@@ -13,6 +13,7 @@ export enum DataStatus {
   Executed = "Executed",
   Error = "Error"
 }
+
 
 class Dictionary<T> {
   [id: string]: T;
@@ -448,17 +449,32 @@ export class InvestimentoStateService implements OnDestroy{
     })
   }
 
-  carregarCotacoesBatch(): void {
+  carregarCotacoesBatch() {
+    const sub = new Subject<InfoCotacaoBatch | undefined>();
     this.cotacaoService.atualizarCotacoesBatch().subscribe(
       {
-        next: () => {
-          this.carregarCotacoes(Object.values(this.ativoState$.state$.value.entities));
+        next: (carregamentoId) => {
+          interval(5_000).pipe(
+            takeWhile(()=>!sub.closed),
+            switchMap(()=>this.cotacaoService.obterInfoCotacoesBatch().pipe(
+              tap((mapInfo)=>{
+                console.log(`Carregamento ${carregamentoId} em andamento`);
+                const info = mapInfo.get(carregamentoId);
+                sub.next(info);
+                if (!info || info.status !== 'processando') {
+                  sub.complete();
+                }
+              })
+            ))
+          )
         },
         error: (error) => {
+          sub.error(error);
           this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Error, error });
         }
       }
-    )
+    );
+    return sub;
   }
 
 }
