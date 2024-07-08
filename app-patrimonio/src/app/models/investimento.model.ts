@@ -1,7 +1,6 @@
 import { Observable } from "rxjs";
 import { Moeda } from "./base.model";
 import { Cotacao } from "./cotacao.models";
-import { StateStatus } from "./app.models";
 
 export enum TipoInvestimento {
     Referencia = 'Referencia',
@@ -105,6 +104,41 @@ export class Ativo extends Investimento {
         this._valor = v;
     }
 
+}
+
+export class AtivoRefCarteira extends Ativo {
+
+    carteira: Carteira;
+
+    constructor(ativo: IAtivo, carteira: Carteira) {
+        super(ativo);
+        this.carteira = carteira;
+    }
+
+    override get valor() {
+        return this.carteira.valor;
+    }
+
+    override set valor(v: number) {
+        console.warn("Valor do ativo ref carteira não pode ser alterado");
+    }
+
+}
+
+export class AtivoRefCotacao extends Ativo {
+    
+    constructor(ativo: IAtivo, cotacao: Cotacao) {
+        super(ativo);
+        this.cotacao = cotacao;
+    }
+
+    override get valor() {
+        return this.cotacao?.valor || 0;
+    }
+
+    override set valor(v: number) {
+        console.warn("Valor do ativo ref cotacao não pode ser alterado");
+    }
 }
 
 export function valorAtivoEm(ativo: IAtivo, outraCotacao: Cotacao) {
