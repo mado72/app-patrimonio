@@ -1,0 +1,10 @@
+@if (!!carteira && !!carteiras && !! cotacoes) {
+    <app-carteira-card [carteira]="carteira"
+        (onEditarCarteira)="editarCarteira($event)"
+        (onRemoverCarteira)="removerCarteira(carteira)"
+        (onOcultarCarteira)="ocultarCarteira(carteira)"
+        (onEditarCarteiraAtivo)="editarCarteiraAtivo($event)"
+        (onAdicionarCarteiraAtivo)="adicionarCarteiraAtivo($event)"
+        (onRemoverCarteiraAtivo)="removerCarteiraAtivo($event)"
+        />
+}
