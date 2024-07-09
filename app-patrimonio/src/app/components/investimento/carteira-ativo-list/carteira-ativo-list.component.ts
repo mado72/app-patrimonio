@@ -99,7 +99,9 @@ function transform(item: CarteiraAtivo) {
   return Object.assign({}, item, item.ativo as AuxAtivo);
 }
 
-function calcularTotais(itensAtivos: CarteiraAtivo[], mapCarteira: Map<string, Carteira>, mapCotacao: Map<string, Cotacao>) {
+type ValorCarteira = (carteira: Carteira) => number;
+
+function calcularTotais(itensAtivos: CarteiraAtivo[], mapCarteira: Map<string | undefined, Carteira>, mapCotacao: Map<string, Cotacao>) {
   const ativos = itensAtivos.map(item => transform(item));
 
   const consolidado = consolidaValores(
@@ -107,33 +109,32 @@ function calcularTotais(itensAtivos: CarteiraAtivo[], mapCarteira: Map<string, C
     (ativo) => ativo.quantidade,
     (ativo) => ativo.vlInicial,
     (ativo) => ativo.objetivo,
-    (ativo) => {
-      if (ativo.ativo?.tipo === TipoInvestimento.Referencia) {
-        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Carteira) {
-          const carteira = mapCarteira.get(ativo.ativo.referencia.id);
-          if (carteira) {
-            if (carteira.moeda === ativo.moeda) {
-              return carteira.valor;
-            }
-            else {
-              const cotacaoAtivo = mapCotacao.get(`${ativo.moeda}${carteira.moeda}`);
-              if (cotacaoAtivo) {
-                return cotacaoAtivo.valor * carteira.valor;
-              }
-            }
-          }
-        }
-        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Moeda) {
-          const cotacao = mapCotacao.get(ativo.ativo.referencia.id);
-          if (cotacao) {
-            return cotacao.valor;
-          }
-        }
-      }
-      ativo.cotacao = mapCotacao.get(ativo.ativo?.siglaYahoo as string);
-      return (ativo.cotacao ? ativo.cotacao?.aplicar(ativo.quantidade) : ativo.vlAtual) || NaN;
-    });
+    (ativo) => calcularValorCotacao(
+      ativo, 
+      (carteira)=>carteira.valor,
+      ativo.vlAtual, 
+      mapCarteira.get(ativo.ativo?.referencia?.id), 
+      mapCotacao.get(ativo.ativo?.siglaYahoo as string)));
 
   return consolidado;
 }
 
+function calcularValorCotacao(ativo: CarteiraAtivo & AuxAtivo, valorCarteira: ValorCarteira, valor?: number, carteira?: Carteira, cotacao?: Cotacao) {
+  {
+    if (ativo.ativo?.tipo === TipoInvestimento.Referencia) {
+      if (ativo.ativo.referencia?.tipo == TipoInvestimento.Carteira && carteira) {
+        if (carteira.moeda === ativo.moeda) {
+          return valorCarteira(carteira);
+        }
+        else if (cotacao) {
+          return cotacao.valor * valorCarteira(carteira);
+        }
+      }
+      if (ativo.ativo.referencia?.tipo == TipoInvestimento.Moeda && cotacao) {
+        return cotacao.valor;
+      }
+    }
+    ativo.cotacao = cotacao;
+    return (ativo.cotacao ? ativo.cotacao?.aplicar(ativo.quantidade) : valor) || NaN;
+  }
+}
