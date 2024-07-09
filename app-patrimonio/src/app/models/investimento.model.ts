@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Moeda } from "./base.model";
+import { Moeda, UUID } from "./base.model";
 import { Cotacao } from "./cotacao.models";
 
 export enum TipoInvestimento {
@@ -35,16 +35,6 @@ export type CotacaoFn = () => Observable<number>;
 export type IInvestimento = Omit<Investimento, "identity">;
 
 export type InvestimentoIdentity = Pick<Investimento, "identity">;
-
-export class UUID {
-    value: string;
-    constructor(value?: string | UUID) {
-        this.value = value?.toString() || crypto.randomUUID();
-    }
-    toString() {
-        return this.value;
-    }
-}
 
 abstract class Investimento {
     _id?: string;

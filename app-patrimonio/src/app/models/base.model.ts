@@ -14,6 +14,16 @@ export enum DataStatus {
 }
 
 
+export class UUID {
+    value: string;
+    constructor(value?: string | UUID) {
+        this.value = value?.toString() || crypto.randomUUID();
+    }
+    toString() {
+        return this.value;
+    }
+}
+
 export class Dictionary<T> {
     [id: string]: T;
 }
