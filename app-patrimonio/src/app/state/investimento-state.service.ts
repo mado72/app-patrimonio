@@ -518,4 +518,16 @@ export class InvestimentoStateService implements OnDestroy{
     return sub;
   }
 
+  converteParaMoeda(de: Moeda, para: Moeda, valor: number) {
+    let cotacao = this.cotacaoState$.state$.value.entities[`${de}${para}`];
+    if (cotacao) {
+      return cotacao.aplicar(valor);
+    }
+    cotacao = this.cotacaoState$.state$.value.entities[`${para}${de}`];
+    if (cotacao) {
+      return 1 / cotacao.aplicar(valor);
+    }
+    throw new Error(`Cotação não encontrada para ${de} -> ${para}`);
+  }
+
 }
