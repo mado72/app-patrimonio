@@ -249,7 +249,7 @@ export class InvestimentoStateService implements OnDestroy{
       )
     }).pipe(
       tap(result => {
-        const carteiras = result.carteiras;
+        const carteiras = result.carteiras.sort((a, b) => a.nome.localeCompare(b.nome));
         this.carteiraState$.state$.value.entities = this.mapearCarteirasAtivos(carteiras, result.ativosCotacoes.ativos);
         this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Executed });
         return {
