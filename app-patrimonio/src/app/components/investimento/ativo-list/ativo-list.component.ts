@@ -32,6 +32,7 @@ export class AtivoListComponent {
 
   editarAtivo(ativo: Ativo) {
     this.modalService.openAtivoModalComponent(ativo).subscribe(result=>{
+      if (!result) return;
       const ativo = result.dados as Ativo;
       switch(result.comando) {
         case 'cancelar':

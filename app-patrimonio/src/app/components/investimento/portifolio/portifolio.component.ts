@@ -74,6 +74,7 @@ export class PortifolioComponent implements OnInit {
   adicionarAtivo() {
     const ativo = createAtivo();
     this.modalService.openAtivoModalComponent(ativo).subscribe(result => {
+      if (!result) return;
       if (result.comando === 'salvar') {
         this.investimentoStateService.adicionarAtivo(ativo);
       }

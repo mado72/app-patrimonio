@@ -32,7 +32,8 @@ export class ModalService {
     component.onSave.subscribe((event)=>modalRef.close({comando: 'salvar', dados: event} as ResultType));
 
     return from(modalRef.result).pipe(
-      map(r=>r as ResultType)
+      map(r=>r as ResultType),
+      catchError(err=>of(null))
     )
 
   }
