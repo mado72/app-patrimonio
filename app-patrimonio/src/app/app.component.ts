@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterOutlet, } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription, map, take, timer } from 'rxjs';
-import { PortifolioComponent } from './components/investimento/portifolio/protifolio.component';
+import { PortifolioComponent } from './components/investimento/portifolio/portifolio.component';
 import { InvestimentoStateService } from './state/investimento-state.service';
 
 @Component({

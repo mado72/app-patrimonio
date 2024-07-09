@@ -11,7 +11,7 @@ export const routes: Routes = [
     },
     {
         path: 'portifolio',
-        loadComponent: () => import('./portifolio/protifolio.component').then(m => m.PortifolioComponent)
+        loadComponent: () => import('./portifolio/portifolio.component').then(m => m.PortifolioComponent)
     },
     {
         path: 'carteira/:id',

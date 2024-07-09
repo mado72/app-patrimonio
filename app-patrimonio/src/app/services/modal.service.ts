@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { from, map, tap } from 'rxjs';
+import { catchError, from, map, of, tap } from 'rxjs';
 import { AtivoModalComponent } from '../components/investimento/ativo-modal/ativo-modal.component';
 import { CarteiraAtivoModalComponent } from '../components/investimento/carteira-ativo-modal/carteira-ativo-modal.component';
 import { Ativo, Carteira, CarteiraAtivo } from '../models/investimento.model';
@@ -66,7 +66,8 @@ export class ModalService {
         console.log(`Modal Result: `, r);
         if (!r.dados) throw `Ativo não selecionado`
         return r
-      })
+      }),
+      catchError(err=>of(null))
     );
   }
 
@@ -86,7 +87,8 @@ export class ModalService {
         console.log(`Modal Result: `, r);
         if (!r.dados) throw `Carteira não salva`
         return r
-      })
+      }),
+      catchError(err=>of(null))
     )
   }
 }

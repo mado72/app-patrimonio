@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PortifolioComponent } from './protifolio.component';
+import { PortifolioComponent } from './portifolio.component';
 import { InvestimentoStateService } from '../../../state/investimento-state.service';
 import { Ativo, Carteira, CarteiraAtivo, ICarteira, ICarteiraAtivo, TipoInvestimento } from '../../../models/investimento.model';
 import { Observable, identity, of } from 'rxjs';

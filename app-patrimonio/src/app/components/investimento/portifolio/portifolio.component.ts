@@ -89,6 +89,7 @@ export class PortifolioComponent implements OnInit {
       take(1),
       tap(ativos =>
         this.modalService.openCarteiraAtivoModalComponent(ativos, $event.carteiraAtivo).subscribe((result) => {
+          if (!result) return;
           const carteiraAtivo = { ...result.dados } as CarteiraAtivo;
           switch (result.comando) {
             case 'excluir':

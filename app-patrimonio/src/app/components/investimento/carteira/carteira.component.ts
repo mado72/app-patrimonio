@@ -48,6 +48,7 @@ export class CarteiraComponent implements OnInit {
 
   editarCarteira(carteira: Carteira) {
     this.modalService.openCarteiraModalComponent(carteira).subscribe(result => {
+      if (!result) return;
       if (result.comando === 'salvar') {
         if (!result.dados._id) {
           this.investimentoStateService.adicionarCarteira(result.dados);
@@ -73,6 +74,7 @@ export class CarteiraComponent implements OnInit {
       take(1),
       tap(ativos =>
         this.modalService.openCarteiraAtivoModalComponent(ativos, $event.carteiraAtivo).subscribe((result) => {
+          if (!result) return;
           const carteiraAtivo = { ...result.dados } as CarteiraAtivo;
           switch (result.comando) {
             case 'excluir':
