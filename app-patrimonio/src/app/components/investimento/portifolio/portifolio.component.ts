@@ -16,7 +16,6 @@ import { InfoCotacaoBatch } from '../../../services/cotacao.service';
   imports: [
     CommonModule,
     CarteiraCardComponent,
-    AtivosCardComponent,
     NgbModalModule
   ],
   templateUrl: './portifolio.component.html',
