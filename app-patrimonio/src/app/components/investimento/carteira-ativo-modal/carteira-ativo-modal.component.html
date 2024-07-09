@@ -3,39 +3,57 @@
   </div>
   <form (ngSubmit)="submitClick()" class="form">
     <div class="modal-body row m-2">
-      <div class="row">
-        <h6>{{carteiraAtivo.ativo?.nome}}</h6>
-      </div>
-      <div class="row">
-        <div class="form-group col">
+      <div class="row my-2">
+        <div class="col-auto">
           <label class="form-label" for="ativo">Ativo:</label>
-          <input class="form-control" type="text" id="ativo" name="ativo" [value]="carteiraAtivo.ativo?.sigla" 
-              (selectItem)="selecionarAtivo($event)" [inputFormatter]="formatar" [ngbTypeahead]="buscarAtivo" [resultTemplate]="autoTemplate">
         </div>
-        <ng-template #autoTemplate let-r="result">
-          <option>{{r.nome}}</option>
-        </ng-template>
-    
-        <div class="form-group col">
-          <label class="form-label" for="qtd">Quantidade:</label>
+        <div class="col-auto">
+          <input class="form-control" type="text" id="ativo" name="ativo" [value]="carteiraAtivo.ativo?.sigla" 
+          (selectItem)="selecionarAtivo($event)" [inputFormatter]="formatar" [ngbTypeahead]="buscarAtivo" [resultTemplate]="autoTemplate">
+          <ng-template #autoTemplate let-r="result">
+            <option>{{r.nome}}</option>
+          </ng-template>
+        </div>
+        <div class="col-auto">
+          <h6>{{carteiraAtivo.ativo?.nome}}</h6>
+        </div>
+      </div>
+
+      <div class="row my-2">
+        <div class="col">
+          <label class="form-label" for="qtd">Quantidade (un):</label>
           <input class="form-control" type="number" id="qtd" name="qtd" [(ngModel)]="carteiraAtivo.quantidade">
         </div>
-      
-        <div class="form-group col">
-          <label class="form-label" for="vlInicial">Valor Inicial:</label>
-          <input class="form-control" type="number" step="0.01" min="0" id="vlInicial" name="vlInicial" [(ngModel)]="carteiraAtivo.vlInicial" (change)="!carteiraAtivo.vlAtual && carteiraAtivo.vlAtual = carteiraAtivo.vlInicial">
-        </div>
-    
-        <div class="form-group col">
-          <label class="form-label" for="valor">Valor:</label>
-          <input class="form-control" type="number" step="0.01" min="0" id="valor" name="valor" [(ngModel)]="carteiraAtivo.vlAtual">
-        </div>
-    
-        <div class="form-group col">
-          <label class="form-label" for="objetivo">Objetivo:</label>
+
+        <div class="col">
+          <label class="form-label" for="objetivo">Objetivo (%):</label>
           <input class="form-control" type="number" step="0.1" min="0" max="100" id="objetivo" name="objetivo" [(ngModel)]="objetivoPerc">
         </div>
       </div>
+
+      <div class="row my-2">
+        <div class="col">
+          <label class="form-label" for="vlInicial">Valor Inicial ({{carteiraAtivo.ativo?.moeda}}):</label>
+          <input class="form-control" type="number" step="0.01" min="0" id="vlInicial" name="vlInicial" [(ngModel)]="carteiraAtivo.vlInicial" (change)="!carteiraAtivo.vlAtual && carteiraAtivo.vlAtual = carteiraAtivo.vlInicial">
+        </div>
+
+        <div class="col">
+          <label class="form-label" for="valor">Valor ({{carteiraAtivo.ativo?.moeda}}):</label>
+          <input class="form-control" type="number" step="0.01" min="0" id="valor" name="valor" [(ngModel)]="carteiraAtivo.vlAtual">
+        </div>
+      </div>
+  
+      @if (carteiraAtivo.ativo?.cotacao) {
+        <div class="row my-2">
+          <div class="col">
+            <label class="form-label" for="cotacao">Cotação:</label>
+            <span>
+              {{carteiraAtivo.ativo?.cotacao?.valor}} {{carteiraAtivo.ativo?.moeda}}
+            </span>
+          </div>
+        </div>
+      }
+
     </div>
   
     <div class="modal-footer">
