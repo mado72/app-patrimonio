@@ -514,12 +514,24 @@ export class InvestimentoStateService implements OnDestroy{
     );
   }
 
+  obterCotacaoMoeda(de: Moeda, para: Moeda) {
+    if (de === para) return new Cotacao({
+      simbolo: `${de}${para}`,
+      moeda: para,
+      valor: 1,
+      data: new Date()
+    });
+    
+    return this.cotacaoState$.state$.value.entities[`${de}${para}`];
+  }
+
   converteParaMoeda(de: Moeda, para: Moeda, valor: number) {
-    let cotacao = this.cotacaoState$.state$.value.entities[`${de}${para}`];
+    if (de === para) return valor;
+    let cotacao = this.obterCotacaoMoeda(de, para);
     if (cotacao) {
       return cotacao.aplicar(valor);
     }
-    cotacao = this.cotacaoState$.state$.value.entities[`${para}${de}`];
+    cotacao = this.obterCotacaoMoeda(para, de);
     if (cotacao) {
       return 1 / cotacao.aplicar(valor);
     }

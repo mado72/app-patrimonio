@@ -19,7 +19,7 @@ type ListItem = AuxAtivo & Omit<CarteiraAtivo, "ativo">;
   templateUrl: './carteira-ativo-list.component.html',
   styleUrl: './carteira-ativo-list.component.scss'
 })
-export class CarteiraAtivoListComponent implements OnDestroy{
+export class CarteiraAtivoListComponent implements OnDestroy {
 
   consolidado !: ConsolidadoTotal<ListItem>;
 
@@ -40,8 +40,13 @@ export class CarteiraAtivoListComponent implements OnDestroy{
       this.mapCotacao = new Map(cotacoes.map(cotacao => [cotacao.simbolo, new Cotacao(cotacao)]));
       this.subject.next({});
     });
-    this.subject.subscribe(()=>{
-      this.consolidado = calcularTotais(this._carteira, this.mapCarteira, this.mapCotacao);
+    this.subject.subscribe(() => {
+      this.consolidado = calcularTotais({
+        carteira: this._carteira, 
+        cotacaoAtivo: (carteira, ativo) => this.investimentoStateService.obterCotacaoMoeda(ativo.ativo?.moeda || carteira.moeda, carteira.moeda),
+        mapCarteira: this.mapCarteira, 
+        mapCotacao: this.mapCotacao
+      });
     })
   }
 
@@ -104,55 +109,57 @@ function transform(item: CarteiraAtivo) {
   return Object.assign({}, item, item.ativo as AuxAtivo);
 }
 
-type ValorCarteira = (carteira: Carteira) => number;
+type CotacaoAtivo = (carteira: Carteira, ativo: CarteiraAtivo) => Cotacao;
 
-function calcularTotais(carteira: Carteira, mapCarteira: Map<string | undefined, Carteira>, mapCotacao: Map<string, Cotacao>) {
+function calcularTotais({ carteira, cotacaoAtivo, mapCarteira, mapCotacao }: {
+  carteira: Carteira, cotacaoAtivo: CotacaoAtivo,
+  mapCarteira: Map<string | undefined, Carteira>, mapCotacao: Map<string, Cotacao>
+}) {
+
   const ativos = carteira.ativos.map(item => transform(item));
 
-  const consolidado = consolidaValores(
-    ativos,
-    (ativo) => ativo.quantidade,
-    (ativo) => converteParaMoeda(ativo.vlInicial, ativo.moeda, carteira.moeda, mapCotacao),
-    (ativo) => ativo.objetivo,
-    (ativo) => 
-      converteParaMoeda(
-        calcularValorCotacao(
-          ativo, 
-          (carteira)=>carteira.valor,
-          ativo.vlAtual, 
-          mapCarteira.get(ativo.ativo?.referencia?.id), 
-          mapCotacao.get(ativo.ativo?.siglaYahoo as string)),
-        ativo.moeda, carteira.moeda, mapCotacao));
+  const consolidado = consolidaValores<CarteiraAtivo & AuxAtivo>(
+    {
+      items: ativos,
+      quantidadeFn: (ativo) => ativo.quantidade,
+      valorInicialFn: (ativo) => cotacaoAtivo(carteira, ativo).aplicar(ativo.vlInicial),
+      objetivoFn: (ativo) => ativo.objetivo,
+      cotacaoFn: (ativo) => ativo.ativo?.cotacao && cotacaoAtivo(carteira, ativo).converterPara(ativo.ativo?.cotacao),
+      valorAtualFn: (ativo) => calcularValorCotacao(
+        {
+          ativo,
+          cotacaoMoeda: cotacaoAtivo(carteira, ativo),
+          valor: ativo.vlAtual,
+          carteiraRef: mapCarteira.get(ativo.ativo?.referencia?.id),
+          cotacaoAtivo: mapCotacao.get(ativo.ativo?.siglaYahoo as string)
+        })
+    }
+  );
 
   return consolidado;
 }
 
-function converteParaMoeda(valor: number, de: Moeda, para: Moeda, mapCotacao: Map<string, Cotacao>) {
-  if (de === para) return valor;
-  const cotacao = mapCotacao.get(`${de}${para}`);
-  if (!cotacao) {
-    console.warn(`Cotação não encontrada para ${de} -> ${para}`);
-    return NaN;
-  }
-  return cotacao.aplicar(valor);
-}
+function calcularValorCotacao({ ativo, cotacaoMoeda, valor, carteiraRef: carteira, cotacaoAtivo }:
+  { ativo: CarteiraAtivo & AuxAtivo; cotacaoMoeda: Cotacao; valor?: number; carteiraRef?: Carteira; cotacaoAtivo?: Cotacao; }) {
 
-function calcularValorCotacao(ativo: CarteiraAtivo & AuxAtivo, valorCarteira: ValorCarteira, valor?: number, carteira?: Carteira, cotacao?: Cotacao) {
-  {
-    if (ativo.ativo?.tipo === TipoInvestimento.Referencia) {
-      if (ativo.ativo.referencia?.tipo == TipoInvestimento.Carteira && carteira) {
-        if (carteira.moeda === ativo.moeda) {
-          return valorCarteira(carteira);
+    const valorCalculado = () => {
+      if (ativo.ativo?.tipo === TipoInvestimento.Referencia) {
+        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Carteira && carteira) {
+          if (carteira.moeda === ativo.moeda) {
+            return carteira.valor;
+          }
+          else if (cotacaoAtivo) {
+            return cotacaoAtivo.valor * carteira.valor;
+          }
         }
-        else if (cotacao) {
-          return cotacao.valor * valorCarteira(carteira);
+        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Moeda && cotacaoAtivo) {
+          return cotacaoAtivo.valor;
         }
       }
-      if (ativo.ativo.referencia?.tipo == TipoInvestimento.Moeda && cotacao) {
-        return cotacao.valor;
-      }
-    }
-    ativo.cotacao = cotacao;
-    return (ativo.cotacao ? ativo.cotacao?.aplicar(ativo.quantidade) : valor) || NaN;
-  }
+      ativo.cotacao = cotacaoAtivo;
+      return (ativo.cotacao ? ativo.cotacao?.aplicar(ativo.quantidade) : valor) || NaN;
+    };
+
+    return cotacaoMoeda.aplicar(valorCalculado())
+
 }

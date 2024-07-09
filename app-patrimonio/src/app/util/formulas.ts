@@ -1,3 +1,5 @@
+import { Cotacao } from "../models/cotacao.models";
+
 export type Extrator<T, V> = (item: T) => V;
 export type ExtratorNum<T> = Extrator<T, number>;
 
@@ -15,15 +17,20 @@ export type ConsolidadoItem = {
 }
 
 export function consolidaValores<T>(
-    items: T[], 
-    quantidadeFn: ExtratorNum<T>, 
-    valorInicialFn: ExtratorNum<T>, 
-    objetivoFn: ExtratorNum<T>, 
-    valorAtualFn: ExtratorNum<T>) {
+    { items, quantidadeFn, valorInicialFn, objetivoFn, valorAtualFn, cotacaoFn }:
+        {
+            items: T[],
+            quantidadeFn: ExtratorNum<T>,
+            valorInicialFn: ExtratorNum<T>,
+            objetivoFn: ExtratorNum<T>,
+            valorAtualFn: ExtratorNum<T>,
+            cotacaoFn: Extrator<T, Cotacao | undefined>
+        }) {
 
     const mapCalc = new Map(items.map(item => {
         const v = {
             ...item,
+            cotacao: cotacaoFn(item),
             quantidade: quantidadeFn(item),
             vlInicial: valorInicialFn(item),
             vlFinal: valorAtualFn(item) || 0,
@@ -57,7 +64,7 @@ export function consolidaValores<T>(
         v.difObjetivo = v.objetivo > 0 ? (v.participacao - v.objetivo) / v.objetivo : v.participacao ? 1 : 0;
     })
 
-    const dados = Array.from(mapCalc.entries()).map(entry=>({
+    const dados = Array.from(mapCalc.entries()).map(entry => ({
         ...entry[0],
         ...entry[1]
     }))
