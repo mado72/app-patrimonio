@@ -1,71 +1,11 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, catchError, concatMap, forkJoin, interval, map, mergeMap, of, Subject, Subscription, switchMap, take, takeWhile, tap } from 'rxjs';
-import { Moeda } from '../models/base.model';
+import { catchError, concatMap, forkJoin, interval, map, mergeMap, of, Subscription, switchMap, take, takeWhile, tap } from 'rxjs';
+import { clearDictionary, DataStatus, Moeda, State, StateBehavior } from '../models/base.model';
 import { Cotacao } from '../models/cotacao.models';
 import { Ativo, Carteira, ICarteira, TipoInvestimento } from '../models/investimento.model';
 import { AtivoService, FilterAtivos } from '../services/ativo.service';
 import { CarteiraService } from '../services/carteira.service';
-import { CotacaoService, InfoCotacaoBatch } from '../services/cotacao.service';
-
-export enum DataStatus {
-  Idle = "Idle",
-  Processing = "Processing",
-  Executed = "Executed",
-  Error = "Error"
-}
-
-
-class Dictionary<T> {
-  [id: string]: T;
-}
-
-function clearDictionary<T>(dictionary: Dictionary<T>): Dictionary<T> {
-  Object.keys(dictionary).forEach(key => delete dictionary[key]);
-  return dictionary;
-}
-
-class State<T> {
-  entities = new Dictionary<T>();
-  status = DataStatus.Idle;
-  error: any;
-}
-
-class StateBehavior<T> {
-
-  state$ = new BehaviorSubject(new State<T>());
-  error = this.state$.pipe(map(s => s.error));
-  entities = this.state$.pipe(map(s => s.entities));
-  status = this.state$.pipe(map(s => s.status));
-  nome!: string;
-
-  constructor(nome: string) {
-    this.nome = nome;
-  }
-
-  asObservable() {
-    return this.state$.asObservable().pipe(
-      tap(()=>console.log(`Observando ${this.nome}..`))
-    );
-  }
-
-  setState(state: State<T>) {
-    const value = { ...this.state$.value, ...state };
-    this.state$.next(value);
-  }
-
-  clearError() {
-    const error = this.state$.value.error;
-    if (error) {
-      const state = { ...this.state$.value, status: DataStatus.Idle, error: null };
-      this.setState(state);
-    }
-  }
-
-  countListerners() {
-    return this.state$.observers.length
-  }
-
-}
+import { CotacaoService } from '../services/cotacao.service';
 
 class CarteiraStateBehavior extends StateBehavior<Carteira> {
   constructor() {
