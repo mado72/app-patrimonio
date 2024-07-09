@@ -10,7 +10,7 @@
         }
     </div>
     <app-carteira-ativo-list 
-            [ativos]="carteira.ativos" 
+            [carteira]="carteira" 
             (onRemoveAtivo)="removeCarteiraAtivo($event)"
             (onEditarAtivo)="editarCarteiraAtivo($event)"
             (onAdicionarAtivo)="adicionarCarteiraAtivo()" />

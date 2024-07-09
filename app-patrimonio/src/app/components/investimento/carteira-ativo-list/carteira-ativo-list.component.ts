@@ -5,6 +5,7 @@ import { ConsolidadoTotal, consolidaValores } from '../../../util/formulas';
 import { Cotacao } from '../../../models/cotacao.models';
 import { InvestimentoStateService } from '../../../state/investimento-state.service';
 import { Subject } from 'rxjs';
+import { Moeda } from '../../../models/base.model';
 
 type AuxAtivo = Pick<Ativo, "identity" | "nome" | "sigla" | "moeda" | "cotacao">;
 type ListItem = AuxAtivo & Omit<CarteiraAtivo, "ativo">;
@@ -40,7 +41,7 @@ export class CarteiraAtivoListComponent implements OnDestroy{
       this.subject.next({});
     });
     this.subject.subscribe(()=>{
-      this.consolidado = calcularTotais(this._ativos, this.mapCarteira, this.mapCotacao);
+      this.consolidado = calcularTotais(this._carteira, this.mapCarteira, this.mapCotacao);
     })
   }
 
@@ -48,17 +49,21 @@ export class CarteiraAtivoListComponent implements OnDestroy{
     this.subject.complete();
   }
 
-  private _ativos: CarteiraAtivo[] = [];
+  private _carteira!: Carteira;
 
-  public get ativos(): CarteiraAtivo[] {
-    return this._ativos;
+  public get carteira(): Carteira {
+    return this._carteira;
   }
 
   @Input()
-  public set ativos(value: CarteiraAtivo[]) {
-    const diff = this._ativos != value;
-    this._ativos = value;
+  public set carteira(value: Carteira) {
+    const diff = this._carteira != value;
+    this._carteira = value;
     diff && this.subject.next({});
+  }
+
+  get ativos() {
+    return this._carteira?.ativos;
   }
 
   @Output() onRemoveAtivo = new EventEmitter<CarteiraAtivo>();
@@ -101,22 +106,35 @@ function transform(item: CarteiraAtivo) {
 
 type ValorCarteira = (carteira: Carteira) => number;
 
-function calcularTotais(itensAtivos: CarteiraAtivo[], mapCarteira: Map<string | undefined, Carteira>, mapCotacao: Map<string, Cotacao>) {
-  const ativos = itensAtivos.map(item => transform(item));
+function calcularTotais(carteira: Carteira, mapCarteira: Map<string | undefined, Carteira>, mapCotacao: Map<string, Cotacao>) {
+  const ativos = carteira.ativos.map(item => transform(item));
 
   const consolidado = consolidaValores(
     ativos,
     (ativo) => ativo.quantidade,
-    (ativo) => ativo.vlInicial,
+    (ativo) => converteParaMoeda(ativo.vlInicial, ativo.moeda, carteira.moeda, mapCotacao),
     (ativo) => ativo.objetivo,
-    (ativo) => calcularValorCotacao(
-      ativo, 
-      (carteira)=>carteira.valor,
-      ativo.vlAtual, 
-      mapCarteira.get(ativo.ativo?.referencia?.id), 
-      mapCotacao.get(ativo.ativo?.siglaYahoo as string)));
+    (ativo) => 
+      converteParaMoeda(
+        calcularValorCotacao(
+          ativo, 
+          (carteira)=>carteira.valor,
+          ativo.vlAtual, 
+          mapCarteira.get(ativo.ativo?.referencia?.id), 
+          mapCotacao.get(ativo.ativo?.siglaYahoo as string)),
+        ativo.moeda, carteira.moeda, mapCotacao));
 
   return consolidado;
+}
+
+function converteParaMoeda(valor: number, de: Moeda, para: Moeda, mapCotacao: Map<string, Cotacao>) {
+  if (de === para) return valor;
+  const cotacao = mapCotacao.get(`${de}${para}`);
+  if (!cotacao) {
+    console.warn(`Cotação não encontrada para ${de} -> ${para}`);
+    return NaN;
+  }
+  return cotacao.aplicar(valor);
 }
 
 function calcularValorCotacao(ativo: CarteiraAtivo & AuxAtivo, valorCarteira: ValorCarteira, valor?: number, carteira?: Carteira, cotacao?: Cotacao) {
