@@ -1,0 +1,55 @@
+<div class="card">
+    <div class="header d-flex">
+        <h4 class="title">Contas</h4>
+        <div class="text-end ms-auto">
+            <div class="d-inline-block" ngbDropdown>
+                <button class="btn btn-secondary" type="button" name="dpDown" id="dropdown" ngbDropdownToggle>Filtro</button>
+                <div class="dropdown-menu" ngbDropdownMenu>
+                    <button ngbDropdownItem type="button" *ngFor="let tipoConta of tiposConta" class="d-flex" (click)="tipoContaAlternar(tipoConta)">
+                        <span>
+                            {{tipoConta | capitalize}}
+                        </span>
+                        <span *ngIf="tipoContaAtivo(tipoConta)" class="ms-auto">
+                            &#x2713;
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr class="table-dark">
+                <th>Conta</th>
+                <th class="text-center">Tipo</th>
+                <th class="text-center">Saldo Atual</th>
+                <th class="text-center">Vl. Real</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of contasListadas">
+                <td>
+                    <a href="javascript:void(0)" (click)="contaClick(item)">
+                        {{item.conta}}
+                    </a>
+                </td>
+                <td class="text-center">{{item.tipo | capitalize }}</td>
+                <td class="text-end"><ng-container [ngTemplateOutlet]="DisplayNum" [ngTemplateOutletContext]="{valor:item.saldo, sigla: sigla(item.moeda)}"/></td>
+                <td class="text-end"><ng-container [ngTemplateOutlet]="DisplayNum" [ngTemplateOutletContext]="{valor:item.saldoReal, sigla: 'R$'}"/></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr class="table-secondary">
+                <th colspan="3" class="fw-bold">Total</th>
+                <th class="text-end"><ng-container [ngTemplateOutlet]="DisplayNum" [ngTemplateOutletContext]="{valor:totais, sigla: 'R$'}"/></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<ng-template #DisplayNum let-valor="valor" let-sigla="sigla">
+    <div class="d-flex justify-content-end small" [negativo]="valor">
+        <span *ngIf="valor < 0">-</span>
+        <span class="text-end ms-auto">{{sigla}}
+            {{valor | absolute | number:'1.2-2'}}</span>
+    </div>
+</ng-template>
