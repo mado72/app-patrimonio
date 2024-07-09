@@ -29,17 +29,17 @@ export class PortifolioComponent implements OnInit {
 
   private router = inject(Router);
 
-  carteiras$ = this.investimentoStateService.carteira;
-  ativos$ = this.investimentoStateService.ativo;
-  cotacoes$ = this.investimentoStateService.cotacao;
+  carteiras$ = this.investimentoStateService.carteira$;
+  ativos$ = this.investimentoStateService.ativo$;
+  cotacoes$ = this.investimentoStateService.cotacao$;
 
-  carteiraError$ = this.investimentoStateService.carteiraError;
-  ativoError$ = this.investimentoStateService.ativoError;
-  cotacoesError$ = this.investimentoStateService.cotacaoError;
+  carteiraError$ = this.investimentoStateService.carteiraError$;
+  ativoError$ = this.investimentoStateService.ativoError$;
+  cotacoesError$ = this.investimentoStateService.cotacaoError$;
 
-  carteiraStatus$ = this.investimentoStateService.carteiraStatus;
-  ativoStatus$ = this.investimentoStateService.ativoStatus;
-  cotacoesStatus$ = this.investimentoStateService.cotacaoStatus;
+  carteiraStatus$ = this.investimentoStateService.carteiraStatus$;
+  ativoStatus$ = this.investimentoStateService.ativoStatus$;
+  cotacoesStatus$ = this.investimentoStateService.cotacaoStatus$;
 
   ngOnInit(): void {
   }
@@ -85,7 +85,7 @@ export class PortifolioComponent implements OnInit {
   }
 
   editarCarteiraAtivo($event: { carteira: Carteira; carteiraAtivo: CarteiraAtivo; }) {
-    this.investimentoStateService.ativo.pipe(
+    this.investimentoStateService.ativo$.pipe(
       take(1),
       tap(ativos =>
         this.modalService.openCarteiraAtivoModalComponent(ativos, $event.carteiraAtivo).subscribe((result) => {

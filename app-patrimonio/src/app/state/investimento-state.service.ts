@@ -121,7 +121,7 @@ export class InvestimentoStateService implements OnDestroy{
     this.cotacaoState$.state$.next(this.cotacaoState$.state$.value)
   }
 
-  get ativo() {
+  get ativo$() {
     return this.ativoState$.entities.pipe(
       map(dictionary => Object.values(dictionary))
     )
@@ -131,15 +131,15 @@ export class InvestimentoStateService implements OnDestroy{
     return this.ativoState$.asObservable();
   }
 
-  get ativoError() {
+  get ativoError$() {
     return this.ativoState$.error;
   }
 
-  get ativoStatus() {
+  get ativoStatus$() {
     return this.ativoState$.status;
   }
 
-  get carteira() {
+  get carteira$() {
     return this.carteiraState$.entities.pipe(
       map(dictionary => Object.values(dictionary))
     );
@@ -149,15 +149,15 @@ export class InvestimentoStateService implements OnDestroy{
     return this.carteiraState$.asObservable();
   }
 
-  get carteiraError() {
+  get carteiraError$() {
     return this.carteiraState$.error;
   }
 
-  get carteiraStatus() {
+  get carteiraStatus$() {
     return this.carteiraState$.status;
   }
 
-  get cotacao() {
+  get cotacao$() {
     return this.cotacaoState$.entities.pipe(
       map(dictionary => Object.values(dictionary))
     );
@@ -167,11 +167,11 @@ export class InvestimentoStateService implements OnDestroy{
     return this.cotacaoState$.asObservable();
   }
 
-  get cotacaoError() {
+  get cotacaoError$() {
     return this.cotacaoState$.error;
   }
 
-  get cotacaoStatus() {
+  get cotacaoStatus$() {
     return this.cotacaoState$.status;
   }
 

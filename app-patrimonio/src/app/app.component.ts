@@ -26,19 +26,19 @@ export class AppComponent implements OnDestroy {
   erro: any;
 
   constructor() {
-    this.investimentoStateService.ativoError.subscribe(error=> {
+    this.investimentoStateService.ativoError$.subscribe(error=> {
       if(!!error){
         this.displayError(error, "Ativos não carregados");
         this.investimentoStateService.limparErrosAtivos();
       }
     });
-    this.investimentoStateService.carteiraError.subscribe(error=> {
+    this.investimentoStateService.carteiraError$.subscribe(error=> {
       if(!!error){
         this.displayError(error, "Carteira não carregada");
         this.investimentoStateService.limparErrosCarteiras();
       }
     });
-    this.investimentoStateService.cotacaoError.subscribe(error=> {
+    this.investimentoStateService.cotacaoError$.subscribe(error=> {
       if(!!error){
         this.displayError(error, "Cotações não carregadas");
         this.investimentoStateService.limparErrosCotacoes();

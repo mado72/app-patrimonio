@@ -13,13 +13,14 @@ describe('PortifolioComponent', () => {
   let component: PortifolioComponent;
   let fixture: ComponentFixture<PortifolioComponent>;
   const investimentoStateServiceStub: Partial<InvestimentoStateService> = {
-    ativo: of(ATIVOS),
+    ativo$: of(ATIVOS),
     atualizarCarteira: (carteira: Carteira) => {}
   }
   const modalServiceStub: Partial<ModalService> = {
     openCarteiraAtivoModalComponent : (ativos, carteiraAtivos) => {
       return of({
-        comando: 'salvar'
+        comando: 'salvar',
+        dados: carteiraAtivos as CarteiraAtivo,
       })
     }
   }
@@ -57,8 +58,8 @@ describe('PortifolioComponent', () => {
     
     spyOn(investimentoStateService, 'atualizarCarteira').and.callFake(carteira=>update = carteira);
     spyOn(modalService, 'openCarteiraAtivoModalComponent').and.callFake(()=>of({
-      carteiraAtivo: CARTEIRA_ATIVO,
-      comando:'salvar'
+      comando:'salvar',
+      dados: CARTEIRA_ATIVO
     }));
 
     component.editarCarteiraAtivo({carteira: CARTEIRA, carteiraAtivo: CARTEIRA_ATIVO});
@@ -105,7 +106,7 @@ const CARTEIRA: Carteira = new Carteira({
     ativo: ATIVOS[0]
   }],
   nome: 'carteira',
-  tipo: TipoInvestimento.Carteira,
+  classe: TipoInvestimento.Acao,
   moeda: Moeda.BRL,
   objetivo: 1
 });

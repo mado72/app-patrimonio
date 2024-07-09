@@ -50,7 +50,7 @@ export class AtivoModalComponent {
 
   private investimentoStateService = inject(InvestimentoStateService);
 
-  carteiras$ = this.investimentoStateService.carteira;
+  carteiras$ = this.investimentoStateService.carteira$;
 
   get tipo() {
     return this.ativo.tipo;

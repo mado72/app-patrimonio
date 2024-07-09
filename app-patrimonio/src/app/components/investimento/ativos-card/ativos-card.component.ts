@@ -21,7 +21,7 @@ export class AtivosCardComponent implements OnInit {
 
   ngOnInit(): void {
       if (! this.ativos.length) {
-        this.investimentoStateService.ativo.subscribe((ativos: Ativo[]) => {
+        this.investimentoStateService.ativo$.subscribe((ativos: Ativo[]) => {
           this.ativos = ativos;
         });
       }

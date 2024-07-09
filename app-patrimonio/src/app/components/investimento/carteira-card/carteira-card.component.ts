@@ -60,7 +60,7 @@ export class CarteiraCardComponent {
 
   get ativos() {
     const ids = this.carteira.ativos.map(carteiraAtivo => carteiraAtivo.ativoId);
-    return this.investimentoStateService.ativo.pipe(
+    return this.investimentoStateService.ativo$.pipe(
       map((ativos)=>ativos.filter(ativo=>ids.includes(ativo.identity.toString())))
     );
   }
