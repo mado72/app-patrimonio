@@ -112,7 +112,7 @@ export class AtivoRefCotacao extends Ativo {
 }
 
 
-export type ICarteira = Omit<Carteira, "identity" | "valor">;
+export type ICarteira = Omit<Carteira, "identity" | "valor" | "vlInicial">;
 
 export type ICarteiraAtivo = Omit<CarteiraAtivo, "ativo">;
 
@@ -138,6 +138,13 @@ export class Carteira extends Investimento {
         this.ativos = ativos || carteira.ativos;
         this.objetivo = carteira.objetivo;
         this.classe = carteira.classe;
+    }
+
+    get vlInicial() {
+        if (!this.ativos) {
+            return 0;
+        }
+        return this.ativos.reduce((acc, ativo) => acc += ativo.vlInicial, 0);
     }
 
     get valor() {
