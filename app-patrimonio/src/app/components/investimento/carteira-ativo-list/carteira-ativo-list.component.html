@@ -23,18 +23,18 @@
             <td>{{item.nome}}</td>
             <td>{{item.sigla}}</td>
             <td class="text-center">{{item.moeda}}</td>
-            <td [ngClass]="item.cotacao ? 'text-end' : 'text-center'">
+            <td class="number" [ngClass]="item.cotacao ? 'text-end' : 'text-center'">
                 <ng-container [ngTemplateOutlet]="ConteudoCotacao" [ngTemplateOutletContext]="{$implicit: item.cotacao}"/>
             </td>
-            <td class="text-end">{{item.quantidade | number:'1.0-6'}}</td>
-            <td class="text-end">{{item.vlInicial/item.quantidade | number:'1.2-2'}}</td>
-            <td class="text-end">{{item.vlInicial | number:'1.2-2'}} </td>
-            <td class="text-end">{{item.vlFinal | number:'1.2-2'}}</td>
-            <td class="text-end">{{item.valorizacao | number:'1.2-2'}}</td>
-            <td class="text-end">{{item.valorizacaoPerc | percent:'1.2-2'}}</td>
-            <td class="text-end">{{item.objetivo | percent:'1.2-2'}}</td>
-            <td class="text-end">{{item.participacao | percent:'1.2-2'}}</td>
-            <td class="text-end">{{item.difObjetivo | percent:'1.2-2'}}</td>
+            <td class="number text-end">{{item.quantidade | number:'1.0-6'}}</td>
+            <td class="number text-end">{{item.vlInicial/item.quantidade | number:'1.2-2'}}</td>
+            <td class="number text-end">{{item.vlInicial | number:'1.2-2'}} </td>
+            <td class="number text-end">{{item.vlFinal | number:'1.2-2'}}</td>
+            <td class="number text-end">{{item.valorizacao | number:'1.2-2'}}</td>
+            <td class="number text-end">{{item.valorizacaoPerc | percent:'1.2-2'}}</td>
+            <td class="number text-end">{{item.objetivo | percent:'1.2-2'}}</td>
+            <td class="number text-end">{{item.participacao | percent:'1.2-2'}}</td>
+            <td class="number text-end">{{item.difObjetivo | percent:'1.2-2'}}</td>
             <td>
                 <a href="javascript:void(0)" (click)="editarAtivo(item)">editar</a><br/>
                 <a href="javascript:void(0)" (click)="removerAtivo(item)">remover</a>
@@ -46,10 +46,10 @@
         <tr class="table-dark">
             <td>Totais:</td>
             <td colspan="5"></td>
-            <td class="text-end">{{consolidado.total.vlInicial| number:'1.2-2'}}</td>
-            <td class="text-end">{{consolidado.total.vlTotal| number:'1.2-2'}}</td>
-            <td class="text-end">{{consolidado.total.valorizacao| number:'1.2-2'}}</td>
-            <td class="text-end">{{consolidado.total.valorizacaoPerc| percent:'1.2-2'}}</td>
+            <td class="number text-end">{{consolidado.total.vlInicial| number:'1.2-2'}}</td>
+            <td class="number text-end">{{consolidado.total.vlTotal| number:'1.2-2'}}</td>
+            <td class="number text-end">{{consolidado.total.valorizacao| number:'1.2-2'}}</td>
+            <td class="number text-end">{{consolidado.total.valorizacaoPerc| percent:'1.2-2'}}</td>
             <td colspan="4"></td>
         </tr>
         <tr>
