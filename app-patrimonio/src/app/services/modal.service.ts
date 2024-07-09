@@ -5,6 +5,8 @@ import { AtivoModalComponent } from '../components/investimento/ativo-modal/ativ
 import { CarteiraAtivoModalComponent } from '../components/investimento/carteira-ativo-modal/carteira-ativo-modal.component';
 import { Ativo, Carteira, CarteiraAtivo } from '../models/investimento.model';
 import { CarteiraModalComponent } from '../components/investimento/carteira-modal/carteira-modal.component';
+import { Conta } from '../models/conta.model';
+import { ContaModalComponent } from '../components/conta/conta-modal/conta-modal.component';
 
 export type ModalResult<T> = {
   comando: 'cancelar' | 'excluir' | 'salvar',
@@ -87,6 +89,27 @@ export class ModalService {
       map((r: ResultType)=>{
         console.log(`Modal Result: `, r);
         if (!r.dados) throw `Carteira não salva`
+        return r
+      }),
+      catchError(err=>of(null))
+    )
+  }
+
+  openContaModalComponent(conta: Conta) {
+    type ResultType = ModalResult<Conta>;
+
+    const modalRef = this.modal.open(ContaModalComponent, {size: 'lg'});
+    const component = modalRef.componentInstance as ContaModalComponent;
+
+    component.conta = conta;
+    component.onCancelar.subscribe(()=> modalRef.dismiss({comando: 'cancelar'}));
+    component.onSalvarConta.subscribe((event)=> modalRef.close({comando: 'salvar', dados: event} as ResultType));
+    component.onExcluirConta.subscribe((event)=> modalRef.close({comando: 'excluir', dados: event} as ResultType));
+
+    return from(modalRef.result).pipe(
+      map((r: ResultType)=>{
+        console.log(`Modal Result: `, r);
+        if (!r.dados) throw `Conta não salva`
         return r
       }),
       catchError(err=>of(null))
