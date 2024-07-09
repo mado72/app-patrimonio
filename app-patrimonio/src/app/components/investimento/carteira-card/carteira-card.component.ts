@@ -44,6 +44,7 @@ export class CarteiraCardComponent {
   }
 
   editarCarteiraAtivo(carteiraAtivo: CarteiraAtivo) {
+    carteiraAtivo = this.carteira.ativos.find(item=>item.ativoId === carteiraAtivo.ativoId) as CarteiraAtivo;
     this.onEditarCarteiraAtivo.emit({ carteira: this.carteira, carteiraAtivo });
   }
 
