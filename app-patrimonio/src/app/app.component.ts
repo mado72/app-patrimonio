@@ -4,11 +4,12 @@ import { ToastrService } from 'ngx-toastr';
 import { Subscription, map, take, timer } from 'rxjs';
 import { PortifolioComponent } from './components/investimento/portifolio/portifolio.component';
 import { InvestimentoStateService } from './state/investimento-state.service';
+import { MenuSuperiorComponent } from './components/menu-superior/menu-superior.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, PortifolioComponent],
+  imports: [RouterOutlet, MenuSuperiorComponent, PortifolioComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

@@ -7,3 +7,73 @@
 .debug {
     display: none
 }
+
+.led {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    margin-right: 2px;
+    border-radius: 50%;
+    background-color: #BCBCBC;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 3px;
+}
+
+.popup-menu {
+    --popup-zindex: 1000;
+    --popup-min-width: 10rem;
+    --popup-padding-x: 0;
+    --popup-padding-y: 0.5rem;
+    --popup-spacer: 0.125rem;
+    --popup-font-size: 1rem;
+    --popup-color: var(--bs-body-color);
+    --popup-bg: var(--bs-body-bg);
+    --popup-border-color: var(--bs-border-color-translucent);
+    --popup-border-radius: var(--bs-border-radius);
+    --popup-border-width: var(--bs-border-width);
+    --popup-inner-border-radius: calc(var(--bs-border-radius) - var(--bs-border-width));
+    --popup-divider-bg: var(--bs-border-color-translucent);
+    --popup-divider-margin-y: 0.5rem;
+    --popup-box-shadow: var(--bs-box-shadow);
+    --popup-link-color: var(--bs-body-color);
+    --popup-link-hover-color: var(--bs-body-color);
+    --popup-link-hover-bg: var(--bs-tertiary-bg);
+    --popup-link-active-color: #fff;
+    --popup-link-active-bg: #0d6efd;
+    --popup-link-disabled-color: var(--bs-tertiary-color);
+    --popup-item-padding-x: 1rem;
+    --popup-item-padding-y: 0.25rem;
+    --popup-header-color: #6c757d;
+    --popup-header-padding-x: 1rem;
+    --popup-header-padding-y: 0.5rem;
+  
+    .title {
+        display: block;
+        padding: var(--popup-header-padding-y) var(--popup-header-padding-x);
+        margin-bottom: 0;
+        font-size: 0.875rem;
+        color: var(--popup-header-color);
+        white-space: nowrap;
+    }
+     
+    .items {
+        .popup-item {
+            display: block;
+            width: 100%;
+            padding: var(--popup-item-padding-y) var(--popup-item-padding-x);
+            clear: both;
+            font-weight: 400;
+            color: var(--popup-link-color);
+            text-align: inherit;
+            text-decoration: none;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
+            border-radius: var(--popup-item-border-radius, 0);
+
+            &:hover {
+                color: var(--popup-link-hover-color);
+                background-color: var(--popup-link-hover-bg);
+            }
+        }
+    }
+}

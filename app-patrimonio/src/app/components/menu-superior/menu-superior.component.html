@@ -1,0 +1,12 @@
+Menu:
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+        @for (item of menu; track $index) {
+            <li class="nav-item @if($index === 0) {active}">
+                <a class="nav-link" [routerLink]="item.url">{{ item.lb }}</a>
+            </li>
+        }
+        </ul>
+    </div>
+</nav>
