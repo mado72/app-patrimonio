@@ -18,7 +18,10 @@ export class Cotacao {
     }
 
     converterPara(outra: ICotacao) {
-        return this.valor / outra.valor;
+        return new Cotacao({
+            ...outra,
+            valor: outra.valor * this.valor
+        });
     }
 
     aplicar(n: number) {
