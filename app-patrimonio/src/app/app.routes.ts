@@ -3,12 +3,12 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'patrimonio',
+        redirectTo: 'painel',
         pathMatch: 'full'
     },
     {
-        path: 'patrimonio',
-        loadComponent: () => import('./components/patrimonio/patrimonio.component').then(m => m.PatrimonioComponent)
+        path: 'painel',
+        loadComponent: () => import('./components/painel/painel.component').then(m => m.PainelComponent)
     },
     {
         path: 'investimento',
