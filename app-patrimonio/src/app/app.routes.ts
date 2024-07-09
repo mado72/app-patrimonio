@@ -3,8 +3,12 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'investimento/portifolio',
+        redirectTo: 'patrimonio',
         pathMatch: 'full'
+    },
+    {
+        path: 'patrimonio',
+        loadComponent: () => import('./components/patrimonio/patrimonio.component').then(m => m.PatrimonioComponent)
     },
     {
         path: 'investimento',

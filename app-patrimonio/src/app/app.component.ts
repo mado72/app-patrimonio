@@ -1,15 +1,14 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { RouterOutlet, } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription, map, take, timer } from 'rxjs';
-import { PortifolioComponent } from './components/investimento/portifolio/portifolio.component';
-import { InvestimentoStateService } from './state/investimento-state.service';
 import { MenuSuperiorComponent } from './components/menu-superior/menu-superior.component';
+import { InvestimentoStateService } from './state/investimento-state.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MenuSuperiorComponent, PortifolioComponent],
+  imports: [RouterOutlet, MenuSuperiorComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
