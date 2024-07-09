@@ -44,8 +44,6 @@ export class AtivoModalComponent {
 
   readonly tiposStr = Object.values(TipoInvestimentoStr);
 
-  readonly tipoMoedaRef = TipoInvestimento.Moeda;
-
   readonly tipoCarteiraRef = TipoInvestimento.Referencia;
 
   private investimentoStateService = inject(InvestimentoStateService);

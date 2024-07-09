@@ -58,14 +58,6 @@
                 </select>
             </div>
         }
-        @case (tipoMoedaRef) {
-            <div class="form-group">
-                <label for="moedas" class="form-label">Moedas</label>
-                <select name="moedas" id="moedas" class="form-select" [(ngModel)]="moedaReferenciaId" payload="Selecione...">
-                    <option *ngFor="let moeda of moedas; " [value]="moeda">{{moeda}}</option>
-                </select>
-            </div>
-        }
     }
 
         <pre class="debug">{{ativo | json}}</pre>
