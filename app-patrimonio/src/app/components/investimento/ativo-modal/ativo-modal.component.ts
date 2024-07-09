@@ -46,11 +46,22 @@ export class AtivoModalComponent {
 
   readonly tipoMoedaRef = TipoInvestimento.Moeda;
 
-  readonly tipoCarteiraRef = TipoInvestimento.Carteira;
+  readonly tipoCarteiraRef = TipoInvestimento.Referencia;
 
   private investimentoStateService = inject(InvestimentoStateService);
 
   carteiras$ = this.investimentoStateService.carteira;
+
+  get tipo() {
+    return this.ativo.tipo;
+  }
+
+  set tipo(t: TipoInvestimento | undefined) {
+    if (t !== TipoInvestimento.Referencia) {
+      this.ativo.referencia = undefined;
+    }
+    this.ativo.tipo = t;
+  }
 
   constructor(
   ) {  }
@@ -68,20 +79,20 @@ export class AtivoModalComponent {
   }
 
   get carteiraReferenciaId() {
-    return this.ativo.referencia;
+    return this.ativo.referencia?.id;
   }
 
   set carteiraReferenciaId(id: string | undefined) {
-    this.ativo.tipo = TipoInvestimento.Carteira;
-    this.ativo.referencia = id;
+    this.ativo.tipo = TipoInvestimento.Referencia;
+    this.ativo.referencia = id ? {id, tipo: TipoInvestimento.Carteira} : undefined;
   }
 
   get moedaReferenciaId() {
-    return this.ativo.referencia;
+    return this.ativo.referencia?.id;
   }
 
   set moedaReferenciaId(id: string | undefined) {
-    this.ativo.referencia = id
+    this.ativo.referencia = id ? {id, tipo: TipoInvestimento.Moeda} : undefined;
   }
 
 }

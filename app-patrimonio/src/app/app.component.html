@@ -1,1 +1,6 @@
-<router-outlet />
+@if (carregado) {
+    <router-outlet />
+}
+@else {
+    <p>Carregando...</p>
+}

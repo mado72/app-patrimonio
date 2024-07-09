@@ -59,20 +59,11 @@ abstract class Investimento {
         this.moeda = investimento.moeda;
     }
 
-    abstract get valor(): number;
 }
 
-export function valorMoedaInvestimento(inv: Investimento, cotacao: Cotacao) {
-    return inv.valor * cotacao.valor;
-}
-
-export type IAtivo = Omit<Ativo, "identity"> & {
-    valor: number;
-};
+export type IAtivo = Omit<Ativo, "identity">;
 
 export class Ativo extends Investimento {
-
-    private _valor!: number;
 
     sigla: string;
 
@@ -84,24 +75,18 @@ export class Ativo extends Investimento {
 
     tipo?: TipoInvestimento;
 
-    referencia?: string;
+    referencia?: {
+        id: string;
+        tipo: TipoInvestimento;
+    };
 
     constructor(ativo: IAtivo) {
         super(ativo);
-        this._valor = ativo.valor;
         this.sigla = ativo.sigla;
         this.setor = ativo.setor;
         this.siglaYahoo = ativo.siglaYahoo;
         this.tipo = ativo.tipo;
         this.referencia = ativo.referencia;
-    }
-
-    get valor() {
-        return this._valor;
-    }
-
-    set valor(v: number) {
-        this._valor = v;
     }
 
 }
@@ -115,14 +100,6 @@ export class AtivoRefCarteira extends Ativo {
         this.carteira = carteira;
     }
 
-    override get valor() {
-        return this.carteira.valor;
-    }
-
-    override set valor(v: number) {
-        console.warn("Valor do ativo ref carteira não pode ser alterado");
-    }
-
 }
 
 export class AtivoRefCotacao extends Ativo {
@@ -132,20 +109,6 @@ export class AtivoRefCotacao extends Ativo {
         this.cotacao = cotacao;
     }
 
-    override get valor() {
-        return this.cotacao?.valor || 0;
-    }
-
-    override set valor(v: number) {
-        console.warn("Valor do ativo ref cotacao não pode ser alterado");
-    }
-}
-
-export function valorAtivoEm(ativo: IAtivo, outraCotacao: Cotacao) {
-    if (!ativo.cotacao) {
-        throw `Cotação não definida para o ativo ${ativo.sigla}`
-    }
-    return ativo.valor * ativo.cotacao.converterPara(outraCotacao)
 }
 
 
@@ -171,7 +134,7 @@ export class Carteira extends Investimento {
     classe: TipoInvestimento;
 
     constructor(carteira: ICarteira | Carteira, ativos?: CarteiraAtivo[]) {
-        super({ ...carteira, valor: 0 });
+        super({ ...carteira });
         this.ativos = ativos || carteira.ativos;
         this.objetivo = carteira.objetivo;
         this.classe = carteira.classe;
@@ -181,7 +144,7 @@ export class Carteira extends Investimento {
         if (!this.ativos) {
             return 0;
         }
-        return this.ativos.reduce((acc, ativo) => acc += ativo?.vlAtual || 0, 0);
+        return this.ativos.reduce((acc, ativo) => acc += (ativo.ativo?.cotacao?.valor || NaN) * ativo.quantidade || ativo.vlAtual || NaN, 0);
     }
 }
 
@@ -217,7 +180,6 @@ export function createAtivo(): Ativo {
         sigla: '',
         nome: '',
         setor: '',
-        moeda: Moeda.BRL,
-        valor: 0
+        moeda: Moeda.BRL
     })
 }

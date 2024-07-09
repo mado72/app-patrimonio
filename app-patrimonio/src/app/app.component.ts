@@ -12,7 +12,7 @@ import { InvestimentoStateService } from './state/investimento-state.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnDestroy {
   title = 'app-patrimonio';
 
   private timerSubscription! : Subscription;
@@ -21,9 +21,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private investimentoStateService = inject(InvestimentoStateService);
 
+  carregado = false;
+
   erro: any;
 
-  ngOnInit(): void {
+  constructor() {
     this.investimentoStateService.ativoError.subscribe(error=> {
       if(!!error){
         this.displayError(error, "Ativos não carregados");
@@ -42,7 +44,15 @@ export class AppComponent implements OnInit, OnDestroy {
         this.investimentoStateService.limparErrosCotacoes();
       }
     })
-    this.investimentoStateService.obterAlocacoes().subscribe();
+    this.obterAlocacoes();
+  }
+
+  private obterAlocacoes() {
+    this.investimentoStateService.obterAlocacoes().subscribe((result) => {
+      console.log(`Alocacao concluída`, result);
+      this.investimentoStateService.notificar();
+      this.carregado = true;
+    });
   }
 
   ngOnDestroy(): void {
@@ -56,7 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.timerSubscription = timer(30000).pipe(
         map(()=>{
           console.warn("Fazendo reload...");
-          this.ngOnInit();
+          this.obterAlocacoes();
         }),
         take(1)
       ).subscribe();

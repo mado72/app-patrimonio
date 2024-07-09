@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { BehaviorSubject, catchError, forkJoin, interval, map, mergeMap, of, Subject, Subscription, switchMap, take, takeUntil, takeWhile, tap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, concatMap, forkJoin, interval, map, mergeMap, of, Subject, Subscription, switchMap, take, takeUntil, takeWhile, tap, timer } from 'rxjs';
 import { Moeda } from '../models/base.model';
 import { Cotacao } from '../models/cotacao.models';
 import { Ativo, Carteira, ICarteira, TipoInvestimento } from '../models/investimento.model';
@@ -115,6 +115,12 @@ export class InvestimentoStateService implements OnDestroy{
       }
   }
 
+  notificar() {
+    this.ativoState$.state$.next(this.ativoState$.state$.value)
+    this.carteiraState$.state$.next(this.carteiraState$.state$.value)
+    this.cotacaoState$.state$.next(this.cotacaoState$.state$.value)
+  }
+
   get ativo() {
     return this.ativoState$.entities.pipe(
       map(dictionary => Object.values(dictionary))
@@ -184,38 +190,73 @@ export class InvestimentoStateService implements OnDestroy{
   obterAlocacoes() {
     this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Processing });
     this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Processing });
+    this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Processing });
 
     return forkJoin({
       carteiras: this.carteiraService.getCarteiras({}),
-      ativos: this.ativoService.getAtivos({})
-    }).pipe(
-      mergeMap(result => {
-        const carteiras = result.carteiras;
-        const ativos = result.ativos;
-        this.carteiraState$.state$.value.entities = this.mapearCarteirasAtivos(carteiras, ativos);
-        this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Executed });
+      ativosCotacoes: this.ativoService.getAtivos({}).pipe(
+        concatMap(ativos => {
+          return this.cotacaoService.getCotacoes(ativos).pipe(
+            map(cotacoes => {
+              const moedas = Array.from(Object.keys(Moeda));
 
-        this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Processing });
-        return this.cotacaoService.getCotacoes(ativos).pipe(
-          map(cotacoes => {
-            const dictionaryCotacoes = clearDictionary(this.cotacaoState$.state$.value.entities);
-            cotacoes.forEach(entity => dictionaryCotacoes[entity.simbolo] = entity);
-            this.cotacaoState$.setState({
-              ...this.cotacaoState$.state$.value,
-              entities: { ...dictionaryCotacoes },
-              status: DataStatus.Executed
+              const dictionaryCotacoes = clearDictionary(this.cotacaoState$.state$.value.entities);
+              cotacoes.forEach(entity => dictionaryCotacoes[entity.simbolo] = entity);
+
+              this.ativoState$.setState({
+                ...this.ativoState$.state$.value,
+                entities: this.mapearAtivosCotacoes(ativos, Object.values(dictionaryCotacoes)),
+                status: DataStatus.Executed
+              });
+
+              moedas.flatMap(moedaInicial=>moedas.filter(moeda=> moeda !== moedaInicial)
+                  .map(moeda=>({sigla: `${moedaInicial}${moeda}`, de: moedaInicial, para: moeda})))
+                  .map(item=>({...item, ativo: ativos.find(ativo=>ativo.sigla === item.sigla)}))
+                  .filter(item=> !!item.ativo?.cotacao)
+                  .map(item=>({...item, cotacao: item.ativo?.cotacao}))
+                  .forEach(item => {
+                    const cotacaoDePara = new Cotacao({
+                      simbolo: item.sigla,
+                      moeda: item.para as Moeda,
+                      valor: item.cotacao?.valor || NaN,
+                      data: new Date()
+                    });
+                    const cotacaoParaDe = new Cotacao({
+                      simbolo: `${item.para}${item.de}`,
+                      data: cotacaoDePara.data,
+                      moeda: item.de as Moeda,
+                      valor: 1/cotacaoDePara.valor
+                    })
+                    dictionaryCotacoes[cotacaoDePara.simbolo] = cotacaoDePara;
+                    dictionaryCotacoes[cotacaoParaDe.simbolo] = cotacaoParaDe;
+                  })
+              
+
+              this.cotacaoState$.setState({
+                ...this.cotacaoState$.state$.value,
+                entities: { ...dictionaryCotacoes },
+                status: DataStatus.Executed
+              })
+              
+              return {ativos, cotacoes}
+            }),
+            catchError(error => {
+              this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Error, error });
+              throw error;
             })
-            this.ativoState$.setState({
-              ...this.ativoState$.state$.value,
-              entities: this.mapearAtivosCotacoes(ativos, Object.values(dictionaryCotacoes)),
-              status: DataStatus.Executed
-            });
-          }),
-          catchError(error => {
-            this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Error, error });
-            return of(null);
-          }),
-        )
+          )
+        })
+      )
+    }).pipe(
+      tap(result => {
+        const carteiras = result.carteiras;
+        this.carteiraState$.state$.value.entities = this.mapearCarteirasAtivos(carteiras, result.ativosCotacoes.ativos);
+        this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Executed });
+        return {
+          carteiras,
+          ativos: result.ativosCotacoes.ativos,
+          cotacoes: result.ativosCotacoes.cotacoes
+        }
       }),
       catchError(error => {
         this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Error, error });

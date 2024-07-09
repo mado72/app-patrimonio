@@ -7,6 +7,7 @@ import { ModalService } from '../../../services/modal.service';
 import { InvestimentoStateService } from '../../../state/investimento-state.service';
 import { AtivosCardComponent } from '../ativos-card/ativos-card.component';
 import { CarteiraCardComponent } from '../carteira-card/carteira-card.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-protifolio',
@@ -25,6 +26,8 @@ export class PortifolioComponent implements OnInit {
   private investimentoStateService = inject(InvestimentoStateService);
 
   private modalService = inject(ModalService);
+
+  private router = inject(Router);
 
   carteiras$ = this.investimentoStateService.carteira;
   ativos$ = this.investimentoStateService.ativo;
@@ -47,16 +50,17 @@ export class PortifolioComponent implements OnInit {
   }
 
   editarCarteira(carteira: Carteira) {
-    this.modalService.openCarteiraModalComponent(carteira).subscribe(result => {
-      if (result.comando === 'salvar') {
-        if (!result.dados._id) {
-          this.investimentoStateService.adicionarCarteira(result.dados);
-        }
-        else {
-          this.investimentoStateService.atualizarCarteira(result.dados);
-        }
-      }
-    })
+    this.router.navigate(['investimento/carteira', carteira.identity])
+    // this.modalService.openCarteiraModalComponent(carteira).subscribe(result => {
+    //   if (result.comando === 'salvar') {
+    //     if (!result.dados._id) {
+    //       this.investimentoStateService.adicionarCarteira(result.dados);
+    //     }
+    //     else {
+    //       this.investimentoStateService.atualizarCarteira(result.dados);
+    //     }
+    //   }
+    // })
   }
 
   removerCarteira(carteira: Carteira) {

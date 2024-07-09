@@ -29,7 +29,7 @@
         <div class="row mt-3">
             <div class="form-group col-md">
                 <label for="tipo" class="form-label">Tipo</label>
-                <select name="tipo" id="tipo" class="form-select" [(ngModel)]="ativo.tipo">
+                <select name="tipo" id="tipo" class="form-select" [(ngModel)]="tipo">
                     <option [value]="undefined">Selecione...</option>
                     <option *ngFor="let tipo of tiposKey; index as index" [ngValue]="tipo">{{tiposStr[index]}}</option>
                 </select>
@@ -49,7 +49,7 @@
             </div>
         </div>
 
-    @switch (ativo.tipo) {
+    @switch (tipo) {
         @case (tipoCarteiraRef) {
             <div class="form-group">
                 <label for="carteiras" class="form-label">Carteiras</label>

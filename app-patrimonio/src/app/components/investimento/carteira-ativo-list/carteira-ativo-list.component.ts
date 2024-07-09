@@ -66,16 +66,41 @@ export class CarteiraAtivoListComponent {
     return Object.assign({}, item, item.ativo as AuxAtivo);
   }
 
-  calcularTotais() {
+  export type CalcularTotaisReturnType = ReturnType<typeof calcularTotais>;
+
+function calcularTotais() {
     const ativos = this.ativos.map(item=>this.transform(item));
 
     const consolidado = consolidaValores(
-      ativos, 
+    itemAtivos, 
       (ativo)=>ativo.quantidade, 
       (ativo)=>ativo.vlInicial, 
       (ativo)=>ativo.objetivo, 
       (ativo)=>{
-        return ativo.ativo?.cotacao ? ativo.ativo.cotacao.aplicar(ativo.quantidade) : ativo.vlAtual || NaN;
+        if (ativo.ativo?.tipo === TipoInvestimento.Referencia) {
+        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Carteira) {
+          const carteira = mapCarteira.get(ativo.ativo.referencia.id);
+          if (carteira) {
+            if (carteira.moeda === ativo.moeda) {
+              return carteira.valor;
+            }
+            else {
+              const cotacaoAtivo = mapCotacao.get(`${ativo.moeda}${carteira.moeda}`);
+              if (cotacaoAtivo ) {
+                return cotacaoAtivo.valor * carteira.valor;
+              }
+            }
+          }
+        }
+        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Moeda) {
+          const cotacao = mapCotacao.get(ativo.ativo.referencia.id);
+          if (cotacao) {
+            return cotacao.valor;
+          }
+        }
+      }
+      ativo.cotacao = mapCotacao.get(ativo.ativo?.siglaYahoo as string);
+      return (ativo.cotacao ? ativo.cotacao?.aplicar(ativo.quantidade) : ativo.vlAtual) || NaN;
       });
 
     this.consolidado = consolidado;

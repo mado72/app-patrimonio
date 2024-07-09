@@ -26,7 +26,7 @@ export class ModalService {
     const modalRef = this.modal.open(AtivoModalComponent, { size: 'lg' });
     const component = modalRef.componentInstance as AtivoModalComponent;
     
-    component.ativo = {...ativo} as Ativo;
+    component.ativo = ativo;
     component.onClose.subscribe(()=>modalRef.dismiss('cancelar'));
     component.onRemove.subscribe((event)=>modalRef.close({comando: 'excluir', dados: event} as ResultType));
     component.onSave.subscribe((event)=>modalRef.close({comando: 'salvar', dados: event} as ResultType));
