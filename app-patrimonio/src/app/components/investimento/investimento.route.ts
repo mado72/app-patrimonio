@@ -14,6 +14,11 @@ export const routes: Routes = [
         loadComponent: () => import('./portifolio/protifolio.component').then(m => m.PortifolioComponent)
     },
     {
+        path: 'carteira/:id',
+        loadComponent: () => import('./carteira/carteira.component').then(m => m.CarteiraComponent)
+
+    },
+    {
         path: 'ativos',
         loadComponent: () => import('./ativos-card/ativos-card.component').then(m => m.AtivosCardComponent)
     }
