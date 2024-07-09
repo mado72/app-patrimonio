@@ -8,6 +8,7 @@ import { InvestimentoStateService } from '../../../state/investimento-state.serv
 import { AtivosCardComponent } from '../ativos-card/ativos-card.component';
 import { CarteiraCardComponent } from '../carteira-card/carteira-card.component';
 import { Router } from '@angular/router';
+import { InfoCotacaoBatch } from '../../../services/cotacao.service';
 
 @Component({
   selector: 'app-protifolio',
@@ -40,6 +41,10 @@ export class PortifolioComponent implements OnInit {
   carteiraStatus$ = this.investimentoStateService.carteiraStatus$;
   ativoStatus$ = this.investimentoStateService.ativoStatus$;
   cotacoesStatus$ = this.investimentoStateService.cotacaoStatus$;
+
+  info?: InfoCotacaoBatch & {
+    progresso: number;
+  };
 
   ngOnInit(): void {
   }
@@ -126,8 +131,8 @@ export class PortifolioComponent implements OnInit {
   }
 
   atualizarCotacoes() {
-    this.investimentoStateService.carregarCotacoesBatch().asObservable().subscribe(info=>{
-      console.log('Cotações atualizadas com sucesso!', info);
+    this.investimentoStateService.carregarCotacoesBatch().subscribe(info=>{
+      this.info = {...info, progresso: ((info.processados + info.erros) / info.total)};
     });
   }
 

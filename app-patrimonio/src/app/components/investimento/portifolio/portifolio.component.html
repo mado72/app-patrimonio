@@ -3,6 +3,13 @@
     <button type="button" class="btn btn-light" (click)="adicionarAtivo()">Adicionar Ativo</button>
     <button type="button" class="btn btn-light" (click)="atualizarCotacoes()">Atualizar Cotações</button>
 </div>
+@if (info) {
+    <div class="d-flex w-100">
+        <div class="progress w-100" role="progressbar" aria-label="Atualização de cotações">
+            <div class="progress-bar" [style]="{'width': 100 * info.progresso + '%'}"></div>
+        </div>
+    </div>
+}
 
 <div>
     Carteira Status: {{carteiraStatus$ | async}}

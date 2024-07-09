@@ -16,6 +16,12 @@ export type InfoCotacaoBatch = {
     status: string
 }
 
+export type InicioCotacaoBatch = {
+    data: Date,
+    siglas: string[],
+    uuid: string
+}
+
 
 
 @Injectable({
@@ -49,11 +55,17 @@ export class CotacaoService {
     }
 
     atualizarCotacoesBatch() {
-        return this.http.put<string>(`${environment.apiUrl}/cotacao/batch/cotacoes`, {});
+        return this.http.put<InicioCotacaoBatch>(`${environment.apiUrl}/cotacao/batch/cotacoes`, {});
     }
 
-    obterInfoCotacoesBatch() {
-        return this.http.get<Map<string, InfoCotacaoBatch>>(`${environment.apiUrl}/cotacao/batch/cotacoes`);
+    obterInfoCotacoesBatch(key: InicioCotacaoBatch) {
+        return this.http.get<any>(`${environment.apiUrl}/cotacao/batch/cotacoes`).pipe(
+            map(infoCotacoesBatch => {
+                console.debug(`Processando ${key.uuid}`);
+                const info = infoCotacoesBatch[key.uuid] as InfoCotacaoBatch;
+                return info;
+            })
+        );
     }
 
 }

@@ -1,5 +1,5 @@
-import { Injectable, OnDestroy, inject } from '@angular/core';
-import { BehaviorSubject, catchError, concatMap, forkJoin, interval, map, mergeMap, of, Subject, Subscription, switchMap, take, takeUntil, takeWhile, tap, timer } from 'rxjs';
+import { inject, Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, catchError, concatMap, forkJoin, interval, map, mergeMap, of, Subject, Subscription, switchMap, take, takeWhile, tap } from 'rxjs';
 import { Moeda } from '../models/base.model';
 import { Cotacao } from '../models/cotacao.models';
 import { Ativo, Carteira, ICarteira, TipoInvestimento } from '../models/investimento.model';
@@ -491,31 +491,27 @@ export class InvestimentoStateService implements OnDestroy{
   }
 
   carregarCotacoesBatch() {
-    const sub = new Subject<InfoCotacaoBatch | undefined>();
-    this.cotacaoService.atualizarCotacoesBatch().subscribe(
-      {
-        next: (carregamentoId) => {
-          interval(5_000).pipe(
-            takeWhile(()=>!sub.closed),
-            switchMap(()=>this.cotacaoService.obterInfoCotacoesBatch().pipe(
-              tap((mapInfo)=>{
-                console.log(`Carregamento ${carregamentoId} em andamento`);
-                const info = mapInfo.get(carregamentoId);
-                sub.next(info);
-                if (!info || info.status !== 'processando') {
-                  sub.complete();
-                }
-              })
-            ))
-          )
-        },
-        error: (error) => {
-          sub.error(error);
-          this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Error, error });
-        }
-      }
+    return this.cotacaoService.atualizarCotacoesBatch().pipe(
+      switchMap(key => interval(1000).pipe(
+        tap(console.debug),
+        mergeMap(_ => this.cotacaoService.obterInfoCotacoesBatch(key).pipe(
+          map(info=>{
+            console.debug(info);
+            return info;
+          })
+        ))
+      )),
+      takeWhile((info)=>{
+        return info.status === 'processando' && (info.total > info.processados + info.erros);
+      }),
+      tap((info)=>{
+        console.debug(`Concluiu`, info)
+      }),
+      catchError(error=>{
+        this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Error, error });
+        throw error;
+      })
     );
-    return sub;
   }
 
   converteParaMoeda(de: Moeda, para: Moeda, valor: number) {
