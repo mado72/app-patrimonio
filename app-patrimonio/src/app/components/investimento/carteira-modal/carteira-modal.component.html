@@ -33,7 +33,7 @@
             <input type="number" name="objetivo" id="objetivo" class="form-control" [(ngModel)]="objetivoPerc"
                 step="0.01" min="0" max="100">
         </div>
-        {{carteira | json}}
+        <pre class="debug">{{carteira | json}}</pre>        
     </div>
     <div class="modal-footer">
         <div class="form-group">

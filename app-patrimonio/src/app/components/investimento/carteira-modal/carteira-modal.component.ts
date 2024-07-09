@@ -28,7 +28,7 @@ export class CarteiraModalComponent {
   
   @Input()
   set carteira(carteira: Carteira) {
-    this._carteira = {...carteira, valor: carteira.valor};
+    this._carteira = {...carteira, valor: carteira.valor, vlInicial: carteira.vlInicial};
   }
 
   salvarEdicao() {
