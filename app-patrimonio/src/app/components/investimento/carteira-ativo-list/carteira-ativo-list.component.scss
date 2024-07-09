@@ -1,10 +1,13 @@
 table {
     table-layout: fixed;
     th {
-        width: 6.75%;
+        width: 6%;
     }
     th:first-child {
         width: 19%
+    }
+    th:last-child {
+        width: 9%;
     }
 }
 
