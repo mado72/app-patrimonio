@@ -1,11 +1,13 @@
 <div class="card m-3">
     <div class="card-header d-flex justify-content-between">
         <h3>
-            {{carteira.nome}}
+            {{carteira.nome}}  ({{carteira.moeda}})
         </h3>
-        <div class="float-end">
-            <button type="button" class="border-0" (click)="ocultarCarteira()">&times;</button>
-        </div>
+        @if (!ocultarClose) {
+            <div class="float-end">
+                <button type="button" class="border-0" (click)="ocultarCarteira()">&times;</button>
+            </div>
+        }
     </div>
     <app-carteira-ativo-list 
             [ativos]="carteira.ativos" 

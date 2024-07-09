@@ -19,6 +19,7 @@ import { CarteiraAtivoListComponent } from '../carteira-ativo-list/carteira-ativ
 export class CarteiraCardComponent {
 
   @Input() carteira!: Carteira;
+  @Input() ocultarClose = false;
   @Output() onEditarCarteira = new EventEmitter<Carteira>();
   @Output() onRemoverCarteira = new EventEmitter<Carteira>();
   @Output() onOcultarCarteira = new EventEmitter<Carteira>();

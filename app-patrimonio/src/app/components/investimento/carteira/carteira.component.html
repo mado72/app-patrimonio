@@ -1,5 +1,5 @@
 @if (!!carteira && !!carteiras && !! cotacoes) {
-    <app-carteira-card [carteira]="carteira"
+    <app-carteira-card [carteira]="carteira" [ocultarClose]="true"
         (onEditarCarteira)="editarCarteira($event)"
         (onRemoverCarteira)="removerCarteira(carteira)"
         (onOcultarCarteira)="ocultarCarteira(carteira)"
