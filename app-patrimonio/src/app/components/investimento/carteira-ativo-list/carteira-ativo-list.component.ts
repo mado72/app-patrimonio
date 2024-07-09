@@ -1,10 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { Ativo, Carteira, CarteiraAtivo, ICarteiraAtivo, TipoInvestimento } from '../../../models/investimento.model';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Ativo, CarteiraAtivo, ICarteiraAtivo } from '../../../models/investimento.model';
 import { ConsolidadoTotal, consolidaValores } from '../../../util/formulas';
-import { InvestimentoStateService } from '../../../state/investimento-state.service';
-import { forkJoin, map } from 'rxjs';
-import { Cotacao } from '../../../models/cotacao.models';
 
 type AuxAtivo = Pick<Ativo, "identity" | "nome" | "sigla" | "moeda" | "cotacao">;
 type ListItem = AuxAtivo & Omit<CarteiraAtivo, "ativo">;
@@ -18,9 +15,7 @@ type ListItem = AuxAtivo & Omit<CarteiraAtivo, "ativo">;
   templateUrl: './carteira-ativo-list.component.html',
   styleUrl: './carteira-ativo-list.component.scss'
 })
-export class CarteiraAtivoListComponent implements OnInit {
-
-  private investimentoStateService = inject(InvestimentoStateService);
+export class CarteiraAtivoListComponent {
 
   private _ativos: CarteiraAtivo[] = [];
 
@@ -28,21 +23,13 @@ export class CarteiraAtivoListComponent implements OnInit {
     return this._ativos;
   }
 
-  consolidado!: CalcularTotaisReturnType;
-  //= this.calcularTotais();
-
-  ngOnInit(): void {
-      this.consolidado = calcularTotais(this.carteiras, this.cotacoes, this._ativos);
-  }
+  consolidado !: ConsolidadoTotal<ListItem>;
 
   @Input()
   public set ativos(value: CarteiraAtivo[]) {
     this._ativos = value;
+    this.calcularTotais();
   }
-
-  @Input() carteiras!: Carteira[];
-
-  @Input() cotacoes!: Cotacao[];
 
   @Output() onRemoveAtivo = new EventEmitter<CarteiraAtivo>();
 
@@ -75,29 +62,22 @@ export class CarteiraAtivoListComponent implements OnInit {
     this.onAdicionarAtivo.emit();
   }
 
+  transform(item: CarteiraAtivo) {
+    return Object.assign({}, item, item.ativo as AuxAtivo);
+  }
 
-}
+  export type CalcularTotaisReturnType = ReturnType<typeof calcularTotais>;
 
+function calcularTotais() {
+    const ativos = this.ativos.map(item=>this.transform(item));
 
-function transform(item: CarteiraAtivo) {
-  return Object.assign({}, item, item.ativo as AuxAtivo);
-}
-
-export type CalcularTotaisReturnType = ReturnType<typeof calcularTotais>;
-
-function calcularTotais(carteiras: Carteira[], cotacoes: Cotacao[], ativos: CarteiraAtivo[]) {
-  const mapCarteira = new Map(carteiras.map(carteira => [carteira.identity.toString(), carteira]));
-  const mapCotacao = new Map(cotacoes.map(cotacao => [cotacao.simbolo, cotacao]));
-
-  const itemAtivos = ativos.map(item=>transform(item));
-
-  const consolidado = consolidaValores(
+    const consolidado = consolidaValores(
     itemAtivos, 
-    (ativo)=>ativo.quantidade, 
-    (ativo)=>ativo.vlInicial, 
-    (ativo)=>ativo.objetivo, 
-    (ativo)=>{
-      if (ativo.ativo?.tipo === TipoInvestimento.Referencia) {
+      (ativo)=>ativo.quantidade, 
+      (ativo)=>ativo.vlInicial, 
+      (ativo)=>ativo.objetivo, 
+      (ativo)=>{
+        if (ativo.ativo?.tipo === TipoInvestimento.Referencia) {
         if (ativo.ativo.referencia?.tipo == TipoInvestimento.Carteira) {
           const carteira = mapCarteira.get(ativo.ativo.referencia.id);
           if (carteira) {
@@ -121,7 +101,10 @@ function calcularTotais(carteiras: Carteira[], cotacoes: Cotacao[], ativos: Cart
       }
       ativo.cotacao = mapCotacao.get(ativo.ativo?.siglaYahoo as string);
       return (ativo.cotacao ? ativo.cotacao?.aplicar(ativo.quantidade) : ativo.vlAtual) || NaN;
-    });
+      });
 
-  return consolidado;
+    this.consolidado = consolidado;
+  }
+
 }
+

@@ -9,8 +9,6 @@
     </div>
     <app-carteira-ativo-list 
             [ativos]="carteira.ativos" 
-            [carteiras]="carteiras"
-            [cotacoes]="cotacoes"
             (onRemoveAtivo)="removeCarteiraAtivo($event)"
             (onEditarAtivo)="editarCarteiraAtivo($event)"
             (onAdicionarAtivo)="adicionarCarteiraAtivo()" />

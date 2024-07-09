@@ -1,7 +1,6 @@
 import { AsyncPipe, JsonPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { map } from 'rxjs';
-import { Cotacao } from '../../../models/cotacao.models';
 import { Carteira, CarteiraAtivo } from '../../../models/investimento.model';
 import { InvestimentoStateService } from '../../../state/investimento-state.service';
 import { CarteiraAtivoListComponent } from '../carteira-ativo-list/carteira-ativo-list.component';
@@ -20,8 +19,6 @@ import { CarteiraAtivoListComponent } from '../carteira-ativo-list/carteira-ativ
 export class CarteiraCardComponent {
 
   @Input() carteira!: Carteira;
-  @Input() carteiras!: Carteira[];
-  @Input() cotacoes!: Cotacao[];
   @Output() onEditarCarteira = new EventEmitter<Carteira>();
   @Output() onRemoverCarteira = new EventEmitter<Carteira>();
   @Output() onOcultarCarteira = new EventEmitter<Carteira>();

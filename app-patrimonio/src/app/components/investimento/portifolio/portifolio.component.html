@@ -23,28 +23,18 @@
     }
 </div>
 
-@if ((cotacoes$ | async); as cotacoes) {
-    @if (carteiras$ | async; as carteiras) {
-    
-        @for (carteira of carteiras ; track carteira.identity) {
-            <div>
-        
-                <app-carteira-card [carteira]="carteira"
-                    [carteiras]="carteiras"
-                    [cotacoes]="cotacoes"
-                    (onEditarCarteira)="editarCarteira($event)"
-                    (onRemoverCarteira)="removerCarteira(carteira)"
-                    (onOcultarCarteira)="ocultarCarteira(carteira)"
-                    (onEditarCarteiraAtivo)="editarCarteiraAtivo($event)"
-                    (onAdicionarCarteiraAtivo)="adicionarCarteiraAtivo($event)"
-                    (onRemoverCarteiraAtivo)="removerCarteiraAtivo($event)"
-                    />
-            </div>
-
-        }
-    }
+@for (carteira of (carteiras$ | async) ; track carteira.identity) {
+    <div>
+        <app-carteira-card [carteira]="carteira"
+            (onEditarCarteira)="editarCarteira($event)"
+            (onRemoverCarteira)="removerCarteira(carteira)"
+            (onOcultarCarteira)="ocultarCarteira(carteira)"
+            (onEditarCarteiraAtivo)="editarCarteiraAtivo($event)"
+            (onAdicionarCarteiraAtivo)="adicionarCarteiraAtivo($event)"
+            (onRemoverCarteiraAtivo)="removerCarteiraAtivo($event)"
+            />
+    </div>
 }
-
 
 @if ((ativos$ | async); as itens) {
     <app-ativos-card [ativos]="itens"/>
