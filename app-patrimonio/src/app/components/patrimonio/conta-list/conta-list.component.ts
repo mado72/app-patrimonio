@@ -91,4 +91,13 @@ export class ContaListComponent {
     return this.tiposContaSelecionados.includes(tipoConta);
   }
 
+  tipoAbrev(tipoConta: TipoConta) {
+    switch (tipoConta) {
+      case TipoConta.CARTAO: return 'CARTAO';
+      case TipoConta.CORRENTE: return 'C/C';
+      case TipoConta.INVESTIMENTO: return 'INV';
+      case TipoConta.POUPANCA: return 'POUP';
+    }
+  }
+
 }

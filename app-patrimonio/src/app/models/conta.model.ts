@@ -6,6 +6,13 @@ export enum TipoConta {
     POUPANCA = "POUPANCA",
     CARTAO = "CARTAO"
 }
+
+export enum TipoContaStr {
+    CORRENTE = "C/C",
+    INVESTIMENTO = "INV.",
+    POUPANCA = "POUP.",
+    CARTAO = "CARTAO"
+}
 export interface IConta extends Conta {}
 
 export class Conta {

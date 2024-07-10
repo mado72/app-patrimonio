@@ -1,9 +1,9 @@
-<div class="card">
+<div class="card m-2">
     <div class="header d-flex">
-        <h4 class="title">Contas</h4>
+        <h4 class="title">Saldos</h4>
         <div class="text-end ms-auto">
             <div class="d-inline-block" ngbDropdown>
-                <button class="btn btn-secondary" type="button" name="dpDown" id="dropdown" ngbDropdownToggle>Filtro</button>
+                <button class="btn btn-sm btn-secondary m-2" type="button" name="dpDown" id="dropdown" ngbDropdownToggle>Filtro</button>
                 <div class="dropdown-menu" ngbDropdownMenu>
                     @for (tipoConta of tiposConta; track $index) {
                         <button ngbDropdownItem type="button" class="d-flex" (click)="tipoContaAlternar(tipoConta)">
@@ -24,8 +24,8 @@
             <tr class="table-dark">
                 <th>Conta</th>
                 <th class="text-center">Tipo</th>
-                <th class="text-center">Saldo Atual</th>
-                <th class="text-center">Vl. Real</th>
+                <th class="text-center">Saldo</th>
+                <th class="text-center">Saldo R$</th>
             </tr>
         </thead>
         <tbody>
@@ -36,16 +36,16 @@
                             {{item.conta}}
                         </a>
                     </td>
-                    <td class="text-center">{{item.tipo | capitalize }}</td>
-                    <td class="text-end"><ng-container [ngTemplateOutlet]="DisplayNum" [ngTemplateOutletContext]="{valor:item.saldo, sigla: sigla(item.moeda)}"/></td>
-                    <td class="text-end"><ng-container [ngTemplateOutlet]="DisplayNum" [ngTemplateOutletContext]="{valor:saldoReal(item), sigla: 'R$'}"/></td>
+                    <td class="abrev text-center">{{tipoAbrev(item.tipo)}}</td>
+                    <td class="number text-end"><ng-container [ngTemplateOutlet]="DisplayNum" [ngTemplateOutletContext]="{valor:item.saldo, sigla: sigla(item.moeda)}"/></td>
+                    <td class="number text-end"><ng-container [ngTemplateOutlet]="DisplayNum" [ngTemplateOutletContext]="{valor:saldoReal(item), sigla: ''}"/></td>
                 </tr>
             }
         </tbody>
         <tfoot>
             <tr class="table-secondary">
                 <th colspan="3" class="fw-bold">Total</th>
-                <th class="text-end"><ng-container [ngTemplateOutlet]="DisplayNum" [ngTemplateOutletContext]="{valor:totais$ | async, sigla: 'R$'}"/></th>
+                <th class="text-end"><ng-container [ngTemplateOutlet]="DisplayNum" [ngTemplateOutletContext]="{valor:totais$ | async, sigla: ''}"/></th>
             </tr>
         </tfoot>
     </table>
