@@ -54,6 +54,7 @@ export class AppComponent implements OnDestroy {
       }
     });
     this.obterAlocacoes();
+    this.patrimonioStateService.obterContas();
   }
 
   private obterAlocacoes() {
@@ -62,10 +63,6 @@ export class AppComponent implements OnDestroy {
       this.investimentoStateService.notificar();
       this.carregado = true;
     });
-  }
-
-  private obterPatrimonio() {
-    
   }
 
   ngOnDestroy(): void {
