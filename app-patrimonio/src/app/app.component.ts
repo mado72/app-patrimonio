@@ -4,6 +4,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subscription, map, take, timer } from 'rxjs';
 import { MenuSuperiorComponent } from './components/menu-superior/menu-superior.component';
 import { InvestimentoStateService } from './state/investimento-state.service';
+import { PatrimonioStateService } from './state/patrimonio-state.service';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,8 @@ export class AppComponent implements OnDestroy {
   private toastrService = inject(ToastrService);
 
   private investimentoStateService = inject(InvestimentoStateService);
+
+  private patrimonioStateService = inject(PatrimonioStateService);
 
   carregado = false;
 
@@ -44,6 +47,12 @@ export class AppComponent implements OnDestroy {
         this.investimentoStateService.limparErrosCotacoes();
       }
     })
+    this.patrimonioStateService.contaError$.subscribe(error=> {
+      if(!!error){
+        this.displayError(error, "Conta não carregada");
+        this.patrimonioStateService.limparErrosConta();
+      }
+    });
     this.obterAlocacoes();
   }
 
@@ -53,6 +62,10 @@ export class AppComponent implements OnDestroy {
       this.investimentoStateService.notificar();
       this.carregado = true;
     });
+  }
+
+  private obterPatrimonio() {
+    
   }
 
   ngOnDestroy(): void {
