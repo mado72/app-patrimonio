@@ -1,0 +1,8 @@
+<pre>
+    @if (totais$ | async; as totais) {
+        @for (alocacao of (alocacoes$ | async); track $index) {
+            {{alocacao.carteira}}   {{alocacao.financeiro}} {{alocacao.planejado}}  {{atual(alocacao, totais)}}
+        }
+            {{totais.carteira}}   {{totais.financeiro}} {{totais.planejado}}  {{atual(totais, totais)}}
+    }
+</pre>

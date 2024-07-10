@@ -21,5 +21,9 @@ export const InvestimentoRoutes: Routes = [
     {
         path: 'ativos',
         loadComponent: () => import('./ativos-card/ativos-card.component').then(m => m.AtivosCardComponent)
+    },
+    {
+        path: 'alocacoes',
+        loadComponent: () => import('./alocacao/alocacao.component').then(m => m.AlocacaoComponent)
     }
 ];
