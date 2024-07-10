@@ -6,7 +6,7 @@ import { CarteiraAtivoModalComponent } from '../components/investimento/carteira
 import { Ativo, Carteira, CarteiraAtivo } from '../models/investimento.model';
 import { CarteiraModalComponent } from '../components/investimento/carteira-modal/carteira-modal.component';
 import { Conta } from '../models/conta.model';
-import { ContaModalComponent } from '../components/conta/conta-modal/conta-modal.component';
+import { ContaModalComponent } from '../components/patrimonio/conta-modal/conta-modal.component';
 
 export type ModalResult<T> = {
   comando: 'cancelar' | 'excluir' | 'salvar',

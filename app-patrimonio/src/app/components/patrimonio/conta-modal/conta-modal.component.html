@@ -15,7 +15,9 @@
         <label for="tipo">Tipo</label>
         <select name="tipo" id="tipo" [(ngModel)]="conta.tipo" class="form-control">
           <option [value]="undefined">Selecione...</option>
-          <option [value]="tipo" *ngFor="let tipo of tipos">{{tipo | capitalize}}</option>
+          @for (tipo of tipos; track $index) {
+            <option [value]="tipo">{{tipo | capitalize}}</option>
+          }
         </select>
       </div>
     
@@ -23,7 +25,9 @@
         <label for="moeda">Moeda</label>
         <select name="moeda" id="moeda" [(ngModel)]="conta.moeda" class="form-control">
           <option [value]="undefined">Selecione...</option>
-          <option [value]="moeda" *ngFor="let moeda of moedas">{{moeda}}</option>
+          @for (moeda of moedas; track $index) {
+            <option [value]="moeda">{{moeda}}</option>
+          }
         </select>
       </div>
     
