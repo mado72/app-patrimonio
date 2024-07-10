@@ -1,14 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, OnDestroy, Output } from '@angular/core';
-import { Ativo, Carteira, CarteiraAtivo, ICarteiraAtivo, TipoInvestimento } from '../../../models/investimento.model';
-import { ConsolidadoTotal, consolidaValores } from '../../../util/formulas';
-import { Cotacao } from '../../../models/cotacao.models';
-import { InvestimentoStateService } from '../../../state/investimento-state.service';
 import { Subject } from 'rxjs';
-import { Moeda } from '../../../models/base.model';
+import { Cotacao } from '../../../models/cotacao.models';
+import { Carteira, CarteiraAtivo, ICarteiraAtivo } from '../../../models/investimento.model';
+import { InvestimentoStateService } from '../../../state/investimento-state.service';
+import { calcularTotais, CarteiraAtivoItem, ConsolidadoTotal } from '../../../util/formulas';
 
-type AuxAtivo = Pick<Ativo, "identity" | "nome" | "sigla" | "moeda" | "cotacao">;
-type ListItem = AuxAtivo & Omit<CarteiraAtivo, "ativo">;
 
 @Component({
   selector: 'app-carteira-ativo-list',
@@ -21,7 +18,7 @@ type ListItem = AuxAtivo & Omit<CarteiraAtivo, "ativo">;
 })
 export class CarteiraAtivoListComponent implements OnDestroy {
 
-  consolidado !: ConsolidadoTotal<ListItem>;
+  consolidado !: ConsolidadoTotal<CarteiraAtivoItem>;
 
   private mapCarteira!: Map<string, Carteira>;
 
@@ -77,17 +74,17 @@ export class CarteiraAtivoListComponent implements OnDestroy {
 
   @Output() onAdicionarAtivo = new EventEmitter<void>();
 
-  removerAtivo(listItem: ListItem): void {
+  removerAtivo(listItem: CarteiraAtivoItem): void {
     const ativo: ICarteiraAtivo = this.extrairCarteiraAtivo(listItem)
     this.onRemoveAtivo.emit(ativo);
   }
 
-  editarAtivo(listItem: ListItem) {
+  editarAtivo(listItem: CarteiraAtivoItem) {
     const ativo: ICarteiraAtivo = this.extrairCarteiraAtivo(listItem)
     this.onEditarAtivo.emit(ativo);
   }
 
-  private extrairCarteiraAtivo(listItem: ListItem): CarteiraAtivo {
+  private extrairCarteiraAtivo(listItem: CarteiraAtivoItem): CarteiraAtivo {
     return {
       ativoId: listItem.ativoId,
       ativo: (listItem as any).ativo,
@@ -101,65 +98,4 @@ export class CarteiraAtivoListComponent implements OnDestroy {
   adicionarAtivo(): void {
     this.onAdicionarAtivo.emit();
   }
-}
-
-export type CalcularTotaisReturnType = ReturnType<typeof calcularTotais>;
-
-function transform(item: CarteiraAtivo) {
-  return Object.assign({}, item, item.ativo as AuxAtivo);
-}
-
-type CotacaoAtivo = (carteira: Carteira, ativo: CarteiraAtivo) => Cotacao;
-
-function calcularTotais({ carteira, cotacaoAtivo, mapCarteira, mapCotacao }: {
-  carteira: Carteira, cotacaoAtivo: CotacaoAtivo,
-  mapCarteira: Map<string | undefined, Carteira>, mapCotacao: Map<string, Cotacao>
-}) {
-
-  const ativos = carteira.ativos.map(item => transform(item));
-
-  const consolidado = consolidaValores<CarteiraAtivo & AuxAtivo>(
-    {
-      items: ativos,
-      quantidadeFn: (ativo) => ativo.quantidade,
-      valorInicialFn: (ativo) => cotacaoAtivo(carteira, ativo).aplicar(ativo.vlInicial),
-      objetivoFn: (ativo) => ativo.objetivo,
-      cotacaoFn: (ativo) => ativo.ativo?.cotacao && cotacaoAtivo(carteira, ativo).converterPara(ativo.ativo?.cotacao),
-      valorAtualFn: (ativo) => calcularValorCotacao(
-        {
-          ativo,
-          cotacaoMoeda: cotacaoAtivo(carteira, ativo),
-          valor: ativo.vlAtual,
-          carteiraRef: mapCarteira.get(ativo.ativo?.referencia?.id),
-          cotacaoAtivo: mapCotacao.get(ativo.ativo?.siglaYahoo as string)
-        })
-    }
-  );
-
-  return consolidado;
-}
-
-function calcularValorCotacao({ ativo, cotacaoMoeda, valor, carteiraRef: carteira, cotacaoAtivo }:
-  { ativo: CarteiraAtivo & AuxAtivo; cotacaoMoeda: Cotacao; valor?: number; carteiraRef?: Carteira; cotacaoAtivo?: Cotacao; }) {
-
-    const valorCalculado = () => {
-      if (ativo.ativo?.tipo === TipoInvestimento.Referencia) {
-        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Carteira && carteira) {
-          if (carteira.moeda === ativo.moeda) {
-            return carteira.valor;
-          }
-          else if (cotacaoAtivo) {
-            return cotacaoAtivo.valor * carteira.valor;
-          }
-        }
-        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Moeda && cotacaoAtivo) {
-          return cotacaoAtivo.valor;
-        }
-      }
-      ativo.cotacao = cotacaoAtivo;
-      return (ativo.cotacao ? ativo.cotacao?.aplicar(ativo.quantidade) : valor) || NaN;
-    };
-
-    return cotacaoMoeda.aplicar(valorCalculado())
-
 }

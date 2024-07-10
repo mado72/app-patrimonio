@@ -1,4 +1,5 @@
 import { Cotacao } from "../models/cotacao.models";
+import { Ativo, Carteira, CarteiraAtivo, TipoInvestimento } from "../models/investimento.model";
 
 export type Extrator<T, V> = (item: T) => V;
 export type ExtratorNum<T> = Extrator<T, number>;
@@ -73,4 +74,66 @@ export function consolidaValores<T>(
         items: dados,
         total
     }
+}
+
+
+export type CalcularTotaisReturnType = ReturnType<typeof calcularTotais>;
+
+type CarteiraAtivo2CotacaoFn = (carteira: Carteira, ativo: CarteiraAtivo) => Cotacao;
+
+export type AuxAtivo = Pick<Ativo, "identity" | "nome" | "sigla" | "moeda" | "cotacao">;
+
+export type CarteiraAtivoItem = AuxAtivo & Omit<CarteiraAtivo, "ativo">;
+
+export function calcularTotais({ carteira, cotacaoAtivo, mapCarteira, mapCotacao }: {
+  carteira: Carteira, cotacaoAtivo: CarteiraAtivo2CotacaoFn,
+  mapCarteira: Map<string | undefined, Carteira>, mapCotacao: Map<string, Cotacao>
+}) {
+
+  const ativos = carteira.ativos.map(item => ({...item, ...item.ativo as AuxAtivo}));
+
+  const consolidado = consolidaValores<CarteiraAtivo & AuxAtivo>(
+    {
+      items: ativos,
+      quantidadeFn: (ativo) => ativo.quantidade,
+      valorInicialFn: (ativo) => cotacaoAtivo(carteira, ativo).aplicar(ativo.vlInicial),
+      objetivoFn: (ativo) => ativo.objetivo,
+      cotacaoFn: (ativo) => ativo.ativo?.cotacao && cotacaoAtivo(carteira, ativo).converterPara(ativo.ativo?.cotacao),
+      valorAtualFn: (ativo) => calcularValorCotacao(
+        {
+          ativo,
+          cotacaoMoeda: cotacaoAtivo(carteira, ativo),
+          valor: ativo.vlAtual,
+          carteiraRef: mapCarteira.get(ativo.ativo?.referencia?.id),
+          cotacaoAtivo: mapCotacao.get(ativo.ativo?.siglaYahoo as string)
+        })
+    }
+  );
+
+  return consolidado;
+}
+
+function calcularValorCotacao({ ativo, cotacaoMoeda, valor, carteiraRef: carteira, cotacaoAtivo }:
+  { ativo: CarteiraAtivo & AuxAtivo; cotacaoMoeda: Cotacao; valor?: number; carteiraRef?: Carteira; cotacaoAtivo?: Cotacao; }) {
+
+    const valorCalculado = () => {
+      if (ativo.ativo?.tipo === TipoInvestimento.Referencia) {
+        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Carteira && carteira) {
+          if (carteira.moeda === ativo.moeda) {
+            return carteira.valor;
+          }
+          else if (cotacaoAtivo) {
+            return cotacaoAtivo.valor * carteira.valor;
+          }
+        }
+        if (ativo.ativo.referencia?.tipo == TipoInvestimento.Moeda && cotacaoAtivo) {
+          return cotacaoAtivo.valor;
+        }
+      }
+      ativo.cotacao = cotacaoAtivo;
+      return (ativo.cotacao ? ativo.cotacao?.aplicar(ativo.quantidade) : valor) || NaN;
+    };
+
+    return cotacaoMoeda.aplicar(valorCalculado())
+
 }
