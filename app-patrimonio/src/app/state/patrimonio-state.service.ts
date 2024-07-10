@@ -58,4 +58,36 @@ export class PatrimonioStateService {
       });
   }
 
+  excluirConta(conta: Conta) {
+    this.contaState$.setState({...this.contaState$.state$.value, status: DataStatus.Processing });
+
+    this.contaService.excluirConta(conta).subscribe({
+      next: conta=>{
+        delete this.contaState$.state$.value.entities[conta.identity.toString()];
+        this.contaState$.setState({...this.contaState$.state$.value, status: DataStatus.Executed });
+      },
+      error: error => this.contaState$.setState(
+        {
+         ...this.contaState$.state$.value, error, status: DataStatus.Error
+        }
+      )
+    })
+  }
+
+  atualizarConta(conta: Conta) {
+    this.contaState$.setState({...this.contaState$.state$.value, status: DataStatus.Processing });
+
+    this.contaService.salvarConta(conta).subscribe({
+      next: (conta) => {
+        this.contaState$.state$.value.entities[conta.identity.toString()] = conta;
+        this.contaState$.setState({...this.contaState$.state$.value, status: DataStatus.Executed });
+      },
+      error: error => this.contaState$.setState(
+        {
+         ...this.contaState$.state$.value, error, status: DataStatus.Error
+        }
+      )
+    });
+  }
+
 }

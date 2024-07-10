@@ -16,7 +16,8 @@ export class ContaService {
 
   obterContas(): Observable<Conta[]> {
     return this._http.get<IConta[]>(`${environment.apiUrl}/conta`).pipe(
-      map(contas=>contas.map(item=>new Conta(item)).sort((a,b)=>a.conta.localeCompare(b.conta)))
+      map(contas=>contas.map(item=>new Conta(item)).sort((a,b)=>a.conta.localeCompare(b.conta))),
+      tap(console.log)
     );
   }
 
@@ -24,12 +25,12 @@ export class ContaService {
     if (!conta._id) {
       return this._http.post<Conta>(`${environment.apiUrl}/conta`, conta)
         .pipe(
-          map(item => item._id != undefined)
+          map(item => new Conta(item))
         )
     }
     return this._http.put<Conta>(`${environment.apiUrl}/conta`, conta)
       .pipe(
-        map(item => item._id != undefined)
+        map(item => new Conta(item))
       )
   }
 
