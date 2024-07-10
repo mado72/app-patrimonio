@@ -1,8 +1,45 @@
-<pre>
-    @if (totais$ | async; as totais) {
-        @for (alocacao of (alocacoes$ | async); track $index) {
-            {{alocacao.carteira}}   {{alocacao.financeiro}} {{alocacao.planejado}}  {{atual(alocacao, totais)}}
-        }
-            {{totais.carteira}}   {{totais.financeiro}} {{totais.planejado}}  {{atual(totais, totais)}}
+<!-- @if ({} as dados) { -->
+<div class="card m-2">
+    <div class="card-header">
+        <h4>Alocação</h4>
+        <div class="float-right">
+            Expandido
+            <input type="checkbox" name="listaPorClasse" id="listaPorClasse" (click)="expandido = !expandido" [checked]="expandido">
+        </div>
+    </div>
+    @if (alocacoes$ | async; as dados) {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>@if (expandido) { Carteira } @else { Classe }</th>
+                    <th>Financeiro</th>
+                    <th>Planejado</th>
+                    <th>Atual</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (alocacao of dados.alocacoes; track $index) {
+                <tr>
+                    @if(expandido) {
+                        <td class="action" [routerLink]="['/investimento/carteira', alocacao.id]">{{alocacao.carteira}}</td>
+                    }
+                    @else {
+                        <td>{{alocacao.classe}}</td>
+                    }
+                    <td class="text-end"><span class="me-2">{{alocacao.financeiro | number:'1.2-2'}}</span></td>
+                    <td class="text-end"><span class="me-2">{{alocacao.planejado | percent:'1.2-2'}}</span></td>
+                    <td class="text-end"><span class="me-2">{{alocacao.atual| percent:'1.2-2'}}</span></td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="table-dark">
+                    <td>Total</td>
+                    <td class="text-end"><span class="me-2">{{dados.totais.financeiro | number:'1.2-2'}}</span></td>
+                    <td class="text-end"><span class="me-2">{{dados.totais.planejado | percent:'1.2-2'}}</span></td>
+                    <td class="text-end"><span class="me-2">{{dados.totais.atual| percent:'1.2-2'}}</span></td>
+                </tr>
+            </tfoot>
+        </table>
     }
-</pre>
+</div>

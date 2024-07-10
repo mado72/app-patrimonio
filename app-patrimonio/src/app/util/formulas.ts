@@ -77,13 +77,13 @@ export function consolidaValores<T>(
 }
 
 
-export type CalcularTotaisReturnType = ReturnType<typeof calcularTotais>;
-
 type CarteiraAtivo2CotacaoFn = (carteira: Carteira, ativo: CarteiraAtivo) => Cotacao;
 
 export type AuxAtivo = Pick<Ativo, "identity" | "nome" | "sigla" | "moeda" | "cotacao">;
 
 export type CarteiraAtivoItem = AuxAtivo & Omit<CarteiraAtivo, "ativo">;
+
+export type CalcularTotaisReturnType = ReturnType<typeof calcularTotais>;
 
 export function calcularTotais({ carteira, cotacaoAtivo, mapCarteira, mapCotacao }: {
   carteira: Carteira, cotacaoAtivo: CarteiraAtivo2CotacaoFn,

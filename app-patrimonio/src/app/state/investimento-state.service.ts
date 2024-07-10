@@ -1,11 +1,12 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import { catchError, concatMap, forkJoin, interval, map, mergeMap, of, Subscription, switchMap, take, takeWhile, tap } from 'rxjs';
+import { catchError, concatMap, forkJoin, interval, map, mergeAll, mergeMap, Observable, of, Subscription, switchMap, take, takeWhile, tap, toArray, zip, zipAll } from 'rxjs';
 import { clearDictionary, DataStatus, Moeda, State, StateBehavior } from '../models/base.model';
 import { Cotacao } from '../models/cotacao.models';
 import { Ativo, Carteira, ICarteira, TipoInvestimento } from '../models/investimento.model';
 import { AtivoService, FilterAtivos } from '../services/ativo.service';
 import { CarteiraService } from '../services/carteira.service';
 import { CotacaoService } from '../services/cotacao.service';
+import { calcularTotais, CalcularTotaisReturnType, CarteiraAtivoItem, ConsolidadoTotal } from '../util/formulas';
 
 class CarteiraStateBehavior extends StateBehavior<Carteira> {
   constructor() {
@@ -46,6 +47,43 @@ export class InvestimentoStateService implements OnDestroy{
     this.timerSubscription = interval(15_000).pipe(
       tap(() => console.log(`\n\n@@@ Listeners: carteira ${this.carteiraState$.countListerners()}, ativo: ${this.ativoState$.countListerners()}, cotacao: ${this.cotacaoState$.countListerners()}`))
     ).subscribe();
+  }
+
+  calcularTotaisTodasCarteiras() {
+    return this.carteira$.pipe(
+      mergeMap(carteiras => 
+        forkJoin(carteiras
+          .filter(carteira=>carteira.objetivo>0)
+          .map(carteira => {
+            return this.calcularTotaisCarteira(carteira).pipe(
+              map(calculado => ({ ...carteira, ...calculado.total, ativos: undefined }))
+            );
+          }))
+      )
+    )
+  }
+
+  calcularTotaisCarteira(carteira: Carteira) {
+
+    const ob = new Observable<CalcularTotaisReturnType>(subscriber=>{
+      const mapCarteira = new Map<string, Carteira>(Object.values(this.carteiraState$.state$.value.entities)
+        .map((carteira: Carteira) => [carteira.identity.toString(), carteira]));
+      const mapCotacao = new Map<string, Cotacao>(Object.values(this.cotacaoState$.state$.value.entities)
+        .map((cotacao: Cotacao) => [cotacao.simbolo, new Cotacao(cotacao)]));
+
+      const consolidado = calcularTotais({
+        carteira,
+        cotacaoAtivo: (carteira, ativo) => this.obterCotacaoMoeda(ativo.ativo?.moeda || carteira.moeda, carteira.moeda),
+        mapCarteira,
+        mapCotacao
+      });
+
+      subscriber.next(consolidado);
+      subscriber.complete();
+    })
+
+    return ob;
+
   }
 
   ngOnDestroy(): void {
@@ -477,5 +515,6 @@ export class InvestimentoStateService implements OnDestroy{
     }
     throw new Error(`Cotação não encontrada para ${de} -> ${para}`);
   }
+
 
 }

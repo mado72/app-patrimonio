@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Cotacao } from '../../../models/cotacao.models';
 import { Carteira, CarteiraAtivo, ICarteiraAtivo } from '../../../models/investimento.model';
@@ -16,35 +16,19 @@ import { calcularTotais, CarteiraAtivoItem, ConsolidadoTotal } from '../../../ut
   templateUrl: './carteira-ativo-list.component.html',
   styleUrl: './carteira-ativo-list.component.scss'
 })
-export class CarteiraAtivoListComponent implements OnDestroy {
+export class CarteiraAtivoListComponent implements OnInit, OnDestroy {
 
   consolidado !: ConsolidadoTotal<CarteiraAtivoItem>;
-
-  private mapCarteira!: Map<string, Carteira>;
-
-  private mapCotacao!: Map<string, Cotacao>;
 
   private investimentoStateService = inject(InvestimentoStateService);
 
   private subject = new Subject();
 
   constructor() {
-    this.investimentoStateService.carteira$.subscribe(carteiras => {
-      this.mapCarteira = new Map(carteiras.map(carteira => [carteira.identity.toString(), carteira]));
-      this.subject.next({});
-    });
-    this.investimentoStateService.cotacao$.subscribe(cotacoes => {
-      this.mapCotacao = new Map(cotacoes.map(cotacao => [cotacao.simbolo, new Cotacao(cotacao)]));
-      this.subject.next({});
-    });
-    this.subject.subscribe(() => {
-      this.consolidado = calcularTotais({
-        carteira: this._carteira, 
-        cotacaoAtivo: (carteira, ativo) => this.investimentoStateService.obterCotacaoMoeda(ativo.ativo?.moeda || carteira.moeda, carteira.moeda),
-        mapCarteira: this.mapCarteira, 
-        mapCotacao: this.mapCotacao
-      });
-    })
+  }
+  
+  ngOnInit(): void {
+    this.investimentoStateService.calcularTotaisCarteira(this.carteira).subscribe(consolidado=> this.consolidado = consolidado);
   }
 
   ngOnDestroy(): void {
