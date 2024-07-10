@@ -1,7 +1,13 @@
-table th {
-    width: 20%;
+table {
+    th {
+        width: 20%;
 
-    &:first-child {
-        width: 40%;
+        &:first-child {
+            width: 40%;
+        }
+    }
+    td.number, td.abrev {
+        vertical-align: bottom;
+        font-size: 80%;
     }
 }
