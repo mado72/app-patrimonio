@@ -1,7 +1,7 @@
 import { ENVIRONMENT_INITIALIZER, inject } from '@angular/core';
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [
+export const InvestimentoRoutes: Routes = [
     {
         path: '',
         redirectTo: 'portifolio',

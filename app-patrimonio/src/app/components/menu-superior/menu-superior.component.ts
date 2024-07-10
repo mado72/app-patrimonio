@@ -26,6 +26,10 @@ export class MenuSuperiorComponent {
     {
       lb: 'Ativos',
       url: '/investimento/ativos'
+    },
+    {
+      lb: 'Contas',
+      url: '/patrimonio/contas'
     }
   ]
 

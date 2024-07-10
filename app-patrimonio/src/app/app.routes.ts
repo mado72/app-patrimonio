@@ -12,6 +12,10 @@ export const routes: Routes = [
     },
     {
         path: 'investimento',
-        loadChildren: () => import('./components/investimento/investimento.route').then(m => m.routes)
+        loadChildren: () => import('./components/investimento/investimento.route').then(m => m.InvestimentoRoutes)
+    },
+    {
+        path: 'conta',
+        loadChildren: () => import('./components/patrimonio/patrimonio.route').then(m => m.PatrimonioRoute)
     }
 ];
