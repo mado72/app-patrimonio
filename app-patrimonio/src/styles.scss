@@ -14,6 +14,11 @@ td.number {
     display: none
 }
 
+.action {
+    cursor: pointer;
+    color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1)) !important;
+}
+
 .led {
     width: 14px;
     height: 14px;
