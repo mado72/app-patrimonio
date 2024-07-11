@@ -1,8 +1,8 @@
 <!-- @if ({} as dados) { -->
 <div class="card m-2">
-    <div class="card-header">
+    <div class="card-header d-flex">
         <h4>Alocação</h4>
-        <div class="float-right">
+        <div class="text-end ms-auto">
             Expandido
             <input type="checkbox" name="listaPorClasse" id="listaPorClasse" (click)="expandido = !expandido" [checked]="expandido">
         </div>
@@ -24,7 +24,7 @@
                         <td class="action" [routerLink]="['/investimento/carteira', alocacao.id]">{{alocacao.carteira}}</td>
                     }
                     @else {
-                        <td>{{alocacao.classe}}</td>
+                        <td><b>{{alocacao.classe}}</b></td>
                     }
                     <td class="text-end"><span class="me-2">{{alocacao.financeiro | number:'1.2-2'}}</span></td>
                     <td class="text-end"><span class="me-2">{{alocacao.planejado | percent:'1.2-2'}}</span></td>
