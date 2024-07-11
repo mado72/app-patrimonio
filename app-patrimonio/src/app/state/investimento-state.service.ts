@@ -1,6 +1,6 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { catchError, concatMap, forkJoin, interval, map, mergeAll, mergeMap, Observable, of, Subscription, switchMap, take, takeWhile, tap, toArray, zip, zipAll } from 'rxjs';
-import { clearDictionary, DataStatus, Moeda, State, StateBehavior } from '../models/base.model';
+import { clearDictionary, DataStatus, Dictionary, Immutable, Moeda, State, StateBehavior } from '../models/base.model';
 import { Cotacao } from '../models/cotacao.models';
 import { Ativo, Carteira, ICarteira, TipoInvestimento } from '../models/investimento.model';
 import { AtivoService, FilterAtivos } from '../services/ativo.service';
@@ -125,6 +125,12 @@ export class InvestimentoStateService implements OnDestroy{
 
   get carteiraStateAsObservable() {
     return this.carteiraState$.asObservable();
+  }
+
+  get carteiraEntities$() {
+    return this.carteiraState$.entities.pipe(
+      map(dictionary=> dictionary as Immutable<Dictionary<Carteira>>)
+    )
   }
 
   get carteiraError$() {
