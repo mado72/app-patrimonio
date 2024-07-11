@@ -1,4 +1,12 @@
 .action {
+
     cursor: pointer;
     color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+}
+
+table td {
+    width: 20%;
+    &:first-child {
+        width: 40%;
+    }
 }

@@ -21,21 +21,20 @@ export class AlocacaoComponent {
 
   private consolidacaoService = inject(ConsolidacaoService)
 
-  private _listaPorClasse = signal(true);
+  private _expandido = signal(true);
 
   get expandido() {
-    return this._listaPorClasse();
+    return this._expandido();
   }
 
   set expandido(value: boolean) {
-    this._listaPorClasse.set(value);
-    this._listaPorClasse.update(this._listaPorClasse)
+    this._expandido.set(value);
   }
 
   alocacoes$ = this.obterAlocacoes();
 
   obterAlocacoes() {
-    return toObservable(this._listaPorClasse).pipe(
+    return toObservable(this._expandido).pipe(
       switchMap(()=> this.consolidacaoService.consolidarAlocacoes().pipe(
         map(consolidado=>{
           
