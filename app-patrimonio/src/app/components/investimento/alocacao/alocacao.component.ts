@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { Component, effect, inject, Signal, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { map, Observable, switchMap, tap } from 'rxjs';
-import { TipoInvestimento } from '../../../models/investimento.model';
-import { InvestimentoStateService } from '../../../state/investimento-state.service';
+import { Component, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { map, switchMap } from 'rxjs';
+import { Moeda } from '../../../models/base.model';
+import { InvestimentoStateService } from '../../../state/investimento-state.service';
 
 type Alocacao = {
   id: string;
-  classe: TipoInvestimento;
+  classe: string;
   carteira: string;
   financeiro: number;
   planejado: number;
@@ -51,16 +51,18 @@ export class AlocacaoComponent {
 
   obterAlocacoes() {
     return toObservable(this._listaPorClasse).pipe(
-      tap(console.debug),
       switchMap(()=> this.investimentoStateService.calcularTotaisTodasCarteiras().pipe(
             map(consolidados=>{
-              let alocacoes : Alocacao[] = consolidados.map(consolidado=>({
-                id: consolidado.identity.toString(),
-                classe: consolidado.classe,
-                carteira: consolidado.nome,
-                financeiro: consolidado.vlTotal,
-                planejado: consolidado.objetivo
-              }));
+              let alocacoes : Alocacao[] = consolidados.map(consolidado=>{
+                const alocacao : Alocacao = {
+                  id: consolidado.identity.toString(),
+                  classe: `${consolidado.classe} (${consolidado.moeda})`,
+                  carteira: consolidado.nome,
+                  financeiro: this.investimentoStateService.converteParaMoeda(consolidado.moeda, Moeda.BRL, consolidado.vlTotal),
+                  planejado: consolidado.objetivo
+                };
+                return alocacao;
+              });
         
               const totais = this.totais(alocacoes);
         
