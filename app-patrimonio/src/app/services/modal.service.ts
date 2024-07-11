@@ -7,6 +7,7 @@ import { Ativo, Carteira, CarteiraAtivo } from '../models/investimento.model';
 import { CarteiraModalComponent } from '../components/investimento/carteira-modal/carteira-modal.component';
 import { Conta } from '../models/conta.model';
 import { ContaModalComponent } from '../components/patrimonio/conta-modal/conta-modal.component';
+import { DialogComponent } from '../components/dialog/dialog.component';
 
 export type ModalResult<T> = {
   comando: 'cancelar' | 'excluir' | 'salvar',
@@ -21,6 +22,21 @@ export class ModalService {
 
   constructor(
     private modal: NgbModal) { }
+
+  openDialog(title: string, message: string) {
+    const modalRef = this.modal.open(DialogComponent, { size: 'lg' });
+    const component = modalRef.componentInstance as DialogComponent
+    
+    component.title = title;
+    component.message = message;
+    component.onCancel.subscribe(()=>modalRef.dismiss('cancelar'));
+    component.onConfirm.subscribe(()=>modalRef.close('confirmar'));
+
+    return from(modalRef.result).pipe(
+      map(r=>r === 'confirmar'),
+      catchError(_=>of(false))
+    )
+  }
 
   openAtivoModalComponent(ativo: Ativo) {
     type ResultType = ModalResult<Ativo>;
