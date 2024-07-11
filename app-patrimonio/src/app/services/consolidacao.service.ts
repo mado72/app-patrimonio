@@ -9,7 +9,7 @@ export type Alocacao = {
   carteira: string;
   financeiro: number;
   planejado: number;
-  atual?: number;
+  percentual?: number;
 }
 
 export type Alocacoes = {
@@ -46,8 +46,8 @@ export class ConsolidacaoService {
       }),
       map(calculado=>{
         const totalPlanejado = calculado.alocacoes.reduce((acc,v)=>acc+=this.percentualFinanceiro(v, calculado.totais),0)
-        const alocacoes = calculado.alocacoes.map(alocacao=>({...alocacao, atual: this.percentualFinanceiro(alocacao, calculado.totais)}));
-        return {alocacoes, totais: {...calculado.totais, atual: totalPlanejado}};
+        const alocacoes = calculado.alocacoes.map(alocacao=>({...alocacao, percentual: this.percentualFinanceiro(alocacao, calculado.totais)}));
+        return {alocacoes, totais: {...calculado.totais, percentual: totalPlanejado}};
       }))
   }
 
@@ -62,13 +62,13 @@ export class ConsolidacaoService {
           carteira: tipo,
           financeiro: 0,
           planejado: 0,
-          atual: 0
+          percentual: 0
         };
         acc.set(tipo, cons);
       }
       cons.financeiro += alocacao.financeiro;
       cons.planejado += alocacao.planejado;
-      cons.atual += alocacao.atual;
+      cons.percentual += alocacao.percentual;
       return acc;
     }, new Map<string, Required<Alocacao>>());
 

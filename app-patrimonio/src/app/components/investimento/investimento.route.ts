@@ -25,5 +25,9 @@ export const InvestimentoRoutes: Routes = [
     {
         path: 'alocacoes',
         loadComponent: () => import('./alocacao/alocacao.component').then(m => m.AlocacaoComponent)
+    },
+    {
+        path: 'aportes',
+        loadComponent: () => import('./rebalanceamento/rebalanceamento.component').then(m => m.RebalanceamentoComponent)
     }
 ];

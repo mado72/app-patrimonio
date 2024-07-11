@@ -1,0 +1,47 @@
+<!-- @if ({} as dados) { -->
+<form class="card m-2">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Carteira</th>
+                <th>Financeiro</th>
+                <th>Aporte</th>
+                <th>Total</th>
+                <th>% Planejado</th>
+                <th>% Atual</th>
+                <th>% Novo</th>
+                <th>% Dif</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (item of totais.rebalanceamentos; track $index; let idx = $index) {
+            <tr>
+                <td>{{item.carteira}}</td>
+                <td class="number"><span class="me-2">{{item.financeiro | number:'1.2-2'}}</span></td>
+                <td class="form-group">
+                    <input type="number" class="form-control" name="item_{{idx}}" id="item_{{idx}}" step="0.01" [(ngModel)]="item.aporte">
+                </td>
+                <td class="number"><span class="me-2">{{item.total| number:'1.2-2'}}</span></td>
+                <td class="number"><span class="me-2">{{item.planejado  | percent:'1.2-2'}}</span></td>
+                <td class="number"><span class="me-2">{{item.percentual | percent:'1.2-2'}}</span></td>
+                <td class="number"><span class="me-2">{{item.novo | percent:'1.2-2'}}</span></td>
+                <td class="number"><span class="me-2">{{item.dif  | percent:'1.2-2'}}</span></td>
+            </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-dark">
+                <td>Total</td>
+                <td class="number"><span class="me-2">{{totais.financeiro | number:'1.2-2'}}</span></td>
+                <td class="number"><span class="me-2">{{totais.aporte | number:'1.2-2'}}</span></td>
+                <td class="number"><span class="me-2">{{totais.total  | number:'1.2-2'}}</span></td>
+                <td class="number"><span class="me-2">{{totais.planejado  | percent:'1.2-2'}}</span></td>
+                <td class="number"><span class="me-2">{{totais.percentual | percent:'1.2-2'}}</span></td>
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
+    </table>
+    <input type="number" class="form-control" name="num" id="num" step="0.01" [(ngModel)]="num">
+</form>
+<pre>{{num}}</pre>
+<pre>{{totais.rebalanceamentos[0].aporte | json}}</pre>
