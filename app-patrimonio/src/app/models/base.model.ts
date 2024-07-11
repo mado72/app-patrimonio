@@ -24,6 +24,14 @@ export class UUID {
     }
 }
 
+type ImmutableObject<T> = {
+    readonly [K in keyof T]: Immutable<T[K]>;
+}
+
+export type Immutable<T> = {
+    readonly [K in keyof T]: T[K] extends Function ? T[K] : ImmutableObject<T[K]>;
+}
+
 export class Dictionary<T> {
     [id: string]: T;
 }
