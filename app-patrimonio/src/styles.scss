@@ -4,6 +4,12 @@
 @import 'bootstrap/scss/bootstrap';
 @import 'ngx-toastr/toastr';
 
+td.number {
+    font-size: 80%;
+    vertical-align: baseline;
+    text-align: right;
+}
+
 .debug {
     display: none
 }

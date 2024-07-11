@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Cotacao } from '../../../models/cotacao.models';
+import { Moeda } from '../../../models/base.model';
 import { Carteira, CarteiraAtivo, ICarteiraAtivo } from '../../../models/investimento.model';
 import { InvestimentoStateService } from '../../../state/investimento-state.service';
-import { calcularTotais, CarteiraAtivoItem, ConsolidadoTotal } from '../../../util/formulas';
+import { CarteiraAtivoItem, ConsolidadoTotal } from '../../../util/formulas';
 
 
 @Component({
@@ -19,6 +19,8 @@ import { calcularTotais, CarteiraAtivoItem, ConsolidadoTotal } from '../../../ut
 export class CarteiraAtivoListComponent implements OnInit, OnDestroy {
 
   consolidado !: ConsolidadoTotal<CarteiraAtivoItem>;
+
+  readonly BRL = Moeda.BRL;
 
   private investimentoStateService = inject(InvestimentoStateService);
 
@@ -81,5 +83,9 @@ export class CarteiraAtivoListComponent implements OnInit, OnDestroy {
 
   adicionarAtivo(): void {
     this.onAdicionarAtivo.emit();
+  }
+
+  converterParaBRL(valor: number): number {
+    return this.investimentoStateService.converteParaMoeda(this.carteira.moeda, this.BRL, valor);
   }
 }

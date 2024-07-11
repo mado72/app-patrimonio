@@ -52,6 +52,16 @@
             <td class="number text-end">{{consolidado.total.valorizacaoPerc| percent:'1.2-2'}}</td>
             <td colspan="4"></td>
         </tr>
+    @if (carteira.moeda != BRL) {
+        <tr class="table-secondary">
+            <td>Totais:</td>
+            <td colspan="5"></td>
+            <td class="number text-end">{{converterParaBRL(consolidado.total.vlInicial)| number:'1.2-2'}}</td>
+            <td class="number text-end">{{converterParaBRL(consolidado.total.vlTotal)| number:'1.2-2'}}</td>
+            <td class="number text-end">{{converterParaBRL(consolidado.total.valorizacao)| number:'1.2-2'}}</td>
+            <td colspan="5"></td>
+        </tr>
+    }
         <tr>
             <td colspan="14" class=" m-0 p-0">
                 <button type="button" class="border bg-light" (click)="adicionarAtivo()">Adicionar Ativo</button>

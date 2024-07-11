@@ -26,18 +26,18 @@
                     @else {
                         <td><b>{{alocacao.classe}}</b></td>
                     }
-                    <td class="text-end"><span class="me-2">{{alocacao.financeiro | number:'1.2-2'}}</span></td>
-                    <td class="text-end"><span class="me-2">{{alocacao.planejado | percent:'1.2-2'}}</span></td>
-                    <td class="text-end"><span class="me-2">{{alocacao.atual| percent:'1.2-2'}}</span></td>
+                    <td class="number"><span class="me-2">{{alocacao.financeiro | number:'1.2-2'}}</span></td>
+                    <td class="number"><span class="me-2">{{alocacao.planejado | percent:'1.2-2'}}</span></td>
+                    <td class="number"><span class="me-2">{{alocacao.atual| percent:'1.2-2'}}</span></td>
                 </tr>
                 }
             </tbody>
             <tfoot>
                 <tr class="table-dark">
                     <td>Total</td>
-                    <td class="text-end"><span class="me-2">{{dados.totais.financeiro | number:'1.2-2'}}</span></td>
-                    <td class="text-end"><span class="me-2">{{dados.totais.planejado | percent:'1.2-2'}}</span></td>
-                    <td class="text-end"><span class="me-2">{{dados.totais.atual| percent:'1.2-2'}}</span></td>
+                    <td class="number"><span class="me-2">{{dados.totais.financeiro | number:'1.2-2'}}</span></td>
+                    <td class="number"><span class="me-2">{{dados.totais.planejado | percent:'1.2-2'}}</span></td>
+                    <td class="number"><span class="me-2">{{dados.totais.atual| percent:'1.2-2'}}</span></td>
                 </tr>
             </tfoot>
         </table>
