@@ -16,7 +16,7 @@ export class MenuSuperiorComponent {
 
   readonly menu : MenuLink[] = [
     {
-      lb: 'Patrimônio',
+      lb: 'Painel',
       url: '/'
     },
     {
@@ -29,7 +29,7 @@ export class MenuSuperiorComponent {
     },
     {
       lb: 'Aportes',
-      url: '/investimento/aportes'
+      url: '/aportes'
     },
     {
       lb: 'Contas',

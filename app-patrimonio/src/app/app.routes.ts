@@ -17,5 +17,9 @@ export const routes: Routes = [
     {
         path: 'patrimonio',
         loadChildren: () => import('./components/patrimonio/patrimonio.route').then(m => m.PatrimonioRoute)
+    },
+    {
+        path: 'aportes',
+        loadChildren: () => import('./components/aportes/aportes.route').then(m => m.AportesRoutes)
     }
 ];
