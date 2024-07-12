@@ -4,7 +4,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { map, switchMap } from 'rxjs';
-import { Alocacao, Alocacoes, ConsolidacaoService } from '../../../services/consolidacao.service';
+import { ConsolidacaoService } from '../../../services/consolidacao.service';
 
 @Component({
   selector: 'app-alocacao',

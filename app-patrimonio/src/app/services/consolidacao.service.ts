@@ -2,20 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { InvestimentoStateService } from '../state/investimento-state.service';
 import { map, Observable } from 'rxjs';
 import { Moeda } from '../models/base.model';
-
-export type Alocacao = {
-  id: string;
-  classe: string;
-  carteira: string;
-  financeiro: number;
-  planejado: number;
-  percentual?: number;
-}
-
-export type Alocacoes = {
-  alocacoes: Required<Alocacao>[];
-  totais: Required<Alocacao>;
-}
+import { Alocacao, Alocacoes } from '../models/aportes.model';
 
 @Injectable({
   providedIn: 'root'
