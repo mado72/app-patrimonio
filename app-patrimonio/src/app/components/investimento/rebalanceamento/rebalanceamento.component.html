@@ -1,6 +1,6 @@
 <!-- @if ({} as dados) { -->
 <form class="card m-2">
-    <table class="table table-striped">
+    <table class="card-body table table-striped mb-0">
         <thead>
             <tr>
                 <th>Carteira</th>
@@ -16,7 +16,7 @@
         <tbody>
             @for (item of totais.rebalanceamentos; track $index; let idx = $index) {
             <tr>
-                <td>{{item.carteira}}</td>
+                <td class="action" (click)="abrirModal(item)">{{item.carteira}}</td>
                 <td class="number"><span class="me-2">{{item.financeiro | number:'1.2-2'}}</span></td>
                 <td class="form-group">
                     <input type="number" class="form-control" name="item_{{idx}}" id="item_{{idx}}" step="0.01" [(ngModel)]="item.aporte">
@@ -41,7 +41,19 @@
             </tr>
         </tfoot>
     </table>
-    <input type="number" class="form-control" name="num" id="num" step="0.01" [(ngModel)]="num">
+    <div class="card-footer d-flex">
+        <div class="form-group row">
+            <div class="col-auto">
+                <label for="aporte">Aporte do mês</label>
+            </div>
+            <div class="col-auto">
+                <input type="number" class="form-control" name="aporte" id="aporte" step="0.01" [(ngModel)]="aporte">
+            </div>
+        </div>
+        <div class="me-auto d-flex">
+            <div class="ms-2 text-start flex-fill">
+                Diferença plano x aporte: {{diferencaAporte | number:'1.2-2'}}
+            </div>
+        </div>
+    </div>
 </form>
-<pre>{{num}}</pre>
-<pre>{{totais.rebalanceamentos[0].aporte | json}}</pre>

@@ -1,8 +1,12 @@
-import { Component, computed, inject, signal, Signal, WritableSignal } from '@angular/core';
-import { Alocacao, Alocacoes, ConsolidacaoService } from '../../../services/consolidacao.service';
-import { map } from 'rxjs';
+import { CommonModule, JsonPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AsyncPipe, CommonModule, DecimalPipe, JsonPipe, PercentPipe } from '@angular/common';
+import { map, take } from 'rxjs';
+import { Carteira } from '../../../models/investimento.model';
+import { Alocacao, Alocacoes, ConsolidacaoService } from '../../../services/consolidacao.service';
+import { ModalService } from '../../../services/modal.service';
+import { InvestimentoStateService } from '../../../state/investimento-state.service';
+import { Mutable } from '../../../models/base.model';
 
 interface Totais extends Required<Omit<Rebalanceamento, "totais">> {}
 
@@ -86,9 +90,14 @@ class Totalizador {
 })
 export class RebalanceamentoComponent {
 
+  private investimentoStateService = inject(InvestimentoStateService)
+
   private consolidacaoService = inject(ConsolidacaoService)
 
-  num = 123;
+  private modalService = inject(ModalService)
+
+  aporte: number = 0;
+
   readonly totais = new Totalizador();
 
   constructor() { 
@@ -103,6 +112,29 @@ export class RebalanceamentoComponent {
     
 
     return rebalanceamentos;
+  }
+
+  abrirModal(item: Rebalanceamento): void {
+    this.investimentoStateService.carteiraEntities$.pipe(
+      take(1)
+    ).subscribe(entities=>{
+      const carteira = {...entities[item.id]} as Carteira;
+      this.modalService.openCarteiraModalComponent(carteira).subscribe(result=>{
+        if (result == null) return;
+        if(result.comando === 'excluir'){
+          this.modalService.openDialog('Excluir carteira', `Carteira ${carteira.nome} será excluída`).subscribe(confirma=>{
+            if (confirma)
+              this.investimentoStateService.removerCarteira(carteira)
+          })
+        } else if(result.comando ==='salvar'){
+          this.investimentoStateService.atualizarCarteira(result.dados);
+        }
+      })
+    })
+  }
+
+  get diferencaAporte() {
+    return this.totais.aporte - this.aporte;
   }
 
 }
