@@ -32,6 +32,10 @@ export type Immutable<T> = {
     readonly [K in keyof T]: T[K] extends Function ? T[K] : ImmutableObject<T[K]>;
 }
 
+export type Mutable<T> = {
+    -readonly [P in keyof T]: T[P];
+};
+
 export class Dictionary<T> {
     [id: string]: T;
 }
