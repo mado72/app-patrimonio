@@ -133,6 +133,10 @@ export class InvestimentoStateService implements OnDestroy{
     )
   }
 
+  getCarteira(id: string) {
+    return this.carteiraState$.state$.value.entities[id];
+  }
+
   get carteiraError$() {
     return this.carteiraState$.error;
   }

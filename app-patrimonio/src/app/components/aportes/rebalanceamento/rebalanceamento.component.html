@@ -1,5 +1,9 @@
 <!-- @if ({} as dados) { -->
 <form class="card m-2">
+    <div class="card-title">
+        <h5>Plano de aporte</h5>
+        <span class="badge badge-primary float-end">{{totais.rebalanceamentos.length}}</span>
+    </div>
     <table class="card-body table table-striped mb-0">
         <thead>
             <tr>
@@ -11,14 +15,15 @@
                 <th>% Atual</th>
                 <th>% Novo</th>
                 <th>% Dif</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @for (item of totais.rebalanceamentos; track $index; let idx = $index) {
-            <tr>
-                <td class="action" (click)="abrirModal(item)">{{item.carteira}}</td>
+        @for (item of totais.rebalanceamentos; track $index; let idx = $index) {
+            <tr [ngClass]="{'table-active': itemSelecionado === item}">
+                <td class="action" (click)="selecionarItem(item)">{{item.carteira}}</td>
                 <td class="number"><span class="me-2">{{item.financeiro | number:'1.2-2'}}</span></td>
-                <td class="form-group">
+                <td class="form-group py-0 px-2 mb-0">
                     <input type="number" class="form-control" name="item_{{idx}}" id="item_{{idx}}" step="0.01" [(ngModel)]="item.aporte">
                 </td>
                 <td class="number"><span class="me-2">{{item.total| number:'1.2-2'}}</span></td>
@@ -26,8 +31,9 @@
                 <td class="number"><span class="me-2">{{item.percentual | percent:'1.2-2'}}</span></td>
                 <td class="number"><span class="me-2">{{item.novo | percent:'1.2-2'}}</span></td>
                 <td class="number"><span class="me-2">{{item.dif  | percent:'1.2-2'}}</span></td>
+                <td class="action"><a href="javascript:void(0)" (click)="abrirModal(item)">editar</a></td>
             </tr>
-            }
+        }
         </tbody>
         <tfoot>
             <tr class="table-dark">
@@ -37,7 +43,7 @@
                 <td class="number"><span class="me-2">{{totais.total  | number:'1.2-2'}}</span></td>
                 <td class="number"><span class="me-2">{{totais.planejado  | percent:'1.2-2'}}</span></td>
                 <td class="number"><span class="me-2">{{totais.percentual | percent:'1.2-2'}}</span></td>
-                <td colspan="2"></td>
+                <td colspan="3"></td>
             </tr>
         </tfoot>
     </table>
@@ -57,3 +63,7 @@
         </div>
     </div>
 </form>
+
+@if (itemSelecionado) {
+    <app-aportes-carteira-card [carteira]="carteiraSelecionada(itemSelecionado)" [aporte]="itemSelecionado.aporte" [aportes]="itemSelecionado.items"/>
+}
