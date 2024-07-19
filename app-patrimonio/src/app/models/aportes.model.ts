@@ -1,30 +1,38 @@
-export class Rebalanceamento implements Alocacao {
+import { Dictionary } from "./base.model";
+import { Cotacao } from "./cotacao.models";
+
+export type ParticipacaoTypeFn = (valor: number) => number;
+
+export class AporteCarteira implements Alocacao {
     id: string;
     classe: string;
     carteira: string;
     financeiro: number;
     planejado: number;
     percentual?: number;
-    private _aporte: number;
-    totalizador: Totalizador;
+    aporte: number = 0;
+    readonly participacaoFn: ParticipacaoTypeFn;
+    private _items: Dictionary<AporteAtivo> = {};
 
-    constructor(alocacao: Alocacao, totalizador: Totalizador) {
+    constructor(alocacao: Alocacao, participacaoFn: ParticipacaoTypeFn) {
+        this.participacaoFn = participacaoFn;
         this.id = alocacao.id;
         this.classe = alocacao.classe;
         this.carteira = alocacao.carteira;
         this.financeiro = alocacao.financeiro;
         this.planejado = alocacao.planejado;
         this.percentual = alocacao.percentual;
-        this.totalizador = totalizador;
-        this._aporte = 0;
     }
 
-    get aporte() {
-        return this._aporte;
+    addItem(item: AporteAtivoData) {
+        this._items[item.ativoId] = new AporteAtivo(item, (v)=>v/this.total);
     }
 
-    set aporte(val: number) {
-        this._aporte = val;
+    get items() {
+        type t = typeof this._items;
+        return this._items as {
+            +readonly [P in keyof t]: t[P];
+        }
     }
 
     get total() {
@@ -32,7 +40,7 @@ export class Rebalanceamento implements Alocacao {
     }
 
     get novo() {
-        return this.total / this.totalizador.total;
+        return this.participacaoFn(this.total);
     }
 
     get dif() {
@@ -42,7 +50,7 @@ export class Rebalanceamento implements Alocacao {
 }
 
 export class Totalizador {
-    rebalanceamentos: Rebalanceamento[] = [];
+    rebalanceamentos: AporteCarteira[] = [];
 
     get financeiro(): number {
         return this.rebalanceamentos.reduce((acc, rebalanceamento) => acc + rebalanceamento.financeiro, 0)
@@ -79,3 +87,76 @@ export type Alocacoes = {
     totais: Required<Alocacao>;
 }
 
+export interface IAporteAtivo extends AporteAtivoData {}
+
+class AporteAtivoData {
+    ativoId: string;
+    quantidade: number;
+    sigla: string;
+    novaQuantidade: number;
+    cotacao: Cotacao;
+    objetivo: number;
+
+    constructor (data: IAporteAtivo) {
+        this.ativoId = data.ativoId;
+        this.quantidade = data.quantidade;
+        this.sigla = data.sigla;
+        this.novaQuantidade = data.novaQuantidade;
+        this.cotacao = data.cotacao;
+        this.objetivo = data.objetivo;
+    }
+}
+
+export class AporteAtivo extends AporteAtivoData{
+    private _participacaoFn: ParticipacaoTypeFn;
+
+    constructor(aporte: IAporteAtivo, participacaoFn: ParticipacaoTypeFn) {
+        super(aporte);
+        this._participacaoFn = participacaoFn;
+    }
+
+    get financeiro() {
+        return this.cotacao.aplicar(this.novaQuantidade);
+    }
+    
+    set financeiro(valor: number) {
+        this.novaQuantidade = 1 / this.cotacao.aplicar(valor);
+    }
+
+    get novo() {
+        return this._participacaoFn(this.financeiro);
+    }
+
+    get dif() {
+        if (!this.objetivo) return 0;
+        return (this.novo - this.objetivo) / this.objetivo;
+    }
+
+    get qtdCompra(): number {
+        return this.novaQuantidade - this.quantidade;
+    }
+
+    get total(): number {
+        return this.cotacao.aplicar(this.qtdCompra);
+    }
+
+}
+
+export class AporteTotais {
+    aportes: AporteAtivo[];
+    constructor(aportes: AporteAtivo[]) {
+        this.aportes = aportes;
+    }
+
+    get financeiro () {
+        return this.aportes.reduce((acc, aporte) => acc + aporte.financeiro, 0)
+    };
+    get objetivo () {
+        return this.aportes.reduce((acc, aporte) => acc + aporte.objetivo, 0)
+    }
+    get novo () {
+        return this.aportes.reduce((acc, aporte) => acc + aporte.novo, 0);
+    } 
+};
+
+export type AportesCarteira = Dictionary<AporteTotais>;
