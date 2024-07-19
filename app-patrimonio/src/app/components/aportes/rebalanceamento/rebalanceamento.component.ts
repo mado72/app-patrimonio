@@ -63,7 +63,7 @@ export class RebalanceamentoComponent {
         const carteira = this.investimentoStateService.getCarteira(consolidacao.id);
         (carteira.ativos.map(ativo=> ({
             ativoId: ativo.ativoId,
-            cotacao: ativo.ativo?.cotacao as Cotacao,
+            cotacao: ativo.ativo?.cotacao || this.COTACAO_1x1,
             quantidade: ativo.quantidade,
             novaQuantidade: ativo.quantidade,
             objetivo: ativo.objetivo,
