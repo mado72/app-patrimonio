@@ -48,7 +48,7 @@ export class ContaListComponent {
 
   get totais$() {
     return this.contasListadas$.pipe(
-      map(contas=>contas.reduce((acc,vl)=>acc+=this.saldoReal(vl) || 0, 0))
+      map(contas=>contas.reduce((acc,vl)=>acc+=(vl.tipo!=TipoConta.CARTAO ? 1: -1) * this.saldoReal(vl) || 0, 0))
     )
   }
 
@@ -57,7 +57,7 @@ export class ContaListComponent {
   }
 
   saldoReal(item: Conta): number {
-    return this.investimentoStateService.obterCotacaoMoeda(item.moeda, Moeda.BRL).aplicar(item.saldo);
+    return (item.tipo!=TipoConta.CARTAO ? 1: -1) * this.investimentoStateService.obterCotacaoMoeda(item.moeda, Moeda.BRL).aplicar(item.saldo);
   }
 
   atualizarListaContas () {

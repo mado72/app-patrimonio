@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ContaListComponent } from './conta-list.component';
-import { CapitalizePipe } from 'src/app/util/capitalize.pipe';
-import { AbsolutePipe } from 'src/app/util/absolute.pipe';
+import { CapitalizePipe } from '../../../pipes/capitalize.pipe';
+import { AbsolutePipe } from '../../../pipes/absolute.pipe';
 
 describe('ContaListComponent', () => {
   let component: ContaListComponent;
