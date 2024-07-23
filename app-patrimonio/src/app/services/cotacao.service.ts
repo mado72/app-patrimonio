@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
-import { parse } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { Observable, map, of } from "rxjs";
 import { environment } from "../../environments/environment";
 import { Moeda } from "../models/base.model";
@@ -31,27 +31,28 @@ export class CotacaoService {
     readonly http = inject(HttpClient);
 
     getCotacoes(ativos: Ativo[]): Observable<Cotacao[]> {
-        const siglas = new Map(ativos.filter(ativo => ativo.siglaYahoo)
-            .map(ativo => [ativo.siglaYahoo as string, ativo]));
+        const siglas = ativos.map(ativo => ativo.siglaYahoo || ativo.sigla);
 
-        const simbolo = encodeURIComponent([...siglas.keys()].join(','));
+        const simbolos = encodeURIComponent([...siglas.values()].join(','));
 
-        return this.http.get<YahooQuote[]>(`${environment.apiUrl}/cotacao`, { params: { simbolo: simbolo } })
+        return this.http.get<YahooQuote[]>(`${environment.apiUrl}/cotacao`, { params: { simbolo: simbolos } })
             .pipe(
                 map((quotes: YahooQuote[]) => quotes.map(quote => converterDeYahooQuoteEmCotacao(quote))),
             );
     }
 
     setCotacao(simbolo: string, valor: number, moeda: Moeda): Observable<Cotacao> {
-        console.warn(`TODO: Acrescentar método para atualizar a cotação manualmente.`)
-        const cotacao = new Cotacao({
-            data: new Date(),
+        simbolo = simbolo.trim();
+        const cotacao ={
+            data: format(new Date(), 'yyyy-MM-dd'),
             moeda,
             simbolo,
-            valor,
-            _id: crypto.randomUUID()
-        })
-        return of(cotacao);
+            preco: valor,
+            manual: true
+        }
+        return this.http.post<ICotacao>(`${environment.apiUrl}/cotacao`, cotacao).pipe(
+            map(cotacao => new Cotacao(cotacao))
+        )
     }
 
     atualizarCotacoesBatch() {
@@ -74,8 +75,9 @@ export class CotacaoService {
 const converterDeYahooQuoteEmCotacao = (quote: YahooQuote): Cotacao => {
     const data: ICotacao = {
         simbolo: quote.simbolo as string,
-        valor: quote.preco as number,
+        preco: quote.preco as number,
         moeda: quote.moeda as Moeda,
+        manual: quote.manual,
         data: parse(quote.data, "yyyy-MM-dd", new Date())
     };
     return new Cotacao(data);

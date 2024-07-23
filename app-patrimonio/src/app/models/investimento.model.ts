@@ -141,7 +141,7 @@ export class Carteira extends Investimento {
         if (!this.ativos) {
             return 0;
         }
-        return this.ativos.reduce((acc, ativo) => acc += (ativo.ativo?.cotacao?.valor || NaN) * ativo.quantidade || ativo.vlAtual || NaN, 0);
+        return this.ativos.reduce((acc, ativo) => acc += (ativo.ativo?.cotacao?.preco || NaN) * ativo.quantidade || ativo.vlAtual || NaN, 0);
     }
 }
 
@@ -159,7 +159,8 @@ export type YahooQuote = {
     "curto": string,
     "dividendo": number,
     "dividendoTaxa": number,
-    "horaMercado": Date
+    "horaMercado": Date,
+    "manual": boolean
 }
 
 export function createCarteira(): Carteira {

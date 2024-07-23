@@ -45,7 +45,7 @@
 
             <div class="form-group col-md">
                 <label for="cotacao" class="form-label">Cotação</label>
-                <input type="number" class="form-control text-end" name="cotacao" id="cotacao" [value]="ativo.cotacao?.valor" disabled>
+                <input type="number" class="form-control text-end" name="cotacao" id="cotacao" [(ngModel)]="cotacao" [disabled]="disableCotacao">
             </div>
         </div>
 

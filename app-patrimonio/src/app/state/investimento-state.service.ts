@@ -1,12 +1,12 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import { catchError, concatMap, forkJoin, interval, map, mergeAll, mergeMap, Observable, of, Subscription, switchMap, take, takeWhile, tap, toArray, zip, zipAll } from 'rxjs';
+import { catchError, concatMap, forkJoin, interval, map, mergeMap, Observable, of, Subscription, switchMap, take, takeWhile, tap } from 'rxjs';
 import { clearDictionary, DataStatus, Dictionary, Immutable, Moeda, State, StateBehavior } from '../models/base.model';
 import { Cotacao } from '../models/cotacao.models';
 import { Ativo, Carteira, ICarteira, TipoInvestimento } from '../models/investimento.model';
 import { AtivoService, FilterAtivos } from '../services/ativo.service';
 import { CarteiraService } from '../services/carteira.service';
 import { CotacaoService } from '../services/cotacao.service';
-import { calcularTotais, CalcularTotaisReturnType, CarteiraAtivoItem, ConsolidadoTotal } from '../util/formulas';
+import { calcularTotais, CalcularTotaisReturnType } from '../util/formulas';
 
 class CarteiraStateBehavior extends StateBehavior<Carteira> {
   constructor() {
@@ -206,14 +206,16 @@ export class InvestimentoStateService implements OnDestroy{
                     const cotacaoDePara = new Cotacao({
                       simbolo: item.sigla,
                       moeda: item.para as Moeda,
-                      valor: item.cotacao?.valor || NaN,
+                      preco: item.cotacao?.preco || NaN,
+                      manual: item.cotacao?.manual || true,
                       data: new Date()
                     });
                     const cotacaoParaDe = new Cotacao({
                       simbolo: `${item.para}${item.de}`,
                       data: cotacaoDePara.data,
                       moeda: item.de as Moeda,
-                      valor: 1/cotacaoDePara.valor
+                      manual: item.cotacao?.manual || true,
+                      preco: 1/cotacaoDePara.preco
                     })
                     dictionaryCotacoes[cotacaoDePara.simbolo] = cotacaoDePara;
                     dictionaryCotacoes[cotacaoParaDe.simbolo] = cotacaoParaDe;
@@ -283,7 +285,7 @@ export class InvestimentoStateService implements OnDestroy{
       const ativo = mapAtivos.get(key) as Ativo;
       dictionary[key] = ativo;
 
-      ativo.cotacao = mapCotacoes.get(ativo.siglaYahoo as string);
+      ativo.cotacao = mapCotacoes.get(ativo.siglaYahoo || ativo.sigla);
     });
     return dictionary;
   }
@@ -291,11 +293,15 @@ export class InvestimentoStateService implements OnDestroy{
   adicionarAtivo(ativo: Ativo): void {
     this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Processing });
 
+    const cotacao = ativo.cotacao;
+
     this.ativoService.addAtivo(ativo).subscribe({
       next: ativo => {
         const dictionary = this.ativoState$.state$.value.entities;
         dictionary[ativo.identity.toString()] = ativo;
         this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Executed, entities: dictionary });
+
+        this.atualizarCotacaoManual(ativo, cotacao as Cotacao)
       },
       error: error => {
         this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Error, error });
@@ -306,12 +312,18 @@ export class InvestimentoStateService implements OnDestroy{
   atualizarAtivo(ativo: Ativo): void {
     this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Processing });
 
+    const cotacao = ativo.cotacao;
+
     this.ativoService.updateAtivo(ativo).subscribe({
       next: () => {
         const dictionary = { ...this.ativoState$.state$.value.entities };
         ativo = new Ativo(ativo);
         dictionary[ativo._id as string] = ativo;
+
         this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Executed, entities: dictionary });
+
+        this.atualizarCotacaoManual(ativo, cotacao as Cotacao);
+
         const carteiraDic = {...this.carteiraState$.state$.value.entities};
         Object.keys(carteiraDic).forEach(identity=>{
           const carteira = carteiraDic[identity];
@@ -457,6 +469,26 @@ export class InvestimentoStateService implements OnDestroy{
     this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Executed, entities: dictionary });
   }
 
+  atualizarCotacaoManual(ativo: Ativo, cotacao: Cotacao) {
+    if (ativo.tipo === TipoInvestimento.Referencia) return;
+    if (!cotacao.manual) return;
+
+    this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Processing });
+    this.cotacaoService.setCotacao(cotacao.simbolo, cotacao.preco, cotacao.moeda).subscribe(cotacao=> {
+      const dictionary = {...this.cotacaoState$.state$.value.entities};
+      dictionary[cotacao.simbolo] = cotacao;
+
+      this.cotacaoState$.setState({
+        ...this.cotacaoState$.state$.value, 
+        entities: dictionary,
+        status: DataStatus.Executed});
+
+      Object.values(this.ativoState$.state$.value.entities)
+        .filter(ativo=>ativo.sigla === cotacao.simbolo || ativo.siglaYahoo === cotacao.simbolo)
+        .forEach(ativo=>ativo.cotacao = cotacao)
+    })
+  }
+
   carregarCotacoes(ativos: Ativo[]): void {
     this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Processing });
     this.cotacaoService.getCotacoes(ativos).subscribe(cotacoes => {
@@ -506,7 +538,8 @@ export class InvestimentoStateService implements OnDestroy{
     if (de === para) return new Cotacao({
       simbolo: `${de}${para}`,
       moeda: para,
-      valor: 1,
+      preco: 1,
+      manual: true,
       data: new Date()
     });
     

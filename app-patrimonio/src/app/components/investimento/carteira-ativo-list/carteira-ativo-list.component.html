@@ -71,8 +71,8 @@
 </table>
 <ng-template #ConteudoCotacao let-cotacao>
     @if(cotacao?.valor != undefined) { 
-        <span title="{{cotacao.valor | number:'1.6-6'}}">
-            {{cotacao.valor | number:'1.2-2'}} 
+        <span title="{{cotacao.preco | number:'1.6-6'}}">
+            {{cotacao.preco | number:'1.2-2'}} 
         </span>
     } 
     @else { <i class="fas fa-spinner fa-spin"></i>- }

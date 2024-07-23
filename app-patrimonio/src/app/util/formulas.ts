@@ -123,11 +123,11 @@ function calcularValorCotacao({ ativo, cotacaoMoeda, valor, carteiraRef: carteir
             return carteira.valor;
           }
           else if (cotacaoAtivo) {
-            return cotacaoAtivo.valor * carteira.valor;
+            return cotacaoAtivo.preco * carteira.valor;
           }
         }
         if (ativo.ativo.referencia?.tipo == TipoInvestimento.Moeda && cotacaoAtivo) {
-          return cotacaoAtivo.valor;
+          return cotacaoAtivo.preco;
         }
       }
       ativo.cotacao = cotacaoAtivo;

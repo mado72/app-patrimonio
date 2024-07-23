@@ -26,8 +26,6 @@ type AporteTotaisType = {
 })
 export class AportesCarteiraCardComponent {
 
-  private readonly cotacao1 = new Cotacao({ data: new Date(), moeda: Moeda.BRL, simbolo: '', valor: 1});
-
   private _carteira!: Carteira;
   public get carteira(): Carteira {
     return this._carteira;

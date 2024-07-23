@@ -20,7 +20,7 @@
             <td>{{ativo.moeda}}</td>
             <td class="text-end">
             @if(ativo.cotacao) {
-                {{ativo.cotacao.valor | number:'1.6-6'}}
+                {{ativo.cotacao.preco | number:'1.6-6'}}
             }
             @else {
                 <i class="fas fa-spinner fa-spin"></i>x

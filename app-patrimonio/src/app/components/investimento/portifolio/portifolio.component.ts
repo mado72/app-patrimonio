@@ -9,6 +9,7 @@ import { AtivosCardComponent } from '../ativos-card/ativos-card.component';
 import { CarteiraCardComponent } from '../carteira-card/carteira-card.component';
 import { Router } from '@angular/router';
 import { InfoCotacaoBatch } from '../../../services/cotacao.service';
+import { Cotacao } from '../../../models/cotacao.models';
 
 @Component({
   selector: 'app-protifolio',
@@ -80,8 +81,13 @@ export class PortifolioComponent implements OnInit {
     this.modalService.openAtivoModalComponent(ativo).subscribe(result => {
       if (!result) return;
       if (result.comando === 'salvar') {
-        this.investimentoStateService.adicionarAtivo(ativo);
-      }
+        if (ativo._id !== ativo.identity) {
+          this.investimentoStateService.adicionarAtivo(ativo);
+        }
+        else {
+          this.investimentoStateService.atualizarAtivo(ativo);
+        }
+    }
     });
   }
 

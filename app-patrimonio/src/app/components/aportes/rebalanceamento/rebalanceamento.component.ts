@@ -43,7 +43,8 @@ export class RebalanceamentoComponent {
     data: new Date(),
     moeda: Moeda.BRL,
     simbolo: '1x1',
-    valor: 1
+    manual: false,
+    preco: 1
   })
 
   constructor() {

@@ -73,7 +73,7 @@ const ATIVOS : Ativo[] = [
     siglaYahoo: 'AAPL',
     cotacao: {
       data: new Date(),
-      valor: 123.45
+      preco: 123.45
     } as Cotacao,
     setor: 'Computacao',
     nome: 'APPL',
@@ -86,7 +86,7 @@ const ATIVOS : Ativo[] = [
     siglaYahoo: 'GOOGL',
     cotacao: {
       data: new Date(),
-      valor: 890.12
+      preco: 890.12
     } as Cotacao,
     setor: 'Computacao',
     nome: 'GOOGL',

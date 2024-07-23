@@ -6,25 +6,27 @@ export class Cotacao {
     _id?: string;
     simbolo: string;
     moeda: Moeda;
-    valor: number;
+    preco: number;
     data: Date;
+    manual: boolean;
 
     constructor(cotacao: ICotacao) {
         this._id = cotacao._id;
         this.simbolo = cotacao.simbolo;
         this.moeda = cotacao.moeda;
-        this.valor = cotacao.valor;
+        this.preco = cotacao.preco;
+        this.manual = cotacao.manual;
         this.data = new Date(cotacao.data);
     }
 
     converterPara(outra: ICotacao) {
         return new Cotacao({
             ...outra,
-            valor: outra.valor * this.valor
+            preco: outra.preco * this.preco
         });
     }
 
     aplicar(n: number) {
-        return n * this.valor;
+        return n * this.preco;
     }
 }
