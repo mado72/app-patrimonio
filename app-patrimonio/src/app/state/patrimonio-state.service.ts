@@ -78,9 +78,10 @@ export class PatrimonioStateService {
     this.contaState$.setState({...this.contaState$.state$.value, status: DataStatus.Processing });
 
     this.contaService.salvarConta(conta).subscribe({
-      next: (conta) => {
-        this.contaState$.state$.value.entities[conta.identity.toString()] = conta;
-        this.contaState$.setState({...this.contaState$.state$.value, status: DataStatus.Executed });
+      next: () => {
+        const entities = {...this.contaState$.state$.value.entities};
+        entities[conta.identity.toString()] = conta;
+        this.contaState$.setState({...this.contaState$.state$.value, entities: {...entities}, status: DataStatus.Executed });
       },
       error: error => this.contaState$.setState(
         {
