@@ -41,10 +41,11 @@ export class AtivoService {
     }
     updateAtivo(ativo: Ativo): Observable<Ativo> {
         const data = { ...ativo };
+        const cotacao = ativo.cotacao;
         delete data.cotacao;
         return this._http.put<IAtivo>(`${environment.apiUrl}/ativo`, data)
             .pipe(
-                map(ativo => new Ativo(ativo))
+                map(ativo => new Ativo(ativo, cotacao))
             )
     }
     removeAtivo(ativo: Ativo): Observable<Ativo> {

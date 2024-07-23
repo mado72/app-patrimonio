@@ -14,6 +14,13 @@ export enum TipoInvestimento {
     Cripto = 'Cripto'
 }
 
+export enum MetodoCotacao {
+    manual = 'manual',
+    yahoo = 'yahoo',
+    referencia = 'referencia', 
+    tesouro = 'tesouro',
+}
+
 type TipoInvestimentoPropertiesAsString = {
     [key in keyof typeof TipoInvestimento]: string;
 };
@@ -65,18 +72,22 @@ export class Ativo extends Investimento {
 
     tipo?: TipoInvestimento;
 
+    metodo: MetodoCotacao;
+
     referencia?: {
         id: string;
         tipo: TipoInvestimento;
     };
 
-    constructor(ativo: IAtivo) {
+    constructor(ativo: IAtivo, cotacao?: Cotacao) {
         super(ativo);
         this.sigla = ativo.sigla;
         this.setor = ativo.setor;
         this.siglaYahoo = ativo.siglaYahoo;
         this.tipo = ativo.tipo;
         this.referencia = ativo.referencia;
+        this.metodo = ativo.metodo;
+        this.cotacao = cotacao;
     }
 
 }
@@ -178,6 +189,7 @@ export function createAtivo(): Ativo {
         sigla: '',
         nome: '',
         setor: '',
+        metodo: MetodoCotacao.yahoo,
         moeda: Moeda.BRL
     })
 }

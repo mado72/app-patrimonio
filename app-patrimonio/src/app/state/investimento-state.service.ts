@@ -317,7 +317,7 @@ export class InvestimentoStateService implements OnDestroy{
     this.ativoService.updateAtivo(ativo).subscribe({
       next: () => {
         const dictionary = { ...this.ativoState$.state$.value.entities };
-        ativo = new Ativo(ativo);
+        ativo = new Ativo(ativo, cotacao);
         dictionary[ativo._id as string] = ativo;
 
         this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Executed, entities: dictionary });
