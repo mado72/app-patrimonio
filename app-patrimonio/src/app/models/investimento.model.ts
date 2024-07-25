@@ -193,3 +193,37 @@ export function createAtivo(): Ativo {
         moeda: Moeda.BRL
     })
 }
+
+export enum TipoProvento {
+    Dividendo = "Dividendo",
+    JCP = "JCP",
+    Aluguel = "Aluguel",
+    Taxa = "Taxa",
+    Bonus = "Bonus",
+    Outros = "Outros"
+}
+
+export type Aporte = {
+    _id?: string,
+    idCarteira: string,
+    idAtivo: string,
+    data: string,
+    quantidade: number,
+    valorUnitario: number,
+    total: number
+}
+
+export type Provento = {
+    _id?: string,
+    idAtivo: string,
+    idConta: string,
+    data: string,
+    tipo: TipoProvento,
+    total: number
+}
+
+export type Retirada = {
+    _id?: string,
+    data: string,
+    valor: number
+}
