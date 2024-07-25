@@ -9,6 +9,7 @@
                 <th>Quantidade</th>
                 <th>Sigla</th>
                 <th>Nova Quantidade</th>
+                <th>Cotação</th>
                 <th>Financeiro</th>
                 <th>Objetivo (%)</th>
                 <th>Novo (%)</th>
@@ -27,6 +28,7 @@
                 <td class="number py-0 px-2">
                     <input type="number" class="form-control" [(ngModel)]="item.value.novaQuantidade" min="0" step="0.01" name="novaQuantidade_{{idx}}"/>
                 </td>
+                <td class="number">{{item.value.cotacao.preco | number:'1.2-2'}}</td>
                 <td class="number">{{item.value.financeiro | number:'1.2-2'}}</td>
                 <td class="number">{{item.value.objetivo | percent:'1.2-2'}}</td>
                 <td class="number">{{item.value.novo | percent:'1.2-2'}}</td>
@@ -39,7 +41,7 @@
     @if(!!totais) {
         <tfoot>
             <tr class="table-dark">
-                <td colspan="3">Totais ({{aporte}})</td>
+                <td colspan="4">Totais ({{aporte}})</td>
                 <td class="number">{{totais.financeiro| number:'1.2-2'}}</td>
                 <td class="number">{{totais.objetivo| percent:'1.2-2'}}</td>
                 <td class="number">{{totais.novo| percent:'1.2-2'}}</td>
