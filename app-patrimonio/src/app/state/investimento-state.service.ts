@@ -26,7 +26,7 @@ class CotacaoStateBehavior extends StateBehavior<Cotacao> {
 @Injectable({
   providedIn: 'root'
 })
-export class InvestimentoStateService implements OnDestroy{
+export class InvestimentoStateService implements OnDestroy {
 
   private ativoState$ = new StateBehavior<Ativo>("Ativo");
 
@@ -39,21 +39,29 @@ export class InvestimentoStateService implements OnDestroy{
   private carteiraService = inject(CarteiraService);
 
   private cotacaoService = inject(CotacaoService);
-  
+
   private timerSubscription?: Subscription;
 
 
-  constructor() { 
+  constructor() {
     this.timerSubscription = interval(15_000).pipe(
       tap(() => console.log(`\n\n@@@ Listeners: carteira ${this.carteiraState$.countListerners()}, ativo: ${this.ativoState$.countListerners()}, cotacao: ${this.cotacaoState$.countListerners()}`))
     ).subscribe();
   }
 
+  /**
+   * Calcula os valores totais para todas as carteiras com base em seus ativos e objetivo.
+   * Filtra as carteiras com objetivo <= 0 e calcula o total para cada carteira.
+   * Utiliza o método `calcularTotaisCarteira` para calcular o total para cada carteira.
+   * 
+   * @returns Um observable que emite um array de carteiras com seus respectivos valores totais.
+   * Cada objeto carteira no array terá os valores totais adicionados, e a propriedade ativos será removida.
+   */
   calcularTotaisTodasCarteiras() {
     return this.carteira$.pipe(
-      mergeMap(carteiras => 
+      mergeMap(carteiras =>
         forkJoin(carteiras
-          .filter(carteira=>carteira.objetivo>0)
+          .filter(carteira => carteira.objetivo > 0)
           .map(carteira => {
             return this.calcularTotaisCarteira(carteira).pipe(
               map(calculado => ({ ...carteira, ...calculado.total, ativos: undefined }))
@@ -63,9 +71,21 @@ export class InvestimentoStateService implements OnDestroy{
     )
   }
 
+  /**
+   * Calcula os valores totais para uma carteira de investimentos fornecida.
+   *
+   * @param carteira - A carteira de investimentos para calcular os totais.
+   * @returns Um Observable que emite os valores totais calculados.
+   *
+   * O Observable retornado emite um objeto CalcularTotaisReturnType contendo as seguintes propriedades:
+   * - totalInvestido: O valor total investido na carteira.
+   * - totalAtual: O valor atual total da carteira.
+   * - totalLucro: O lucro ou prejuízo total obtido na carteira.
+   * - totalLucroPercentual: O lucro ou prejuízo total obtido na carteira, expresso como uma porcentagem.
+   */
   calcularTotaisCarteira(carteira: Carteira) {
 
-    const ob = new Observable<CalcularTotaisReturnType>(subscriber=>{
+    const ob = new Observable<CalcularTotaisReturnType>(subscriber => {
       const mapCarteira = new Map<string, Carteira>(Object.values(this.carteiraState$.state$.value.entities)
         .map((carteira: Carteira) => [carteira.identity.toString(), carteira]));
       const mapCotacao = new Map<string, Cotacao>(Object.values(this.cotacaoState$.state$.value.entities)
@@ -87,10 +107,10 @@ export class InvestimentoStateService implements OnDestroy{
   }
 
   ngOnDestroy(): void {
-      if (this.timerSubscription) {
-        this.timerSubscription.unsubscribe();
-        this.timerSubscription = undefined;
-      }
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = undefined;
+    }
   }
 
   notificar() {
@@ -129,7 +149,7 @@ export class InvestimentoStateService implements OnDestroy{
 
   get carteiraEntities$() {
     return this.carteiraState$.entities.pipe(
-      map(dictionary=> dictionary as Immutable<Dictionary<Carteira>>)
+      map(dictionary => dictionary as Immutable<Dictionary<Carteira>>)
     )
   }
 
@@ -197,38 +217,38 @@ export class InvestimentoStateService implements OnDestroy{
                 status: DataStatus.Executed
               });
 
-              moedas.flatMap(moedaInicial=>moedas.filter(moeda=> moeda !== moedaInicial)
-                  .map(moeda=>({sigla: `${moedaInicial}${moeda}`, de: moedaInicial, para: moeda})))
-                  .map(item=>({...item, ativo: ativos.find(ativo=>ativo.sigla === item.sigla)}))
-                  .filter(item=> !!item.ativo?.cotacao)
-                  .map(item=>({...item, cotacao: item.ativo?.cotacao}))
-                  .forEach(item => {
-                    const cotacaoDePara = new Cotacao({
-                      simbolo: item.sigla,
-                      moeda: item.para as Moeda,
-                      preco: item.cotacao?.preco || NaN,
-                      manual: item.cotacao?.manual || true,
-                      data: new Date()
-                    });
-                    const cotacaoParaDe = new Cotacao({
-                      simbolo: `${item.para}${item.de}`,
-                      data: cotacaoDePara.data,
-                      moeda: item.de as Moeda,
-                      manual: item.cotacao?.manual || true,
-                      preco: 1/cotacaoDePara.preco
-                    })
-                    dictionaryCotacoes[cotacaoDePara.simbolo] = cotacaoDePara;
-                    dictionaryCotacoes[cotacaoParaDe.simbolo] = cotacaoParaDe;
+              moedas.flatMap(moedaInicial => moedas.filter(moeda => moeda !== moedaInicial)
+                .map(moeda => ({ sigla: `${moedaInicial}${moeda}`, de: moedaInicial, para: moeda })))
+                .map(item => ({ ...item, ativo: ativos.find(ativo => ativo.sigla === item.sigla) }))
+                .filter(item => !!item.ativo?.cotacao)
+                .map(item => ({ ...item, cotacao: item.ativo?.cotacao }))
+                .forEach(item => {
+                  const cotacaoDePara = new Cotacao({
+                    simbolo: item.sigla,
+                    moeda: item.para as Moeda,
+                    preco: item.cotacao?.preco || NaN,
+                    manual: item.cotacao?.manual || true,
+                    data: new Date()
+                  });
+                  const cotacaoParaDe = new Cotacao({
+                    simbolo: `${item.para}${item.de}`,
+                    data: cotacaoDePara.data,
+                    moeda: item.de as Moeda,
+                    manual: item.cotacao?.manual || true,
+                    preco: 1 / cotacaoDePara.preco
                   })
-              
+                  dictionaryCotacoes[cotacaoDePara.simbolo] = cotacaoDePara;
+                  dictionaryCotacoes[cotacaoParaDe.simbolo] = cotacaoParaDe;
+                })
+
 
               this.cotacaoState$.setState({
                 ...this.cotacaoState$.state$.value,
                 entities: { ...dictionaryCotacoes },
                 status: DataStatus.Executed
               })
-              
-              return {ativos, cotacoes}
+
+              return { ativos, cotacoes }
             }),
             catchError(error => {
               this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Error, error });
@@ -324,13 +344,13 @@ export class InvestimentoStateService implements OnDestroy{
 
         this.atualizarCotacaoManual(ativo, cotacao as Cotacao);
 
-        const carteiraDic = {...this.carteiraState$.state$.value.entities};
-        Object.keys(carteiraDic).forEach(identity=>{
+        const carteiraDic = { ...this.carteiraState$.state$.value.entities };
+        Object.keys(carteiraDic).forEach(identity => {
           const carteira = carteiraDic[identity];
           let carteiraAtivo = carteira.ativos.find(a => a.ativoId === ativo._id)
           if (carteiraAtivo !== undefined) {
-            carteiraAtivo = {...carteiraAtivo, ativo};
-            carteira.ativos = [...carteira.ativos.map(a=>a.ativoId === carteiraAtivo?.ativoId ? carteiraAtivo: a)]
+            carteiraAtivo = { ...carteiraAtivo, ativo };
+            carteira.ativos = [...carteira.ativos.map(a => a.ativoId === carteiraAtivo?.ativoId ? carteiraAtivo : a)]
           }
         })
       },
@@ -385,7 +405,7 @@ export class InvestimentoStateService implements OnDestroy{
         carteira = new Carteira(carteira);
         return [carteira.identity.toString(), carteira];
       }));
-    
+
     const mapAtivos = new Map(ativos.map(ativo => [ativo.identity, ativo]));
 
     Array.from(mapCarteira.keys()).forEach(key => {
@@ -419,19 +439,19 @@ export class InvestimentoStateService implements OnDestroy{
 
     this.carteiraService.updateCarteira(carteira).subscribe({
       next: () => {
-        const dictionary = {...this.carteiraState$.state$.value.entities};
+        const dictionary = { ...this.carteiraState$.state$.value.entities };
         dictionary[carteira._id as string] = carteira = new Carteira(carteira);
 
         this.ativoState$.entities.pipe(
           take(1),
           tap(ativosDic => {
-            carteira.ativos.forEach(item=>{
-              const ativo = ativosDic[item.ativoId]; 
+            carteira.ativos.forEach(item => {
+              const ativo = ativosDic[item.ativoId];
               console.log(`Atualizando carteiraAtivo.ativo. item.ativo?._id: ${item.ativo?._id}, item.ativoId: ${item.ativoId}, : ativo?._id: ${ativo?._id || ''}`)
               item.ativo = ativo;
             })
 
-            this.ativoState$.setState({...this.ativoState$.state$.value, status: DataStatus.Executed, error: undefined });
+            this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Executed, error: undefined });
             this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Executed, entities: dictionary, error: undefined });
           }),
           catchError((error) => {
@@ -474,18 +494,19 @@ export class InvestimentoStateService implements OnDestroy{
     if (!cotacao.manual) return;
 
     this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Processing });
-    this.cotacaoService.setCotacao(cotacao.simbolo, cotacao.preco, cotacao.moeda).subscribe(cotacao=> {
-      const dictionary = {...this.cotacaoState$.state$.value.entities};
+    this.cotacaoService.setCotacao(cotacao.simbolo, cotacao.preco, cotacao.moeda).subscribe(cotacao => {
+      const dictionary = { ...this.cotacaoState$.state$.value.entities };
       dictionary[cotacao.simbolo] = cotacao;
 
       this.cotacaoState$.setState({
-        ...this.cotacaoState$.state$.value, 
+        ...this.cotacaoState$.state$.value,
         entities: dictionary,
-        status: DataStatus.Executed});
+        status: DataStatus.Executed
+      });
 
       Object.values(this.ativoState$.state$.value.entities)
-        .filter(ativo=>ativo.sigla === cotacao.simbolo || ativo.siglaYahoo === cotacao.simbolo)
-        .forEach(ativo=>ativo.cotacao = cotacao)
+        .filter(ativo => ativo.sigla === cotacao.simbolo || ativo.siglaYahoo === cotacao.simbolo)
+        .forEach(ativo => ativo.cotacao = cotacao)
     })
   }
 
@@ -515,19 +536,19 @@ export class InvestimentoStateService implements OnDestroy{
       switchMap(key => interval(1000).pipe(
         tap(console.debug),
         mergeMap(_ => this.cotacaoService.obterInfoCotacoesBatch(key).pipe(
-          map(info=>{
+          map(info => {
             console.debug(info);
             return info;
           })
         ))
       )),
-      takeWhile((info)=>{
+      takeWhile((info) => {
         return info.status === 'processando' && (info.total > info.processados + info.erros);
       }),
-      tap((info)=>{
+      tap((info) => {
         console.debug(`Concluiu`, info)
       }),
-      catchError(error=>{
+      catchError(error => {
         this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Error, error });
         throw error;
       })
@@ -542,7 +563,7 @@ export class InvestimentoStateService implements OnDestroy{
       manual: true,
       data: new Date()
     });
-    
+
     return this.cotacaoState$.state$.value.entities[`${de}${para}`];
   }
 
