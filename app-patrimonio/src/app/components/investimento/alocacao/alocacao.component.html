@@ -18,10 +18,10 @@
                 </tr>
             </thead>
             <tbody>
-                @for (alocacao of dados.alocacoes; track $index) {
+                @for (alocacao of dados.alocacoes; track alocacao.idCarteira) {
                 <tr>
                     @if(expandido) {
-                        <td class="action" [routerLink]="['/investimento/carteira', alocacao.id]">{{alocacao.carteira}}</td>
+                        <td class="action" [routerLink]="['/investimento/carteira', alocacao.idCarteira]">{{alocacao.carteira}}</td>
                     }
                     @else {
                         <td><b>{{alocacao.classe}}</b></td>
