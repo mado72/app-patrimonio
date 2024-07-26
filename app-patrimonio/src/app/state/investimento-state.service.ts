@@ -195,6 +195,18 @@ export class InvestimentoStateService implements OnDestroy {
     this.cotacaoState$.clearError();
   }
 
+  /**
+   * Recupera e processa todas as alocações, incluindo carteiras, ativos e cotações.
+   * Busca carteiras, ativos e suas respectivas cotações dos respectivos serviços.
+   * Em seguida, mapeia os dados buscados e atualiza o estado com os dados processados.
+   *
+   * @returns {Observable<{carteiras: Carteira[], ativos: Ativo[], cotacoes: Cotacao[]}>}
+   * - Um Observable que emite um objeto contendo as carteiras, ativos e cotações processadas.
+   * - As carteiras são ordenadas pela propriedade `nome`.
+   * - Os ativos e cotações são mapeados para as respectivas carteiras.
+   * - O estado é atualizado com as carteiras, ativos e cotações processadas.
+   * - Se ocorrer algum erro durante a busca ou processamento, o estado correspondente é atualizado com o erro.
+   */
   obterAlocacoes() {
     this.carteiraState$.setState({ ...this.carteiraState$.state$.value, status: DataStatus.Processing });
     this.ativoState$.setState({ ...this.ativoState$.state$.value, status: DataStatus.Processing });
@@ -206,49 +218,7 @@ export class InvestimentoStateService implements OnDestroy {
         concatMap(ativos => {
           return this.cotacaoService.getCotacoes(ativos).pipe(
             map(cotacoes => {
-              const moedas = Array.from(Object.keys(Moeda));
-
-              const dictionaryCotacoes = clearDictionary(this.cotacaoState$.state$.value.entities);
-              cotacoes.forEach(entity => dictionaryCotacoes[entity.simbolo] = entity);
-
-              this.ativoState$.setState({
-                ...this.ativoState$.state$.value,
-                entities: this.mapearAtivosCotacoes(ativos, Object.values(dictionaryCotacoes)),
-                status: DataStatus.Executed
-              });
-
-              moedas.flatMap(moedaInicial => moedas.filter(moeda => moeda !== moedaInicial)
-                .map(moeda => ({ sigla: `${moedaInicial}${moeda}`, de: moedaInicial, para: moeda })))
-                .map(item => ({ ...item, ativo: ativos.find(ativo => ativo.sigla === item.sigla) }))
-                .filter(item => !!item.ativo?.cotacao)
-                .map(item => ({ ...item, cotacao: item.ativo?.cotacao }))
-                .forEach(item => {
-                  const cotacaoDePara = new Cotacao({
-                    simbolo: item.sigla,
-                    moeda: item.para as Moeda,
-                    preco: item.cotacao?.preco || NaN,
-                    manual: item.cotacao?.manual || true,
-                    data: new Date()
-                  });
-                  const cotacaoParaDe = new Cotacao({
-                    simbolo: `${item.para}${item.de}`,
-                    data: cotacaoDePara.data,
-                    moeda: item.de as Moeda,
-                    manual: item.cotacao?.manual || true,
-                    preco: 1 / cotacaoDePara.preco
-                  })
-                  dictionaryCotacoes[cotacaoDePara.simbolo] = cotacaoDePara;
-                  dictionaryCotacoes[cotacaoParaDe.simbolo] = cotacaoParaDe;
-                })
-
-
-              this.cotacaoState$.setState({
-                ...this.cotacaoState$.state$.value,
-                entities: { ...dictionaryCotacoes },
-                status: DataStatus.Executed
-              })
-
-              return { ativos, cotacoes }
+              return this.montarAlocacoes(cotacoes, ativos);
             }),
             catchError(error => {
               this.cotacaoState$.setState({ ...this.cotacaoState$.state$.value, status: DataStatus.Error, error });
@@ -274,6 +244,61 @@ export class InvestimentoStateService implements OnDestroy {
         return of(null);
       }),
     )
+  }
+
+  /**
+   * Essa função é responsável por criar e popular dados de cotação para cada ativo.
+   * Também cria cotações adicionais para conversões de moedas entre diferentes moedas.
+   *
+   * @param cotacoes - Um array de objetos Cotacao que representam as cotações atuais.
+   * @param ativos - Um array de objetos Ativo que representam os investimentos.
+   *
+   * @returns Um objeto contendo os ativos e cotações atualizados.
+   */
+  private montarAlocacoes(cotacoes: Cotacao[], ativos: Ativo[]) {
+    const moedas = Array.from(Object.keys(Moeda));
+
+    const dictionaryCotacoes = clearDictionary(this.cotacaoState$.state$.value.entities);
+    cotacoes.forEach(entity => dictionaryCotacoes[entity.simbolo] = entity);
+
+    this.ativoState$.setState({
+      ...this.ativoState$.state$.value,
+      entities: this.mapearAtivosCotacoes(ativos, Object.values(dictionaryCotacoes)),
+      status: DataStatus.Executed
+    });
+
+    moedas.flatMap(moedaInicial => moedas.filter(moeda => moeda !== moedaInicial)
+      .map(moeda => ({ sigla: `${moedaInicial}${moeda}`, de: moedaInicial, para: moeda })))
+      .map(item => ({ ...item, ativo: ativos.find(ativo => ativo.sigla === item.sigla) }))
+      .filter(item => !!item.ativo?.cotacao)
+      .map(item => ({ ...item, cotacao: item.ativo?.cotacao }))
+      .forEach(item => {
+        const cotacaoDePara = new Cotacao({
+          simbolo: item.sigla,
+          moeda: item.para as Moeda,
+          preco: item.cotacao?.preco || NaN,
+          manual: item.cotacao?.manual || true,
+          data: new Date()
+        });
+        const cotacaoParaDe = new Cotacao({
+          simbolo: `${item.para}${item.de}`,
+          data: cotacaoDePara.data,
+          moeda: item.de as Moeda,
+          manual: item.cotacao?.manual || true,
+          preco: 1 / cotacaoDePara.preco
+        });
+        dictionaryCotacoes[cotacaoDePara.simbolo] = cotacaoDePara;
+        dictionaryCotacoes[cotacaoParaDe.simbolo] = cotacaoParaDe;
+      });
+
+
+    this.cotacaoState$.setState({
+      ...this.cotacaoState$.state$.value,
+      entities: { ...dictionaryCotacoes },
+      status: DataStatus.Executed
+    });
+
+    return { ativos, cotacoes };
   }
 
   carregarAtivos(filter?: FilterAtivos) {
