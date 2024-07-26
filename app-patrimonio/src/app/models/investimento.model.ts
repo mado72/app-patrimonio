@@ -203,16 +203,6 @@ export enum TipoProvento {
     Outros = "Outros"
 }
 
-export type Aporte = {
-    _id?: string,
-    idCarteira: string,
-    idAtivo: string,
-    data: string,
-    quantidade: number,
-    valorUnitario: number,
-    total: number
-}
-
 export type Provento = {
     _id?: string,
     idAtivo: string,
