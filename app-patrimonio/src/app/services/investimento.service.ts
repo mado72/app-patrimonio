@@ -1,8 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Aporte, Provento, Retirada } from '../models/investimento.model';
+import { Provento, Retirada } from '../models/investimento.model';
 import { environment } from '../../environments/environment';
 import { format } from 'date-fns';
+import { AporteDB } from '../models/aportes.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,23 +14,23 @@ export class InvestimentoService {
 
   constructor() { }
 
-  obterAportes({idCarteira, data}: {idCarteira: string, data: string}) {
+  obterAportes({idCarteira, data}: {idCarteira?: string, data?: string}) {
     const params = new HttpParams();
     if (idCarteira) params.set('idCarteira', idCarteira);
     if (data) params.set('data', data);
 
-    return this.http.get<Aporte>(`${environment.apiUrl}/aporte`, { params })
+    return this.http.get<AporteDB[]>(`${environment.apiUrl}/aporte`, { params })
   }
 
-  salvarAporte(aporte: Aporte) {
-    return this.http.post<Aporte>(`${environment.apiUrl}/aporte`, aporte);
+  salvarAporte(aporte: AporteDB) {
+    return this.http.post<AporteDB>(`${environment.apiUrl}/aporte`, aporte);
   }
 
-  atualizarAporte(aporte: Aporte) {
-    return this.http.put<Aporte>(`${environment.apiUrl}/aporte/${aporte._id}`, aporte);
+  atualizarAporte(aporte: AporteDB) {
+    return this.http.put<AporteDB>(`${environment.apiUrl}/aporte/${aporte._id}`, aporte);
   }
 
-  removerAporte(aporte: Aporte) {
+  removerAporte(aporte: AporteDB) {
     return this.http.delete<void>(`${environment.apiUrl}/aporte/${aporte._id}`);
   }
 
@@ -39,7 +40,7 @@ export class InvestimentoService {
      .set('dataFinal', format(dataFinal, 'yyyy-MM-dd'))
      .set('agregado', agregado? 'true' : 'false');
     
-    return this.http.get<Provento>(`${environment.apiUrl}/provento`, { params });
+    return this.http.get<Provento[]>(`${environment.apiUrl}/provento`, { params });
   }
 
   salvarProvento(provento: Provento) {
@@ -58,7 +59,7 @@ export class InvestimentoService {
     const params = new HttpParams()
       .set('dataInicio', format(dataInicio, 'yyyy-MM-dd'))
       .set('dataFinal', format(dataFinal, 'yyyy-MM-dd'));
-    return this.http.get<Retirada>(`${environment.apiUrl}/retirada`, {params});
+    return this.http.get<Retirada[]>(`${environment.apiUrl}/retirada`, {params});
   }
 
   salvarRetirada(retirada: Retirada) {
