@@ -26,7 +26,9 @@
                 <td class="number">{{item.value.quantidade}}</td>
                 <td>{{item.value.sigla}}</td>
                 <td class="number py-0 px-2">
-                    <input type="number" class="form-control" [(ngModel)]="item.value.novaQuantidade" min="0" step="0.01" name="novaQuantidade_{{idx}}"/>
+                    <input type="number" class="form-control" [(ngModel)]="item.value.novaQuantidade" min="0" step="0.01" name="novaQuantidade_{{idx}}" 
+                        (change)="fireAporteChanged(item.value)"
+                        (keyup)="fireAporteChanged(item.value)"/>
                 </td>
                 <td class="number">{{item.value.cotacao.preco | number:'1.2-2'}}</td>
                 <td class="number">{{item.value.financeiro | number:'1.2-2'}}</td>

@@ -74,7 +74,7 @@ export class AporteAtivo extends AporteAtivoData{
     }
 
     get qtdCompra(): number {
-        return this.novaQuantidade - this.quantidade;
+        return Math.round((this.novaQuantidade - this.quantidade) * 1000000) / 1000000;
     }
 
     get total(): number {

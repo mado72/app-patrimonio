@@ -1,5 +1,5 @@
 import { DecimalPipe, KeyValuePipe, PercentPipe } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AporteAtivo } from '../../../models/aportes.model';
 import { Dictionary, Moeda } from '../../../models/base.model';
@@ -56,13 +56,21 @@ export class AportesCarteiraCardComponent {
     });
   }
 
+  @Output() aporteChange = new EventEmitter<number>();
+
+  @Output() saldoChange = new EventEmitter<number>();
+
   totais?: AporteTotaisType = undefined;
 
   constructor() { }
+
+  fireAporteChanged(aporteAtivo: AporteAtivo) {
+    this.aporteChange.emit(aporteAtivo.total);
+    const saldo =  Math.round(1000000 * Object.values(this._aportes).reduce((acc, aporte)=>acc+=aporte.cotacao.aplicar(aporte.qtdCompra),0))/ 1000000;
+    this.saldoChange.emit(saldo);
+  }
+
   get saldo() {
-    if (!this.totais) {
-      return this.aporte;
-    }
-    return this.aporte - Object.values(this._aportes).reduce((acc, aporte)=>acc+=aporte.cotacao.aplicar(aporte.qtdCompra),0);
+    return this.aporte;
   }
 }

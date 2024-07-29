@@ -1,0 +1,8 @@
+<form>
+    <app-aportes-carteira-card 
+        [carteira]="carteira" 
+        [(aporte)]="aporte"
+        [aportes]="aportes" 
+        (saldoChange)="saldoChanged($event)"
+        />
+</form>

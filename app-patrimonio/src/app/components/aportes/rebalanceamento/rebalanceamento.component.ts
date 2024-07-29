@@ -7,10 +7,10 @@ import { Moeda } from '../../../models/base.model';
 import { Cotacao } from '../../../models/cotacao.models';
 import { Carteira, CarteiraAtivo } from '../../../models/investimento.model';
 import { ConsolidacaoService } from '../../../services/consolidacao.service';
+import { InvestimentoService } from '../../../services/investimento.service';
 import { ModalService } from '../../../services/modal.service';
 import { InvestimentoStateService } from '../../../state/investimento-state.service';
-import { AportesCarteiraCardComponent } from '../aportes-carteira-card/aportes-carteira-card.component';
-import { InvestimentoService } from '../../../services/investimento.service';
+import { AportesFormComponent } from '../aportes-form/aportes-form.component';
 
 @Component({
   selector: 'app-rebalanceamento',
@@ -19,7 +19,7 @@ import { InvestimentoService } from '../../../services/investimento.service';
     FormsModule,
     CommonModule,
     JsonPipe,
-    AportesCarteiraCardComponent
+    AportesFormComponent
   ],
   templateUrl: './rebalanceamento.component.html',
   styleUrl: './rebalanceamento.component.scss'
@@ -149,6 +149,15 @@ export class RebalanceamentoComponent {
 
   carteiraSelecionada(itemSelecionado: AporteCarteira) {
     return this.investimentoStateService.getCarteira(itemSelecionado.idCarteira);
+  }
+
+  aporteCarteiraChanged(aporte: number) {
+    if (this.itemSelecionado) {
+      this.itemSelecionado.aporte = aporte;
+    }
+    else {
+      console.warn("Nenhum item selecionado para atualizar aporte");
+    }
   }
 
 }

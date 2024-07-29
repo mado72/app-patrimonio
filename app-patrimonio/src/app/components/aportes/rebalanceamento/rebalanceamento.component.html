@@ -20,7 +20,7 @@
         </thead>
         <tbody>
         @for (item of totais.rebalanceamentos; track $index; let idx = $index) {
-            <tr [ngClass]="{'table-active': itemSelecionado === item}">
+            <tr [ngClass]="{'table-active active': itemSelecionado === item}">
                 <td class="action" (click)="selecionarItem(item)">{{item.carteira}}</td>
                 <td class="number"><span class="me-2">{{item.financeiro | number:'1.2-2'}}</span></td>
                 <td class="form-group py-0 px-2 mb-0">
@@ -65,5 +65,8 @@
 </form>
 
 @if (itemSelecionado) {
-    <app-aportes-carteira-card [carteira]="carteiraSelecionada(itemSelecionado)" [aporte]="itemSelecionado.aporte" [aportes]="itemSelecionado.items"/>
+    <app-aportes-form 
+        [carteira]="carteiraSelecionada(itemSelecionado)" 
+        [(aporte)]="itemSelecionado.aporte"
+        [aportes]="itemSelecionado.items"/>
 }
