@@ -17,14 +17,10 @@ export class AportesFormComponent {
   @Input() aporte!: number;
   @Input() aportes!: Dictionary<AporteAtivo>;
 
-  @Output() aporteChange = new EventEmitter<number>();
+  @Output() aporteAtivoChange = new EventEmitter<AporteAtivo>();
 
-  aporteChanged(aporteAtivo: AporteAtivo) {
-    console.log(aporteAtivo);
-  }
-
-  saldoChanged(saldo: number) {
-    this.aporteChange.emit(saldo);
+  aporteAtivoChanged(ev: {aporteAtivo: AporteAtivo, valor: number}) {
+    this.aporteAtivoChange.emit(ev.aporteAtivo);
   }
 
 }

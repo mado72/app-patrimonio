@@ -1,9 +1,9 @@
 import { DecimalPipe, KeyValuePipe, PercentPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { debounceTime, of, Subject, tap } from 'rxjs';
 import { AporteAtivo } from '../../../models/aportes.model';
-import { Dictionary, Moeda } from '../../../models/base.model';
-import { Cotacao } from '../../../models/cotacao.models';
+import { Dictionary } from '../../../models/base.model';
 import { Carteira } from '../../../models/investimento.model';
 
 type AporteTotaisType = {
@@ -24,7 +24,7 @@ type AporteTotaisType = {
   templateUrl: './aportes-carteira-card.component.html',
   styleUrl: './aportes-carteira-card.component.scss'
 })
-export class AportesCarteiraCardComponent {
+export class AportesCarteiraCardComponent implements OnInit, OnDestroy {
 
   private _carteira!: Carteira;
   public get carteira(): Carteira {
@@ -56,21 +56,30 @@ export class AportesCarteiraCardComponent {
     });
   }
 
-  @Output() aporteChange = new EventEmitter<number>();
-
-  @Output() saldoChange = new EventEmitter<number>();
+  @Output() aporteAtivoChange = new EventEmitter<{aporteAtivo: AporteAtivo, valor: number}>();
 
   totais?: AporteTotaisType = undefined;
 
+  private fieldChanged = new Subject<{aporteAtivo: AporteAtivo, valor: number}>();
+
   constructor() { }
 
-  fireAporteChanged(aporteAtivo: AporteAtivo) {
-    this.aporteChange.emit(aporteAtivo.total);
-    const saldo =  Math.round(1000000 * Object.values(this._aportes).reduce((acc, aporte)=>acc+=aporte.cotacao.aplicar(aporte.qtdCompra),0))/ 1000000;
-    this.saldoChange.emit(saldo);
+  ngOnInit(): void {
+      this.fieldChanged.pipe(debounceTime(1000)).subscribe(changed=>{
+        this.aporteAtivoChange.emit(changed);
+      })
   }
 
-  get saldo() {
-    return this.aporte;
+  ngOnDestroy(): void {
+      this.fieldChanged.complete();
+  }
+
+  get total() {
+    const aportes = Object.values(this._aportes).reduce((acc, aporte)=>acc+=aporte.cotacao.aplicar(aporte.qtdCompra),0);
+    return Math.round(1000000 * (aportes - this.aporte))/ 1000000;
+  }
+
+  fireAporteChanged(aporteAtivo: AporteAtivo) {
+    this.fieldChanged.next({aporteAtivo, valor: aporteAtivo.total});
   }
 }

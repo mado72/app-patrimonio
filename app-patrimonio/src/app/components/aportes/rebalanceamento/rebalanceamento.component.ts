@@ -153,7 +153,7 @@ export class RebalanceamentoComponent {
 
   aporteCarteiraChanged(aporte: number) {
     if (this.itemSelecionado) {
-      this.itemSelecionado.aporte = aporte;
+      this.itemSelecionado.aporte = -aporte;
     }
     else {
       console.warn("Nenhum item selecionado para atualizar aporte");

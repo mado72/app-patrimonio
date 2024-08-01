@@ -43,11 +43,11 @@
     @if(!!totais) {
         <tfoot>
             <tr class="table-dark">
-                <td colspan="4">Totais ({{aporte}})</td>
+                <td colspan="4">Totais</td>
                 <td class="number">{{totais.financeiro| number:'1.2-2'}}</td>
                 <td class="number">{{totais.objetivo| percent:'1.2-2'}}</td>
                 <td class="number">{{totais.novo| percent:'1.2-2'}}</td>
-                <td colspan="3" class="number">Saldo: {{saldo| number:'1.2-2'}}</td>
+                <td colspan="3" class="number">{{total| number:'1.2-2'}}</td>
             </tr>
         </tfoot>
     }
